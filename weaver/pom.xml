@@ -25,6 +25,8 @@
   </parent>
   <artifactId>commons-privilizer</artifactId>
   <name>Commons Privilizer</name>
+  <description>Privilizer provides machinery to automate the handling of Java Security access controls in code.
+  </description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
