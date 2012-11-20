@@ -32,5 +32,6 @@
       <item name="Team" href="/team-list.html"/>
       <item name="SVN" href="/source-repository.html"/>
     </menu>
+    <menu ref="modules" />
   </body>
 </project>
