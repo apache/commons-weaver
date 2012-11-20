@@ -166,6 +166,14 @@
     </plugins>
   </build>
 
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <name>Apache Website</name>
+      <url>scp://people.apache.org/www/commons.apache.org/sandbox/privilizer/</url>
+    </site>
+  </distributionManagement>
+
   <modules>
     <module>api</module>
     <module>weaver</module>
