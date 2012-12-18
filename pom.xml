@@ -15,7 +15,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
- --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -24,19 +25,21 @@
     <version>9</version>
   </parent>
 
-  <artifactId>commons-privilizer-parent</artifactId>
+  <artifactId>commons-weaver</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Commons Privilizer Parent POM</name>
+  <name>Commons Weaver Parent POM</name>
 
-  <description>Privilizer provides machinery to automate the handling of Java Security access controls in code.
+  <description>
+    Commons Weaver provides an easy way to 'enhance' compiled classes with
+    new functionality by generating ('weaving') bytecode into those classes.
   </description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compile.source>1.5</maven.compile.source>
-    <maven.compile.target>1.5</maven.compile.target>
+    <maven.compile.source>1.6</maven.compile.source>
+    <maven.compile.target>1.6</maven.compile.target>
     <commons.componentid>privilizer</commons.componentid>
     <commons.release.version>1.0</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
@@ -59,18 +62,16 @@
     <url>http://svn.apache.org/viewvc/commons/sandbox/privilizer/trunk/</url>
   </scm>
 
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <name>Apache Website</name>
+      <url>scp://people.apache.org/www/commons.apache.org/sandbox/privilizer/</url>
+    </site>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-privilizer-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-privilizer</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -84,17 +85,12 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-privilizer-maven-plugin</artifactId>
-          <version>${project.version}</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.5.1</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <source>${maven.compile.source}</source>
+            <target>${maven.compile.target}</target>
             <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
@@ -166,19 +162,13 @@
     </plugins>
   </build>
 
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <name>Apache Website</name>
-      <url>scp://people.apache.org/www/commons.apache.org/sandbox/privilizer/</url>
-    </site>
-  </distributionManagement>
-
   <modules>
-    <module>api</module>
-    <module>weaver</module>
-    <module>maven-plugin</module>
+<!--X TODO enable again
+    <module>processor</module>
+-->
+    <module>modules</module>
     <module>example</module>
+    <module>maven-plugin</module>
     <module>ant</module>
   </modules>
 </project>

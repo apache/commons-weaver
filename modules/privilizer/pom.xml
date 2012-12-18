@@ -1,6 +1,5 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-
   Copyright the original author or authors.
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +15,26 @@
   limitations under the License.
 
  -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.apache.commons</groupId>
-    <artifactId>commons-weaver-privilizer-parent</artifactId>
+    <artifactId>commons-weaver-modules-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-privilizer-api</artifactId>
-  <name>Commons Privilizer API</name>
+  <artifactId>commons-weaver-privilizer-parent</artifactId>
+  <packaging>pom</packaging>
 
+  <name>Commons Weaver Privilizer Parent POM</name>
+
+  <description>
+    Privilizer provides machinery to automate the handling of Java Security access controls in code.
+  </description>
+
+  <modules>
+    <module>api</module>
+    <module>weaver</module>
+  </modules>
 </project>
