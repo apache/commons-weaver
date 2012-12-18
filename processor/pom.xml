@@ -32,4 +32,13 @@
     enhancing.
   </description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-finder</artifactId>
+      <version>3.12</version>
+    </dependency>
+
+  </dependencies>
+
 </project>

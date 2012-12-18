@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.privilizer.weave;
+package org.apache.commons.weaver.utils;
 
 import java.io.File;
 import java.net.MalformedURLException;

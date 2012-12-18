@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.privilizer.weave;
+package org.apache.commons.weaver.privilizer;
 
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;

@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.privilizer.weave;
+package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.privilizer.Privileged;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.archive.FileArchive;
 
