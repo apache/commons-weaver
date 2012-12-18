@@ -13,18 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.privilizer.weave;
-
-import org.apache.commons.privilizer.weave.Privilizer.Policy;
+package org.apache.commons.weaver.privilizer;
 
 public class AlreadyWovenException extends IllegalStateException {
     private static final long serialVersionUID = 1L;
     private static final String MESSAGE = "%s already woven with policy %s";
 
     private final String classname;
-    private final Policy policy;
+    private final Privilizer.Policy policy;
 
-    public AlreadyWovenException(String classname, Policy policy) {
+    public AlreadyWovenException(String classname, Privilizer.Policy policy) {
         super(String.format(MESSAGE, classname, policy));
         this.classname = classname;
         this.policy = policy;
@@ -34,7 +32,7 @@ public class AlreadyWovenException extends IllegalStateException {
         return classname;
     }
 
-    public Policy getPolicy() {
+    public Privilizer.Policy getPolicy() {
         return policy;
     }
 

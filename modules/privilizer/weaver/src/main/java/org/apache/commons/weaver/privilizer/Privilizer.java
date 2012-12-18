@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.privilizer.weave;
+package org.apache.commons.weaver.privilizer;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -44,7 +44,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.privilizer.Privileged;
 
 
 /**
