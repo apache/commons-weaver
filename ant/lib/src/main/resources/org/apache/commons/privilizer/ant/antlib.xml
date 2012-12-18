@@ -17,6 +17,6 @@
 
  -->
 <antlib>
-  <taskdef name="prepare" classname="org.apache.commons.privilizer.ant.PrepareTask" />
-  <taskdef name="weave" classname="org.apache.commons.privilizer.ant.WeaveTask" />
+  <taskdef name="prepare" classname="org.apache.commons.weaver.privilizer.ant.PrepareTask" />
+  <taskdef name="weave" classname="org.apache.commons.weaver.privilizer.ant.WeaveTask" />
 </antlib>

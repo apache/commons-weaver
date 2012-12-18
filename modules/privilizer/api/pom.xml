@@ -24,7 +24,7 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-privilizer-api</artifactId>
+  <artifactId>commons-weaver-privilizer-api</artifactId>
   <name>Commons Privilizer API</name>
 
 </project>
