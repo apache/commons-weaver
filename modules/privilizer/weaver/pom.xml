@@ -33,7 +33,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-privilizer-api</artifactId>
+      <artifactId>commons-weaver-privilizer-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

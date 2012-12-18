@@ -19,25 +19,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
-    <artifactId>commons-privilizer-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>commons-weaver</artifactId>
+    <version>0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>commons-privilizer-antlib-parent</artifactId>
+
+  <artifactId>commons-weaver-antlib-parent</artifactId>
   <name>Commons Privilizer Antlib Parent</name>
   <packaging>pom</packaging>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <locales>en,fr</locales>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
   <modules>
     <module>lib</module>
     <module>test</module>
