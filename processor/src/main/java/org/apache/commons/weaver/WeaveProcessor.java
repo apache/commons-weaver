@@ -103,7 +103,9 @@ public class WeaveProcessor {
 
         ClassLoader classLoader = new URLClassLoader(URLArray.fromFiles(classPathsToWeave));
 
-        AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, target), false);
+        //X ORIGINAL AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, target), false);
+        //X TODO this is a hack for now!
+        AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, classPathsToWeave.get(0)), false);
         for (Class<? extends Annotation> annotation : interest) {
             List<Class<?>> annotatedClasses = annotationFinder.findAnnotatedClasses(annotation);
 
