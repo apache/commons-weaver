@@ -110,12 +110,12 @@ public class WeaveProcessor {
             List<Class<?>> annotatedClasses = annotationFinder.findAnnotatedClasses(annotation);
 
             for (Class<?> annotatedClass : annotatedClasses) {
-                weaver.weave(annotatedClass);
+                weaver.weave(annotatedClass, annotation);
             }
 
             List<Method> annotateMethods = annotationFinder.findAnnotatedMethods(annotation);
             for (Method annotatedMethod : annotateMethods) {
-                weaver.weave(annotatedMethod);
+                weaver.weave(annotatedMethod, annotation);
             }
         }
     }

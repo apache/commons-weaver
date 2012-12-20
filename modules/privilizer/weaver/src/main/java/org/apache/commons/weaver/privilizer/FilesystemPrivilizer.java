@@ -19,9 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -29,12 +27,7 @@ import javassist.CtClass;
 import javassist.LoaderClassPath;
 import javassist.NotFoundException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.xbean.finder.AnnotationFinder;
-import org.apache.xbean.finder.archive.FileArchive;
 
 
 /**
@@ -95,12 +88,11 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
         this.target = target;
     }
 
-    /**
+    /*X TODO remove or fix!
      * Clear the way by deleting classfiles woven with a different
      * {@link Policy}.
      * 
      * @throws NotFoundException
-     */
     public void prepare() throws NotFoundException {
         info("preparing %s; policy = %s", target, policy);
         final Set<File> toDelete = new TreeSet<File>();
@@ -132,6 +124,7 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
             }
         }
     }
+    */
 
     /**
      * Weave all {@link Privileged} methods found.
@@ -141,16 +134,8 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
      * @throws CannotCompileException
      * @throws ClassNotFoundException
      */
-    public void weaveAll() throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException {
-        int woven = 0;
-        for (final Class<?> type : getDeclaringClasses(findPrivilegedMethods())) {
-            if (weave(classPool.get(type.getName()))) {
-                woven++;
-            }
-        }
-        if (woven > 0) {
-            info("Wove %s classes.", woven);
-        }
+    public boolean weaveClass(Class<?> clazz) throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException {
+        return weave(classPool.get(clazz.getName()));
     }
 
     @Override
@@ -158,8 +143,4 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
         return classFileWriter;
     }
 
-    private List<Method> findPrivilegedMethods() {
-        final AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classpath, target), false);
-        return annotationFinder.findAnnotatedMethods(Privileged.class);
-    }
 }

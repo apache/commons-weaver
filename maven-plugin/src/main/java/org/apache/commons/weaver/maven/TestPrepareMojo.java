@@ -15,8 +15,6 @@
  */
 package org.apache.commons.weaver.maven;
 
-import javassist.NotFoundException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -29,18 +27,20 @@ import org.apache.maven.project.MavenProject;
  * policy.
  */
 @Mojo(name = "test-prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.TEST)
-public class TestPrepareMojo extends TestPrivilegedMojo {
+public class TestPrepareMojo extends TestWeaveMojo {
     @Component
     private MavenProject project;
 
     @Override
     public void execute() throws MojoExecutionException {
         if (target.exists()) {
+/*X TODO do we need the prepare mojo at all?
             try {
                 createWeaver().prepare();
-            } catch (NotFoundException e) {
+            } catch (Exception e) {
                 throw new MojoExecutionException("error", e);
             }
+*/
         }
     }
 

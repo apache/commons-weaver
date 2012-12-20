@@ -19,11 +19,6 @@ import java.io.File;
 import java.net.URLClassLoader;
 import java.util.List;
 
-import org.apache.commons.weaver.privilizer.weaver.AccessLevel;
-import org.apache.commons.weaver.privilizer.weaver.FilesystemPrivilizer;
-import org.apache.commons.weaver.privilizer.weaver.URLArray;
-import org.apache.commons.weaver.privilizer.weaver.Privilizer.Log;
-import org.apache.commons.weaver.privilizer.weaver.Privilizer.Policy;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -31,7 +26,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 /**
  * Defines common properties.
  */
-public abstract class AbstractPrivilegedMojo extends AbstractMojo {
+public abstract class AbstractWeaveMojo extends AbstractMojo {
     /**
      * Weaving policy to use.
      */

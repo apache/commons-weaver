@@ -15,22 +15,50 @@
  */
 package org.apache.commons.weaver.maven;
 
-import org.apache.commons.weaver.privilizer.Privileged;
+import java.io.File;
+import java.util.List;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 
 /**
- * Goal to weave test classes with {@link SecurityManager} handling code for methods marked with
- * the {@link Privileged} annotation.
+ * Goal to weave test classes.
  */
 @Mojo(name = "test-weave", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, requiresDependencyCollection = ResolutionScope.TEST)
-public class TestWeaveMojo extends TestPrivilegedMojo {
+public class TestWeaveMojo extends AbstractWeaveMojo {
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.testClasspathElements}")
+    protected List<String> classpath;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
+    protected File target;
+
+    @Parameter(readonly = false, required = true, defaultValue = "PUBLIC")
+    protected AccessLevel accessLevel;
 
     @Override
-    public void execute() throws MojoFailureException {
+    protected List<String> getClasspath() {
+        return classpath;
+    }
+
+    @Override
+    protected File getTarget() {
+        return target;
+    }
+
+    @Override
+    protected AccessLevel getAccessLevel() {
+        return accessLevel;
+    }
+
+    @Override
+    public void execute() throws MojoExecutionException
+    {
         try {
             createWeaver().weaveAll();
         } catch (Exception e) {

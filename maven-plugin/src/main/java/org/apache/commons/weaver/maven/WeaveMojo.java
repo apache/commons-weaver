@@ -15,22 +15,49 @@
  */
 package org.apache.commons.weaver.maven;
 
-import org.apache.commons.weaver.privilizer.Privileged;
+import java.io.File;
+import java.util.List;
+
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 
 /**
- * Goal to weave classes with {@link SecurityManager} handling code for methods marked with
- * the {@link Privileged} annotation.
+ * Goal to weave classes.
  */
 @Mojo(name = "weave", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyCollection = ResolutionScope.COMPILE)
-public class WeaveMojo extends PrivilegedMojo {
+public class WeaveMojo extends AbstractWeaveMojo {
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.compileClasspathElements}")
+    protected List<String> classpath;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.build.outputDirectory}")
+    protected File target;
+
+    @Parameter(readonly = false, required = true, defaultValue = "PACKAGE")
+    protected AccessLevel accessLevel;
 
     @Override
-    public void execute() throws MojoFailureException {
+    protected List<String> getClasspath() {
+        return classpath;
+    }
+
+    @Override
+    protected File getTarget() {
+        return target;
+    }
+
+    @Override
+    protected AccessLevel getAccessLevel() {
+        return accessLevel;
+    }
+    @Override
+    public void execute() throws MojoExecutionException
+    {
         try {
             createWeaver().weaveAll();
         } catch (Exception e) {

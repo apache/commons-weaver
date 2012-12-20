@@ -1,12 +1,17 @@
 package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import org.apache.commons.weaver.spi.Weaver;
 
 /**
@@ -15,6 +20,8 @@ import org.apache.commons.weaver.spi.Weaver;
  */
 public class PrivilizerWeaver implements Weaver
 {
+    private Logger logger = Logger.getLogger(PrivilizerWeaver.class.getName());
+
     private FilesystemPrivilizer privilizer;
 
     private Privilizer.Policy policy;
@@ -25,7 +32,11 @@ public class PrivilizerWeaver implements Weaver
 
     private File target;
 
-
+    @Override
+    public void setLogger(Logger customLogger)
+    {
+        this.logger = customLogger;
+    }
 
     @Override
     public void configure(Map<String, Object> config)
@@ -41,30 +52,54 @@ public class PrivilizerWeaver implements Weaver
     @Override
     public List<Class<? extends Annotation>> getInterest()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Class<? extends Annotation>> interest = new ArrayList<Class<? extends Annotation>>();
+        interest.add(Privileged.class);
+        return interest;
     }
 
     @Override
     public void preWeave()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // nothing to do
     }
 
     @Override
-    public boolean weave(Class classToWeave)
+    public boolean weave(Class classToWeave, Class<? extends Annotation> processingAnnotation)
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        // Privilizer does not weave classes
+        return false;
     }
 
     @Override
-    public boolean weave(Method methodToWeave)
+    public boolean weave(Method methodToWeave, Class<? extends Annotation> processingAnnotation)
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        try
+        {
+            privilizer.weaveClass(methodToWeave.getDeclaringClass());
+        }
+        catch (NotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (CannotCompileException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        return true;
     }
 
     @Override
     public void postWeave()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // nothing to do
     }
 }
