@@ -18,7 +18,8 @@
  */
 package org.apache.commons.weaver.test;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.weaver.test.beans.TestBeanWithClassAnnotation;
 import org.apache.commons.weaver.test.beans.TestBeanWithMethodAnnotation;
@@ -41,7 +42,7 @@ public class WeaveProcessorTest extends WeaverTestBase
 
         WeaveProcessor wp = WeaveProcessor.getInstance();
 
-        Properties config = new Properties();
+        Map<String, Object> config = new HashMap<String, Object>();
         config.put("configKey", "configValue");
         wp.configure(config);
 
@@ -60,6 +61,6 @@ public class WeaveProcessorTest extends WeaverTestBase
         Assert.assertEquals(TestBeanWithClassAnnotation.class, TestWeaver.wovenClasses.get(0));
 
         Assert.assertEquals(1, TestWeaver.wovenMethods.size());
-        Assert.assertEquals(TestBeanWithMethodAnnotation.class, TestWeaver.wovenMethods.get(0));
+        Assert.assertEquals(TestBeanWithMethodAnnotation.class, TestWeaver.wovenMethods.get(0).getDeclaringClass());
     }
 }

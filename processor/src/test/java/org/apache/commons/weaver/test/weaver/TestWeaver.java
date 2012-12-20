@@ -22,7 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.weaver.test.beans.TestAnnotation;
 import org.junit.Assert;
@@ -39,12 +39,12 @@ public class TestWeaver implements Weaver
     public static List<Class> wovenClasses = new ArrayList<Class>();
 
     @Override
-    public void configure(Properties config)
+    public void configure(Map<String, Object> config)
     {
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.size());
 
-        String configValue = config.getProperty("configKey");
+        String configValue = (String) config.get("configKey");
         Assert.assertEquals("configValue", configValue);
     }
 

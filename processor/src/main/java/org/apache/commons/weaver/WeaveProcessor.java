@@ -25,7 +25,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.apache.commons.weaver.spi.Weaver;
@@ -75,7 +75,7 @@ public class WeaveProcessor {
     /**
      * configure all Weavers.
      */
-    public void configure(Properties config) {
+    public void configure(Map<String, Object> config) {
         for (Weaver weaver : weavers) {
             weaver.configure(config);
         }
@@ -112,7 +112,6 @@ public class WeaveProcessor {
             for (Class<?> annotatedClass : annotatedClasses) {
                 weaver.weave(annotatedClass);
             }
-
 
             List<Method> annotateMethods = annotationFinder.findAnnotatedMethods(annotation);
             for (Method annotatedMethod : annotateMethods) {
