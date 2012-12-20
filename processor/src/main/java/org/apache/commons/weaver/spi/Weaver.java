@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * An implementation of a 'Weaver' takes care about
@@ -40,6 +41,12 @@ public interface Weaver
     void configure(Map<String, Object> config);
 
     /**
+     * This method can be used to set a custom logger
+     * @param customLogger
+     */
+    void setLogger(Logger customLogger);
+
+    /**
      * A Weaver must return a List of Annotations he is interested in.
      */
     List<Class<? extends Annotation>> getInterest();
@@ -55,7 +62,7 @@ public interface Weaver
      *
      * @return <code>true</code> if some bytecode has been changed
      */
-    boolean weave(Class classToWeave);
+    boolean weave(Class classToWeave, Class<? extends Annotation> processingAnnotation);
 
     /**
      * Perform weaving on the given class for any class which has one of the required annotations.
@@ -63,7 +70,7 @@ public interface Weaver
      *
      * @return <code>true</code> if some bytecode has been changed
      */
-    boolean weave(Method methodToWeave);
+    boolean weave(Method methodToWeave, Class<? extends Annotation> processingAnnotation);
 
 
     /**

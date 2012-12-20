@@ -15,8 +15,6 @@
  */
 package org.apache.commons.weaver.maven;
 
-import javassist.NotFoundException;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -29,7 +27,7 @@ import org.apache.maven.project.MavenProject;
  * policy.
  */
 @Mojo(name = "prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.COMPILE)
-public class PrepareMojo extends PrivilegedMojo {
+public class PrepareMojo extends WeaveMojo {
     @Component
     private MavenProject project;
 
@@ -37,8 +35,10 @@ public class PrepareMojo extends PrivilegedMojo {
     public void execute() throws MojoExecutionException {
         if (target.exists()) {
             try {
+            /*X TODO do we need the prepare mojo at all?
                 createWeaver().prepare();
-            } catch (NotFoundException e) {
+                */
+            } catch (Exception e) {
                 throw new MojoExecutionException("error", e);
             }
         }
