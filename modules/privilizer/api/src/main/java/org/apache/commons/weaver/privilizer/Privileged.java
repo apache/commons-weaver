@@ -20,10 +20,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.CLASS)
 /**
  * Marks a method as needing to execute in a privileged fashion in secured environments.
  */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.CLASS)
 public @interface Privileged {
 }

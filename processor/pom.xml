@@ -19,7 +19,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.commons</groupId>
+    <groupId>org.apache.commons.weaver</groupId>
     <artifactId>commons-weaver</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-finder-shaded</artifactId>
-      <version>3.12</version>
+      <version>3.13-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

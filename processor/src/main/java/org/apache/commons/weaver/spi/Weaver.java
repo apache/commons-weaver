@@ -21,7 +21,7 @@ package org.apache.commons.weaver.spi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 /**
  * An implementation of a 'Weaver' takes care about
@@ -37,7 +37,7 @@ public interface Weaver
      * Any configuration property of a weaver should start with it's 'name'
      * e.g. 'privilizer'
      */
-    void configure(Properties config);
+    void configure(Map<String, Object> config);
 
     /**
      * A Weaver must return a List of Annotations he is interested in.
