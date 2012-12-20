@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.weaver.privilizer.maven;
+package org.apache.commons.weaver.maven;
 
 import org.apache.commons.weaver.privilizer.Privileged;
 import org.apache.maven.plugin.MojoFailureException;
@@ -23,11 +23,11 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 
 
 /**
- * Goal to weave test classes with {@link SecurityManager} handling code for methods marked with
+ * Goal to weave classes with {@link SecurityManager} handling code for methods marked with
  * the {@link Privileged} annotation.
  */
-@Mojo(name = "test-weave", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, requiresDependencyCollection = ResolutionScope.TEST)
-public class TestWeaveMojo extends TestPrivilegedMojo {
+@Mojo(name = "weave", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyCollection = ResolutionScope.COMPILE)
+public class WeaveMojo extends PrivilegedMojo {
 
     @Override
     public void execute() throws MojoFailureException {

@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.commons.weaver.privilizer.maven;
+package org.apache.commons.weaver.maven;
 
 import java.io.File;
 import java.util.List;
@@ -22,15 +22,15 @@ import org.apache.commons.weaver.privilizer.weaver.AccessLevel;
 import org.apache.maven.plugins.annotations.Parameter;
 
 
-public abstract class TestPrivilegedMojo extends AbstractPrivilegedMojo {
+public abstract class PrivilegedMojo extends AbstractPrivilegedMojo {
 
-    @Parameter(readonly = true, required = true, defaultValue = "${project.testClasspathElements}")
+    @Parameter(readonly = true, required = true, defaultValue = "${project.compileClasspathElements}")
     protected List<String> classpath;
 
-    @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
+    @Parameter(readonly = true, required = true, defaultValue = "${project.build.outputDirectory}")
     protected File target;
 
-    @Parameter(readonly = false, required = true, defaultValue = "PUBLIC")
+    @Parameter(readonly = false, required = true, defaultValue = "PACKAGE")
     protected AccessLevel accessLevel;
 
     @Override
