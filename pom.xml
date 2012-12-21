@@ -25,7 +25,7 @@
     <version>9</version>
   </parent>
 
-  <groupId>org.apache.commons.weaver</groupId>
+  <groupId>org.apache.commons</groupId>
   <artifactId>commons-weaver</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>

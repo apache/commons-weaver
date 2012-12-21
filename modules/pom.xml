@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>commons-weaver</artifactId>
-    <groupId>org.apache.commons.weaver</groupId>
+    <groupId>org.apache.commons</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
