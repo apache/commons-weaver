@@ -44,9 +44,11 @@ public class WeaveProcessorTest extends WeaverTestBase
 
         Map<String, Object> config = new HashMap<String, Object>();
         config.put("configKey", "configValue");
-        wp.configure(config);
 
-        wp.addClassPath(getTargetFolder());
+        getTargetFolder();
+
+        wp.configure(getClassPathEntries(), getTargetFolder(), config);
+
 
         TestWeaver.postWeaveExecuted = false;
         TestWeaver.preWeaveExecuted = false;

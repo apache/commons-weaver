@@ -40,11 +40,20 @@ public class WeaveProcessor {
 
     private static WeaveProcessor instance;
 
+    /**
+     * The classpath which will be used to look up cross references during weaving.
+     */
+    private List<String> classPath;
+
+    /**
+     * The actual path which gets weaved. All the classes in this path
+     * will get weaved. The weaved classes will replace the original classes.
+     */
+    private File target;
+
     /** List of picked up weaver plugins */
     private List<Weaver> weavers = new ArrayList<Weaver>();
 
-    /** List of classpath entries to perform weaving on*/
-    private List<File> classPathsToWeave = new ArrayList<File>();
 
     public static synchronized WeaveProcessor getInstance() {
         if (instance == null) {
@@ -65,19 +74,18 @@ public class WeaveProcessor {
     }
 
     /**
-     * All the class paths which should get weaved.
-     * This e.g. contains target/classes in a typical maven installation.
+     * Configure all Weavers.
+     * @param classPath the classpath to look up cross-references in during weaving
+     * @param target the File path where the classes to weave reside
+     * @param config additional configuration for all plugins.
+     *
      */
-    public void addClassPath(File classPath) {
-        classPathsToWeave.add(classPath);
-    }
+    public void configure(List<String> classPath, File target, Map<String, Object> config) {
+        this.classPath = classPath;
+        this.target = target;
 
-    /**
-     * configure all Weavers.
-     */
-    public void configure(Map<String, Object> config) {
         for (Weaver weaver : weavers) {
-            weaver.configure(config);
+            weaver.configure(classPath, target, config);
         }
     }
 
@@ -101,11 +109,9 @@ public class WeaveProcessor {
     private void weave(Weaver weaver) {
         List<Class<? extends Annotation>> interest = weaver.getInterest();
 
-        ClassLoader classLoader = new URLClassLoader(URLArray.fromFiles(classPathsToWeave));
+        ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classPath));
 
-        //X ORIGINAL AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, target), false);
-        //X TODO this is a hack for now!
-        AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, classPathsToWeave.get(0)), false);
+        AnnotationFinder annotationFinder = new AnnotationFinder(new FileArchive(classLoader, target), false);
         for (Class<? extends Annotation> annotation : interest) {
             List<Class<?>> annotatedClasses = annotationFinder.findAnnotatedClasses(annotation);
 

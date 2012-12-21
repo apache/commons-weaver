@@ -18,6 +18,7 @@
  */
 package org.apache.commons.weaver.test.weaver;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class TestWeaver implements Weaver
     }
 
     @Override
-    public void configure(Map<String, Object> config)
+    public void configure(List<String> classPath, File target, Map<String, Object> config)
     {
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.size());

@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -35,7 +37,16 @@ public abstract class WeaverTestBase {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    private File targetFolder;
+
+    private List<String> classPathEntries;
+
     private static final String TARGET_FOLDER = "target";
+
+    public void cleanup() {
+        targetFolder = null;
+    }
+
     /**
      * Add a class to the temporary folder.
      * @param clazz
@@ -66,6 +77,27 @@ public abstract class WeaverTestBase {
      * Resolves the 'target' folder where the classes should get placed
      */
     protected File getTargetFolder() {
-        return new File(temporaryFolder.getRoot(), TARGET_FOLDER);
+        if (targetFolder == null) {
+            targetFolder =  new File(temporaryFolder.getRoot(), TARGET_FOLDER);
+        }
+        return targetFolder;
     }
+
+    protected List<String> getClassPathEntries() {
+        if (classPathEntries == null) {
+            classPathEntries = new ArrayList<String>(1);
+            try
+            {
+                classPathEntries.add(getTargetFolder().getCanonicalPath());
+            }
+            catch (IOException ioe)
+            {
+                throw new RuntimeException(ioe);
+            }
+        }
+
+        return classPathEntries;
+    }
+
+
 }

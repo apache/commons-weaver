@@ -13,10 +13,14 @@ import java.util.logging.Logger;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import org.apache.commons.weaver.spi.Weaver;
+import org.apache.commons.weaver.utils.URLArray;
 
 /**
  * Weaver which adds doPrivileged blocks for each method annotated with
- * {@link Privileged}
+ * {@link Privileged}.
+ * An instance of this class will automatically get picked up by the
+ * {@link org.apache.commons.weaver.WeaveProcessor} via the
+ * {@link java.util.ServiceLoader}.
  */
 public class PrivilizerWeaver implements Weaver
 {
@@ -28,10 +32,6 @@ public class PrivilizerWeaver implements Weaver
 
     private AccessLevel targetAccessLevel;
 
-    private URLClassLoader urlClassLoader;
-
-    private File target;
-
     @Override
     public void setLogger(Logger customLogger)
     {
@@ -39,9 +39,9 @@ public class PrivilizerWeaver implements Weaver
     }
 
     @Override
-    public void configure(Map<String, Object> config)
+    public void configure(List<String> classPath, File target, Map<String, Object> config)
     {
-        privilizer = new FilesystemPrivilizer(policy, urlClassLoader, target) {
+        privilizer = new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(classPath)), target) {
             @Override
             protected boolean permitMethodWeaving(final AccessLevel accessLevel) {
                 return targetAccessLevel.compareTo(accessLevel) <= 0;
