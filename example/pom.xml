@@ -24,16 +24,15 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
   <artifactId>commons-privilizer-example</artifactId>
-  <name>Commons Privilizer Example</name>
+  <name>Commons Weaver Privilizer Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.2</version><!--$NO-MVN-MAN-VER$ -->
-      <scope>test</scope>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-privilizer</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <build>
