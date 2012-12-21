@@ -18,6 +18,7 @@
  */
 package org.apache.commons.weaver.spi;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -37,8 +38,11 @@ public interface Weaver
      * This is for now a simple way to configure any weaver.
      * Any configuration property of a weaver should start with it's 'name'
      * e.g. 'privilizer'
+     * @param classPath the classpath to look up cross-references in during weaving
+     * @param target the File path where the classes to weave reside
+     * @param config additional configuration for all plugins.
      */
-    void configure(Map<String, Object> config);
+    void configure(List<String> classPath, File target, Map<String, Object> config);
 
     /**
      * This method can be used to set a custom logger
@@ -72,9 +76,9 @@ public interface Weaver
      */
     boolean weave(Method methodToWeave, Class<? extends Annotation> processingAnnotation);
 
-
     /**
-     * This method will get invoked after all {@link #weave(Class)} methods got invoked
+     * This method will get invoked after all {@link #weave(Class, Class)} and
+     * {@link #weave(java.lang.reflect.Method, Class)} methods got invoked
      * for all classes on every weaver.
      */
     void postWeave();

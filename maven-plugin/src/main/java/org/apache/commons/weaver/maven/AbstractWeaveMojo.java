@@ -18,8 +18,12 @@ package org.apache.commons.weaver.maven;
 import java.io.File;
 import java.net.URLClassLoader;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.weaver.WeaveProcessor;
+import org.apache.commons.weaver.utils.URLArray;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 
@@ -27,20 +31,16 @@ import org.apache.maven.plugins.annotations.Parameter;
  * Defines common properties.
  */
 public abstract class AbstractWeaveMojo extends AbstractMojo {
-    /**
-     * Weaving policy to use.
-     */
-    @Parameter(property = "privilizer.policy", required = true, defaultValue = "DYNAMIC")
-    protected Policy policy;
 
     @Parameter(defaultValue = "false")
     protected boolean verbose;
 
+    @Parameter(property = "weaver.properties", required = false)
+    protected Properties properties;
+
     protected abstract List<String> getClasspath();
 
     protected abstract File getTarget();
-
-    protected abstract AccessLevel getAccessLevel();
 
     protected FilesystemPrivilizer createWeaver() {
         return new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(getClasspath())), getTarget()) {
@@ -81,4 +81,19 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
         });
     }
 
+
+    @Override
+    public void execute() throws MojoFailureException {
+        try {
+            WeaveProcessor wp = WeaveProcessor.getInstance();
+            configure(wp);
+            wp.weave();
+        } catch (Exception e) {
+            throw new MojoFailureException("weaving failed", e);
+        }
+    }
+
+    protected void configure(WeaveProcessor wp) {
+
+    }
 }

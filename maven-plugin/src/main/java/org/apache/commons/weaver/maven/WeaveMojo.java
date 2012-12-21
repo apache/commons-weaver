@@ -18,8 +18,6 @@ package org.apache.commons.weaver.maven;
 import java.io.File;
 import java.util.List;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -38,9 +36,6 @@ public class WeaveMojo extends AbstractWeaveMojo {
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.outputDirectory}")
     protected File target;
 
-    @Parameter(readonly = false, required = true, defaultValue = "PACKAGE")
-    protected AccessLevel accessLevel;
-
     @Override
     protected List<String> getClasspath() {
         return classpath;
@@ -51,17 +46,6 @@ public class WeaveMojo extends AbstractWeaveMojo {
         return target;
     }
 
-    @Override
-    protected AccessLevel getAccessLevel() {
-        return accessLevel;
-    }
-    @Override
-    public void execute() throws MojoExecutionException
-    {
-        try {
-            createWeaver().weaveAll();
-        } catch (Exception e) {
-            throw new MojoFailureException("failed", e);
-        }
-    }
+
+
 }
