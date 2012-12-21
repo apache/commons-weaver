@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.apache.commons.weaver.WeaveProcessor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 
@@ -84,12 +85,20 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException
     {
+        Log mojoLog = getLog();
+        JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(mojoLog);
+        logRedirector.activate();
+
         try {
+
             WeaveProcessor wp = WeaveProcessor.getInstance();
             configure(wp);
             wp.weave();
         } catch (Exception e) {
             throw new MojoExecutionException("weaving failed", e);
+        }
+        finally {
+            logRedirector.deactivate();
         }
     }
 

@@ -1,0 +1,151 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.commons.weaver.maven;
+
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+
+
+/**
+ * This class redirects calls to java.util.Logging to Mojo logging.
+ */
+public class JavaLoggingToMojoLoggingRedirector
+{
+    private JDKLogHandler activeHandler;
+    private List<Handler> removedHandlers = new ArrayList<Handler>();
+
+    /**
+     * The Maven mojo logger to delegate messages to.
+     */
+    private Log mojoLogger;
+
+    /**
+     * @param mojoLogger the Maven mojo logger to delegate messages to.
+     */
+    public JavaLoggingToMojoLoggingRedirector(Log mojoLogger)
+    {
+        this.mojoLogger = mojoLogger;
+    }
+
+    /**
+     * Activates this feature.
+     */
+    public void activate() throws MojoExecutionException {
+        try {
+            Logger rootLogger = LogManager.getLogManager().getLogger("");
+            // remove old handlers
+            for (Handler handler : rootLogger.getHandlers()) {
+                rootLogger.removeHandler(handler);
+                removedHandlers.add(handler);
+            }
+            if (removedHandlers.size() == 0) {
+                throw new MojoExecutionException("could not remove any handler. aborting.");
+            }
+
+            // add our own
+            activeHandler = new JDKLogHandler();
+            activeHandler.setLevel(Level.ALL);
+            rootLogger.setLevel(Level.ALL);
+
+            rootLogger.addHandler(activeHandler);
+        } catch (Exception exc) {
+            throw new MojoExecutionException("failed to activate the jul logging redirector", exc);
+        }
+    }
+
+    /**
+     * deactivate the redirection and put the original Handlers back in place again.
+     */
+    public void deactivate() {
+        Logger rootLogger = LogManager.getLogManager().getLogger("");
+        // remove old handlers
+        for (Handler handler : rootLogger.getHandlers()) {
+            if (handler == activeHandler) {
+                rootLogger.removeHandler(handler);
+            }
+        }
+
+        for (Handler oldHandler : removedHandlers) {
+            rootLogger.addHandler(oldHandler);
+        }
+    }
+
+
+    private class JDKLogHandler extends Handler {
+
+        @Override
+        public void publish(LogRecord record) {
+            Throwable exception = record.getThrown();
+            Level level = record.getLevel();
+            if (level == Level.SEVERE && mojoLogger.isErrorEnabled()) {
+                mojoLogger.error(getMessage(record), exception);
+            }
+            else if (level == Level.WARNING && mojoLogger.isWarnEnabled()) {
+                mojoLogger.warn(getMessage(record), exception);
+            }
+            else if (level == Level.INFO && mojoLogger.isInfoEnabled()) {
+                mojoLogger.info(getMessage(record), exception);
+            }
+            else if (level == Level.CONFIG && mojoLogger.isDebugEnabled()) {
+                mojoLogger.debug(getMessage(record), exception);
+            }
+            else if (mojoLogger.isDebugEnabled()) {
+                mojoLogger.debug(getMessage(record), exception);
+            }
+        }
+
+        private String getMessage(LogRecord record) {
+            String message = record.getMessage();
+            ResourceBundle bundle = record.getResourceBundle();
+            Object params[] = record.getParameters();
+            if (bundle != null && bundle.containsKey(message)) {
+                // todo: cannot enforce Locale.ENGLISH here
+                message = bundle.getString(message);
+            }
+            if (params != null && params.length > 0) {
+                MessageFormat format = new MessageFormat(message);
+                message = format.format(params);
+            }
+            return message;
+        }
+
+        @Override
+        public void flush() {
+            // nothing to do
+        }
+
+        @Override
+        public void close() {
+            // nothing to do
+        }
+
+    }
+
+}

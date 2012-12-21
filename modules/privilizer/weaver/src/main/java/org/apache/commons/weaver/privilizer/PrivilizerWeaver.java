@@ -24,7 +24,7 @@ import org.apache.commons.weaver.utils.URLArray;
  */
 public class PrivilizerWeaver implements Weaver
 {
-    private Logger logger = Logger.getLogger(PrivilizerWeaver.class.getName());
+    private static final Logger LOG = Logger.getLogger(PrivilizerWeaver.class.getName());
 
     private FilesystemPrivilizer privilizer;
 
@@ -33,14 +33,9 @@ public class PrivilizerWeaver implements Weaver
     private AccessLevel targetAccessLevel;
 
     @Override
-    public void setLogger(Logger customLogger)
-    {
-        this.logger = customLogger;
-    }
-
-    @Override
     public void configure(List<String> classPath, File target, Map<String, Object> config)
     {
+        LOG.info("");
         privilizer = new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(classPath)), target) {
             @Override
             protected boolean permitMethodWeaving(final AccessLevel accessLevel) {

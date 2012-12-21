@@ -41,11 +41,6 @@ public class TestWeaver implements Weaver
     public static List<Class> wovenClasses = new ArrayList<Class>();
 
     @Override
-    public void setLogger(Logger customLogger) {
-        // do nothing
-    }
-
-    @Override
     public void configure(List<String> classPath, File target, Map<String, Object> config)
     {
         Assert.assertNotNull(config);
