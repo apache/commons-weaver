@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javassist.CannotCompileException;
@@ -24,6 +24,10 @@ import org.apache.commons.weaver.utils.URLArray;
  */
 public class PrivilizerWeaver implements Weaver
 {
+    public static final String CONFIG_WEAVER = "privilizer.";
+    public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
+    public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
+
     private static final Logger LOG = Logger.getLogger(PrivilizerWeaver.class.getName());
 
     private FilesystemPrivilizer privilizer;
@@ -33,15 +37,29 @@ public class PrivilizerWeaver implements Weaver
     private AccessLevel targetAccessLevel;
 
     @Override
-    public void configure(List<String> classPath, File target, Map<String, Object> config)
+    public void configure(List<String> classPath, File target, Properties config)
     {
         LOG.info("");
+
+        String accessLevel = config.getProperty(CONFIG_ACCESS_LEVEL);
+        if (accessLevel == null || accessLevel.length() == 0) {
+            throw new IllegalArgumentException(CONFIG_ACCESS_LEVEL + " property is missing!");
+        }
+        targetAccessLevel = AccessLevel.valueOf(accessLevel);
+
+        String policyConfig = config.getProperty(CONFIG_POLICY);
+        if (policyConfig == null || policyConfig.length() == 0) {
+            throw new IllegalArgumentException(CONFIG_POLICY + " property is missing!");
+        }
+        policy = Privilizer.Policy.valueOf(policyConfig);
+
         privilizer = new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(classPath)), target) {
             @Override
             protected boolean permitMethodWeaving(final AccessLevel accessLevel) {
                 return targetAccessLevel.compareTo(accessLevel) <= 0;
             }
         };
+
     }
 
     @Override

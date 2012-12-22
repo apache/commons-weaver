@@ -41,47 +41,6 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
 
     protected abstract File getTarget();
 
-/*X TODO remove finally
-    protected FilesystemPrivilizer createWeaver() {
-        return new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(getClasspath())), getTarget()) {
-            @Override
-            protected boolean permitMethodWeaving(AccessLevel accessLevel) {
-                return getAccessLevel().compareTo(accessLevel) <= 0;
-            }
-        }.loggingTo(new Log() {
-
-            @Override
-            public void info(String message) {
-                getLog().info(message);
-            }
-
-            @Override
-            public void error(String message) {
-                getLog().error(message);
-            }
-
-            @Override
-            public void debug(String message) {
-                getLog().debug(message);
-            }
-
-            @Override
-            public void verbose(String message) {
-                if (verbose) {
-                    getLog().info(message);
-                } else {
-                    getLog().debug(message);
-                }
-            }
-
-            @Override
-            public void warn(String message) {
-                getLog().warn(message);
-            }
-        });
-    }
-*/
-
     @Override
     public void execute() throws MojoExecutionException
     {
@@ -103,6 +62,6 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
     }
 
     protected void configure(WeaveProcessor wp) {
-
+        wp.configure(getClasspath(), getTarget(), weaverConfig);
     }
 }

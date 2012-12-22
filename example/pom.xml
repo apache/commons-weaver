@@ -23,7 +23,7 @@
       <artifactId>commons-weaver</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>commons-privilizer-example</artifactId>
+  <artifactId>commons-weaver-example</artifactId>
   <name>Commons Weaver Privilizer Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-privilizer</artifactId>
+      <artifactId>commons-weaver-privilizer</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -41,16 +41,34 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-maven-plugin</artifactId>
         <version>${project.version}</version>
+        <configuration>
+          <weaverConfig>
+            <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
+            <privilizer.policy>ON_INIT</privilizer.policy>
+          </weaverConfig>
+        </configuration>
         <executions>
           <execution>
             <goals>
-              <goal>prepare</goal>
               <goal>weave</goal>
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-weaver-privilizer-api</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-weaver-privilizer</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
+
     <pluginManagement>
       <plugins>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
