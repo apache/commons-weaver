@@ -31,4 +31,9 @@ public class SomeTestClass
     public int privilegedMethod() {
         return 21;
     }
+
+    @Privileged
+    public int anotherPrivilegedMethod() {
+        return 21;
+    }
 }
