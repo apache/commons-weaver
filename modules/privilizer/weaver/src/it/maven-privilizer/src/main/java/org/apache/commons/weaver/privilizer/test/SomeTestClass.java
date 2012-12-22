@@ -28,12 +28,12 @@ public class SomeTestClass
     }
 
     @Privileged
-    public int privilegedMethod() {
+    private int privilegedMethod() {
         return 21;
     }
 
     @Privileged
-    public int anotherPrivilegedMethod() {
+    private int anotherPrivilegedMethod() {
         return 21;
     }
 }

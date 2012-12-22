@@ -88,44 +88,6 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
         this.target = target;
     }
 
-    /*X TODO remove or fix!
-     * Clear the way by deleting classfiles woven with a different
-     * {@link Policy}.
-     * 
-     * @throws NotFoundException
-    public void prepare() throws NotFoundException {
-        info("preparing %s; policy = %s", target, policy);
-        final Set<File> toDelete = new TreeSet<File>();
-        for (final Class<?> type : getDeclaringClasses(findPrivilegedMethods())) {
-            final CtClass ctClass = classPool.get(type.getName());
-            final String policyValue = toString(ctClass.getAttribute(generateName(POLICY_NAME)));
-            if (policyValue == null || policyValue.equals(policy.name())) {
-                continue;
-            }
-            debug("class %s previously woven with policy %s", type.getName(), policyValue);
-            final File packageDir =
-                new File(target, StringUtils.replaceChars(ctClass.getPackageName(), '.', File.separatorChar));
-
-            // simple classname of outermost class, plus any inner classes:
-            final String pattern =
-                new StringBuilder(getOutermost(type).getSimpleName()).append("(\\$.+)??\\.class").toString();
-
-            debug("searching %s for pattern '%s'", packageDir.getAbsolutePath(), pattern);
-            toDelete.addAll(FileUtils.listFiles(packageDir, new RegexFileFilter(pattern), null));
-        }
-        if (toDelete.isEmpty()) {
-            return;
-        }
-        info("Deleting %s files...", toDelete.size());
-        debug(toDelete.toString());
-        for (File f : toDelete) {
-            if (!f.delete()) {
-                debug("Failed to delete %s", f);
-            }
-        }
-    }
-    */
-
     /**
      * Weave all {@link Privileged} methods found.
      * 
@@ -134,7 +96,8 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
      * @throws CannotCompileException
      * @throws ClassNotFoundException
      */
-    public boolean weaveClass(Class<?> clazz) throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException {
+    public boolean weaveClass(Class<?> clazz)
+            throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, IllegalAccessException {
         return weave(classPool.get(clazz.getName()));
     }
 
