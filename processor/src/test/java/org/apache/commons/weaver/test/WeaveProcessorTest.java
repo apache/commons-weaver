@@ -18,8 +18,7 @@
  */
 package org.apache.commons.weaver.test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.weaver.test.beans.TestBeanWithClassAnnotation;
 import org.apache.commons.weaver.test.beans.TestBeanWithMethodAnnotation;
@@ -42,7 +41,7 @@ public class WeaveProcessorTest extends WeaverTestBase
 
         WeaveProcessor wp = WeaveProcessor.getInstance();
 
-        Map<String, Object> config = new HashMap<String, Object>();
+        Properties config = new Properties();
         config.put("configKey", "configValue");
 
         getTargetFolder();

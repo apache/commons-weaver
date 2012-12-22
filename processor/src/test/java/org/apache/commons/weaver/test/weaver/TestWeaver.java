@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.apache.commons.weaver.test.beans.TestAnnotation;
@@ -41,7 +42,7 @@ public class TestWeaver implements Weaver
     public static List<Class> wovenClasses = new ArrayList<Class>();
 
     @Override
-    public void configure(List<String> classPath, File target, Map<String, Object> config)
+    public void configure(List<String> classPath, File target, Properties config)
     {
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.size());

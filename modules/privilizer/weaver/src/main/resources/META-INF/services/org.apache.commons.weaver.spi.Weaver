@@ -16,4 +16,4 @@
 # under the License.
 
 # this class gets picked up by the WeaveProcessor
-org.apache.commons.weaver.test.weaver.TestWeaver
+org.apache.commons.weaver.privilizer.PrivilizerWeaver

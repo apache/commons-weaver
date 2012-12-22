@@ -25,7 +25,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.ServiceLoader;
 
 import org.apache.commons.weaver.spi.Weaver;
@@ -80,7 +80,7 @@ public class WeaveProcessor {
      * @param config additional configuration for all plugins.
      *
      */
-    public void configure(List<String> classPath, File target, Map<String, Object> config) {
+    public void configure(List<String> classPath, File target, Properties config) {
         this.classPath = classPath;
         this.target = target;
 

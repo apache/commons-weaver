@@ -22,7 +22,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * An implementation of a 'Weaver' takes care about
@@ -41,7 +41,7 @@ public interface Weaver
      * @param target the File path where the classes to weave reside
      * @param config additional configuration for all plugins.
      */
-    void configure(List<String> classPath, File target, Map<String, Object> config);
+    void configure(List<String> classPath, File target, Properties config);
 
     /**
      * A Weaver must return a List of Annotations he is interested in.
