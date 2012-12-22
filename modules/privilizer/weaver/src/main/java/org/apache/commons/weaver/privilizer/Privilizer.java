@@ -129,35 +129,7 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
 
     private boolean settingsReported;
 
-    private Log log = new Log() {
-        final Logger logger = Logger.getLogger(Privilizer.class.getName());
-
-        @Override
-        public void debug(String message) {
-            logger.finer(message);
-        }
-
-        @Override
-        public void verbose(String message) {
-            logger.fine(message);
-        }
-
-        @Override
-        public void error(String message) {
-            logger.severe(message);
-        }
-
-        @Override
-        public void info(String message) {
-            logger.info(message);
-        }
-
-        @Override
-        public void warn(String message) {
-            logger.warning(message);
-        }
-
-    };
+    private static final Logger log = Logger.getLogger(Privilizer.class.getName());
 
     private static final Comparator<CtMethod> CTMETHOD_COMPARATOR = new Comparator<CtMethod>() {
 
@@ -197,14 +169,6 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         this.classPool = Validate.notNull(classPool, "classPool");
     }
 
-    public SELF loggingTo(Log log) {
-        this.log = Validate.notNull(log);
-        settingsReported = false;
-        @SuppressWarnings("unchecked")
-        final SELF self = (SELF) this;
-        return self;
-    }
-
     /**
      * Weave the specified class.
      * 
@@ -215,8 +179,8 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
      * @throws CannotCompileException
      * @throws ClassNotFoundException
      */
-    public boolean weave(CtClass type) throws NotFoundException, IOException, CannotCompileException,
-        ClassNotFoundException {
+    public boolean weave(CtClass type)
+            throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, IllegalAccessException {
         reportSettings();
         final String policyName = generateName(POLICY_NAME);
         final String policyValue = toString(type.getAttribute(policyName));
@@ -229,8 +193,14 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         }
         boolean result = false;
         if (policy.compareTo(Policy.NEVER) > 0) {
+            if (type.getAttribute(policyName) != null) {
+                // if this class already got enhanced then abort
+                return false;
+            }
+
             if (policy == Policy.ON_INIT) {
                 debug("Initializing field %s to %s", policy.condition, HAS_SECURITY_MANAGER_CONDITION);
+
                 type.addField(new CtField(CtClass.booleanType, policy.condition, type),
                     CtField.Initializer.byExpr(HAS_SECURITY_MANAGER_CONDITION));
             }
@@ -242,20 +212,20 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
                 getClassFileWriter().write(type);
             }
         }
-        log.verbose(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
+        log.info(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
         return result;
     }
 
     protected void debug(String message, Object... args) {
-        log.debug(String.format(message, args));
+        log.fine(String.format(message, args));
     }
 
     protected void verbose(String message, Object... args) {
-        log.verbose(String.format(message, args));
+        log.fine(String.format(message, args));
     }
 
     protected void warn(String message, Object... args) {
-        log.warn(String.format(message, args));
+        log.warning(String.format(message, args));
     }
 
     protected abstract ClassFileWriter getClassFileWriter();
@@ -372,11 +342,12 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
     }
 
     private boolean weave(CtClass type, CtMethod method) throws ClassNotFoundException, CannotCompileException,
-        NotFoundException, IOException {
+        NotFoundException, IOException, IllegalAccessException {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
         if (!permitMethodWeaving(accessLevel)) {
-            warn("Ignoring %s method %s.%s", accessLevel, type.getName(), toString(method));
-            return false;
+            throw new IllegalAccessException("Method " + type.getName() + "#" +  toString(method)
+                                             + " must have maximum access level " + accessLevel
+                                             + " but is defined wider");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
             warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
@@ -483,7 +454,7 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
     private void reportSettings() {
         if (!settingsReported) {
             settingsReported = true;
-            info("Weave policy == %s", policy);
+            debug("Weave policy == %s", policy);
         }
     }
 }

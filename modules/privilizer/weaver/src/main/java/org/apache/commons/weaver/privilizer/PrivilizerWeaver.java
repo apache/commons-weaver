@@ -106,6 +106,10 @@ public class PrivilizerWeaver implements Weaver
         {
             throw new RuntimeException(e);
         }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         return true;
     }
