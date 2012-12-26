@@ -43,7 +43,7 @@
         <version>${project.version}</version>
         <configuration>
           <weaverConfig>
-            <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
+            <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
             <privilizer.policy>ON_INIT</privilizer.policy>
           </weaverConfig>
         </configuration>
@@ -83,7 +83,7 @@
                   <pluginExecutionFilter>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-privilizer-maven-plugin</artifactId>
-                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                    <versionRange>[0.1-SNAPSHOT,)</versionRange>
                     <goals>
                       <goal>prepare</goal>
                       <goal>weave</goal>
