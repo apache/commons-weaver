@@ -36,6 +36,7 @@ public class PrivilizerWeaver implements Weaver
 
     private AccessLevel targetAccessLevel;
 
+
     @Override
     public void configure(List<String> classPath, File target, Properties config)
     {
@@ -57,6 +58,12 @@ public class PrivilizerWeaver implements Weaver
             @Override
             protected boolean permitMethodWeaving(final AccessLevel accessLevel) {
                 return targetAccessLevel.compareTo(accessLevel) <= 0;
+            }
+
+            @Override
+            protected AccessLevel getTargetAccessLevel()
+            {
+                return targetAccessLevel;
             }
         };
 

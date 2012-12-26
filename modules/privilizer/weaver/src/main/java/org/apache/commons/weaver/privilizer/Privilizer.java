@@ -234,6 +234,10 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         log.info(String.format(message, args));
     }
 
+    protected AccessLevel getTargetAccessLevel() {
+        return AccessLevel.PRIVATE;
+    }
+
     protected boolean permitMethodWeaving(AccessLevel accessLevel) {
         return true;
     }
@@ -346,8 +350,8 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
         if (!permitMethodWeaving(accessLevel)) {
             throw new IllegalAccessException("Method " + type.getName() + "#" +  toString(method)
-                                             + " must have maximum access level " + accessLevel
-                                             + " but is defined wider");
+                                             + " must have maximum access level '" + getTargetAccessLevel()
+                                             + "' but is defined wider ('" + accessLevel + "')");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
             warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
