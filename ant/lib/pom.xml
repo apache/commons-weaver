@@ -25,10 +25,11 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-privilizer-antlib</artifactId>
+  <artifactId>commons-weaver-antlib</artifactId>
   <name>Commons Privilizer Antlib</name>
   <description>Privilizing Ant tasks.</description>
-  <properties>
+
+    <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <ant.version>1.8.4</ant.version>
     <commons.osgi.import />
