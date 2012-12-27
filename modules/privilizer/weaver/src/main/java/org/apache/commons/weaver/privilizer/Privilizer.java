@@ -201,8 +201,9 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             if (policy == Policy.ON_INIT) {
                 debug("Initializing field %s to %s", policy.condition, HAS_SECURITY_MANAGER_CONDITION);
 
-                type.addField(new CtField(CtClass.booleanType, policy.condition, type),
-                    CtField.Initializer.byExpr(HAS_SECURITY_MANAGER_CONDITION));
+                CtField securityManager = new CtField(CtClass.booleanType, policy.condition, type);
+                securityManager.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
+                type.addField(securityManager, CtField.Initializer.byExpr(HAS_SECURITY_MANAGER_CONDITION));
             }
             for (final CtMethod m : getPrivilegedMethods(type)) {
                 result |= weave(type, m);
