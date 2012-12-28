@@ -139,28 +139,6 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <id>prepare-to-weave</id>
-                <phase>process-sources</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <sequential xmlns:priv="antlib:org.apache.commons.weaver.privilizer.ant">
-                      <path id="cp">
-                        <fileset dir="${project.build.directory}/compile-classpath" />
-                      </path>
-                      <taskdef uri="antlib:org.apache.commons.weaver.privilizer.ant"
-                               resource="org/apache/commons/privilizer/ant/antlib.xml"
-                               classpathref="cp" />
-                      <priv:prepare target="${project.build.outputDirectory}"
-                                  classpathref="cp"
-                                  policy="${privilizer.policy}" />
-                    </sequential>
-                  </target>
-                </configuration>
-              </execution>
-              <execution>
                 <id>weave</id>
                 <phase>process-classes</phase>
                 <goals>
@@ -168,16 +146,17 @@
                 </goals>
                 <configuration>
                   <target>
-                    <sequential xmlns:priv="antlib:org.apache.commons.weaver.privilizer.ant">
+                    <sequential xmlns:priv="antlib:org.apache.commons.weaver.ant">
                       <path id="cp">
                         <fileset dir="${project.build.directory}/compile-classpath" />
                       </path>
-                      <taskdef uri="antlib:org.apache.commons.weaver.privilizer.ant"
-                               resource="org/apache/commons/privilizer/ant/antlib.xml"
+                      <taskdef uri="antlib:org.apache.commons.weaver.ant"
+                               resource="org/apache/commons/weaver/ant/antlib.xml"
                                classpathref="cp" />
                       <priv:weave target="${project.build.outputDirectory}"
                                   classpathref="cp"
-                                  policy="${privilizer.policy}" />
+                                  privilizer.accessLevel="PRIVATE"
+                                  privilizer.policy="${privilizer.policy}"/>
                     </sequential>
                   </target>
                 </configuration>
