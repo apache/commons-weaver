@@ -18,31 +18,65 @@ package org.apache.commons.weaver.ant;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.weaver.WeaveProcessor;
+
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DynamicElement;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
+import org.apache.tools.ant.types.PropertySet.BuiltinPropertySetName;
 import org.apache.tools.ant.types.Reference;
 
 /**
- * Privileged method weaving Ant task.
+ * Weave Ant task.
  */
-public class WeaveTask  extends Task {
+public class WeaveTask extends Task {
+    /**
+     * Structure to allow the inline specification of weaver properties.
+     */
+    public class InlineProperties implements DynamicElement {
+        /**
+         * Represents a single inline property.
+         */
+        public class InlineProperty {
+            private final String name;
+
+            private InlineProperty(String name) {
+                this.name = name;
+            }
+
+            public void addText(String text) {
+                if (properties.containsKey(name)) {
+                    text = StringUtils.join(properties.getProperty(name), text);
+                }
+                properties.setProperty(name, text);
+            }
+        }
+
+        private final Properties properties = new Properties();
+
+        public InlineProperty createDynamicElement(String name) {
+            return new InlineProperty(name);
+        }
+    } 
 
     private File target;
     private Path classpath;
     private String classpathref;
-    private Properties weaverConfig;
-
+    private PropertySet propertySet;
+    private InlineProperties inlineProperties;
 
     @Override
     public void execute() throws BuildException {
         try {
             WeaveProcessor wp = WeaveProcessor.getInstance();
-            wp.configure(getClassPathEntries(), target, weaverConfig);
+            wp.configure(getClassPathEntries(), target, getProperties());
             wp.weave();
         } catch (Exception e) {
             throw new BuildException(e);
@@ -96,11 +130,39 @@ public class WeaveTask  extends Task {
         this.classpath = classpath;
     }
 
-    public Properties getWeaverConfig() {
-        return weaverConfig;
+    public InlineProperties createProperties() {
+        if (inlineProperties != null) {
+            throw new BuildException("properties already specified");
+        }
+        inlineProperties = new InlineProperties();
+        return inlineProperties;
     }
 
-    public void setWeaverConfig(Properties weaverConfig) {
-        this.weaverConfig = weaverConfig;
+    public PropertySet createPropertySet() {
+        if (propertySet != null) {
+            throw new BuildException("propertyset already specified");
+        }
+        propertySet = new PropertySet();
+        propertySet.setProject(getProject());
+        return propertySet;
     }
+
+    private Properties getProperties() {
+        if (propertySet == null && inlineProperties == null) {
+            createPropertySet().appendBuiltin(
+                    (BuiltinPropertySetName) EnumeratedAttribute.getInstance(
+                            BuiltinPropertySetName.class, "all"));
+        }
+        final Properties result = new Properties();
+        if (propertySet != null) {
+            result.putAll(propertySet.getProperties());
+        }
+        if (inlineProperties != null) {
+            for (Map.Entry<Object, Object> e : inlineProperties.properties.entrySet()) {
+                result.put(e.getKey(), StringUtils.trim((String) e.getValue()));
+            }
+        }
+        return result;
+    }
+
 }

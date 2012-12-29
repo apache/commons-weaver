@@ -146,17 +146,22 @@
                 </goals>
                 <configuration>
                   <target>
-                    <sequential xmlns:priv="antlib:org.apache.commons.weaver.ant">
+                    <sequential xmlns:cw="antlib:org.apache.commons.weaver.ant">
                       <path id="cp">
                         <fileset dir="${project.build.directory}/compile-classpath" />
                       </path>
                       <taskdef uri="antlib:org.apache.commons.weaver.ant"
                                resource="org/apache/commons/weaver/ant/antlib.xml"
                                classpathref="cp" />
-                      <priv:weave target="${project.build.outputDirectory}"
-                                  classpathref="cp"
-                                  privilizer.accessLevel="PRIVATE"
-                                  privilizer.policy="${privilizer.policy}"/>
+                      <cw:weave target="${project.build.outputDirectory}"
+                                  classpathref="cp">
+                          <propertyset>
+                              <propertyref name="privilizer.policy" />
+                          </propertyset>
+                          <properties>
+                              <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
+                          </properties>
+                      </cw:weave>
                     </sequential>
                   </target>
                 </configuration>
