@@ -85,26 +85,21 @@
               <relocations>
                 <relocation>
                   <pattern>org.apache.commons.lang3.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.privilizer.ant._lang3.</shadedPattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._lang3.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.privilizer.ant._io.</shadedPattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.xbean.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.privilizer.ant._xbean.</shadedPattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._xbean.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>javassist.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.privilizer.ant._javassist.</shadedPattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._javassist.</shadedPattern>
                 </relocation>
               </relocations>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.apache.commons:commons-privilizer-api</exclude>
-                </excludes>
-              </artifactSet>
               <filters>
                 <filter>
                   <artifact>org.apache.commons:commons-lang3</artifact>
