@@ -31,8 +31,7 @@ import org.junit.Test;
 /**
  * Test the {@link WeaveProcessor}
  */
-public class WeaveProcessorTest extends WeaverTestBase
-{
+public class WeaveProcessorTest extends WeaverTestBase {
 
     @Test
     public void testWeaveVisiting() throws Exception {
@@ -44,20 +43,13 @@ public class WeaveProcessorTest extends WeaverTestBase
         Properties config = new Properties();
         config.put("configKey", "configValue");
 
-        getTargetFolder();
-
         wp.configure(getClassPathEntries(), getTargetFolder(), config);
 
-
-        TestWeaver.postWeaveExecuted = false;
-        TestWeaver.preWeaveExecuted = false;
         TestWeaver.wovenClasses.clear();
         TestWeaver.wovenMethods.clear();
 
         wp.weave();
 
-        Assert.assertTrue(TestWeaver.preWeaveExecuted);
-        Assert.assertTrue(TestWeaver.postWeaveExecuted);
         Assert.assertEquals(1, TestWeaver.wovenClasses.size());
         Assert.assertEquals(TestBeanWithClassAnnotation.class, TestWeaver.wovenClasses.get(0));
 

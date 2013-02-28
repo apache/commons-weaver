@@ -17,9 +17,6 @@ package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -35,7 +32,6 @@ import org.apache.commons.lang3.Validate;
  */
 public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
 
-
     private static ClassPool createClassPool(ClassLoader classpath, File target) {
         final ClassPool result = new ClassPool();
         try {
@@ -48,26 +44,11 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
         return result;
     }
 
-    private static Set<Class<?>> getDeclaringClasses(Iterable<Method> methods) {
-        final Set<Class<?>> declaringClasses = new HashSet<Class<?>>();
-        for (final Method method : methods) {
-            declaringClasses.add(method.getDeclaringClass());
-        }
-        return declaringClasses;
-    }
-
-    private static Class<?> getOutermost(Class<?> type) {
-        Class<?> enclosing = type.getEnclosingClass();
-        return enclosing == null ? type : getOutermost(enclosing);
-    }
-
     private static File validTarget(File target) {
         Validate.notNull(target, "target");
         Validate.isTrue(target.isDirectory(), "not a directory");
         return target;
     }
-
-    private final ClassLoader classpath;
 
     private final File target;
 
@@ -80,27 +61,12 @@ public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
 
     public FilesystemPrivilizer(ClassLoader classpath, File target) {
         super(createClassPool(classpath, target));
-        this.classpath = classpath;
         this.target = target;
     }
 
     public FilesystemPrivilizer(Policy policy, ClassLoader classpath, File target) {
         super(policy, createClassPool(classpath, target));
-        this.classpath = classpath;
         this.target = target;
-    }
-
-    /**
-     * Weave all {@link Privileged} methods found.
-     * 
-     * @throws NotFoundException
-     * @throws IOException
-     * @throws CannotCompileException
-     * @throws ClassNotFoundException
-     */
-    public boolean weaveClass(Class<?> clazz)
-            throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, IllegalAccessException {
-        return weave(classPool.get(clazz.getName()));
     }
 
     @Override

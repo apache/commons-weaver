@@ -19,8 +19,6 @@ import java.util.ArrayList;
 
 import org.apache.commons.weaver.privilizer.Privileged;
 
-
-
 public class UsingArgs {
 
     @Privileged

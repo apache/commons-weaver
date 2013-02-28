@@ -15,16 +15,14 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
+import static org.junit.Assert.assertEquals;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import junit.framework.TestCase;
+public class StaticOverloadingTest {
 
-public class StaticOverloadingTest extends TestCase {
-
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {

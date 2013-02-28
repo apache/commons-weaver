@@ -19,17 +19,16 @@
 package org.apache.commons.weaver.spi;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.weaver.model.ScanRequest;
+import org.apache.commons.weaver.model.ScanResult;
 
 /**
  * An implementation of a 'Weaver' takes care about
  * certain weaving jobs and will perform the byte code
  * enhancement in the classes.
- *
- * TODO: we might enhance this SPI to gather upfront information about what needs to get scanned at all!
  */
 public interface Weaver
 {
@@ -44,35 +43,14 @@ public interface Weaver
     void configure(List<String> classPath, File target, Properties config);
 
     /**
-     * A Weaver must return a List of Annotations he is interested in.
+     * Get the scan request of this {@link Weaver}.
      */
-    List<Class<? extends Annotation>> getInterest();
+    ScanRequest getScanRequest();
 
     /**
-     * This will get invoked before any weaver did run
+     * Process the scanning results.
+     * @param scanResult
+     * @return whether any work was done.
      */
-    void preWeave();
-
-    /**
-     * Perform weaving on the given class for any class which has one of the required annotations.
-     * If there is nothing to do, then just go on.
-     *
-     * @return <code>true</code> if some bytecode has been changed
-     */
-    boolean weave(Class classToWeave, Class<? extends Annotation> processingAnnotation);
-
-    /**
-     * Perform weaving on the given class for any class which has one of the required annotations.
-     * If there is nothing to do, then just go on.
-     *
-     * @return <code>true</code> if some bytecode has been changed
-     */
-    boolean weave(Method methodToWeave, Class<? extends Annotation> processingAnnotation);
-
-    /**
-     * This method will get invoked after all {@link #weave(Class, Class)} and
-     * {@link #weave(java.lang.reflect.Method, Class)} methods got invoked
-     * for all classes on every weaver.
-     */
-    void postWeave();
+    boolean process(ScanResult scanResult);
 }

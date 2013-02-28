@@ -48,17 +48,18 @@ public abstract class WeaverTestBase {
     }
 
     /**
-     * Add a class to the temporary folder.
+     * Add a class (and its inner classes) to the temporary folder.
      * @param clazz
      */
-    protected void addClassForScanning(Class clazz) throws IOException{
+    protected void addClassForScanning(Class<?> clazz) throws IOException {
         String clazzDirName = clazz.getPackage().getName().replace(".", "/");
         File targetDirFile = new File(getTargetFolder(), clazzDirName);
         targetDirFile.mkdirs();
 
-        String clazzFileName =  clazzDirName + "/" + clazz.getSimpleName() + ".class";
+        String fileName = baseName(clazz) + ".class";
+        String clazzFileName =  clazzDirName + "/" + fileName;
         URL clazzUrl = getClass().getClassLoader().getResource(clazzFileName);
-        File targetClazzFile = new File(targetDirFile, clazz.getSimpleName() + ".class");
+        File targetClazzFile = new File(targetDirFile, fileName);
 
         byte[] buffer = new byte[0xFFFF];
 
@@ -71,6 +72,26 @@ public abstract class WeaverTestBase {
         }
         fos.flush();
         fos.close();
+        
+        for (Class<?> inner : clazz.getClasses()) {
+            addClassForScanning(inner);
+        }
+    }
+
+    private String baseName(Class<?> clazz) {
+        if (clazz.getDeclaringClass() == null) {
+            return clazz.getSimpleName();
+        }
+        final StringBuilder result = new StringBuilder();
+        Class<?> current = clazz;
+        while (current != null) {
+            if (result.length() > 0) {
+                result.insert(0, '$');
+            }
+            result.insert(0, current.getSimpleName());
+            current = current.getDeclaringClass();
+        }
+        return result.toString();
     }
 
     /**
