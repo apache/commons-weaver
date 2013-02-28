@@ -28,7 +28,7 @@ under the License.
   <artifactId>commons-weaver-processor</artifactId>
   <name>Commons Privilizer Processor</name>
   <description>
-    The 'Processor' is responsible for picking up all Waeavers
+    The 'Processor' is responsible for picking up all Weavers
     configure them and make them perform the actual bytecode
     enhancing.
   </description>
@@ -37,9 +37,16 @@ under the License.
     <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-finder-shaded</artifactId>
-      <version>3.13-SNAPSHOT</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -15,19 +15,19 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.apache.commons.weaver.privilizer.example.StaticNoArgs.CheckedException1;
 import org.apache.commons.weaver.privilizer.example.StaticNoArgs.CheckedException2;
 
-import junit.framework.TestCase;
-
-
-public class StaticNoArgsTest extends TestCase {
-    @Override
+public class StaticNoArgsTest {
     public void setUp() throws Exception {
-        super.setUp();
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
             @Override

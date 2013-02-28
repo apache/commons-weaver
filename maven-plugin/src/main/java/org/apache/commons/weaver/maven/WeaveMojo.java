@@ -46,6 +46,4 @@ public class WeaveMojo extends AbstractWeaveMojo {
         return target;
     }
 
-
-
 }

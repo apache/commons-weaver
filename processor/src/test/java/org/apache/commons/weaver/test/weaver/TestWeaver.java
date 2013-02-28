@@ -19,31 +19,29 @@
 package org.apache.commons.weaver.test.weaver;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 
+import org.apache.commons.weaver.model.ScanRequest;
+import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.WeavableClass;
+import org.apache.commons.weaver.model.WeavableMethod;
+import org.apache.commons.weaver.model.WeaveInterest;
+import org.apache.commons.weaver.spi.Weaver;
 import org.apache.commons.weaver.test.beans.TestAnnotation;
 import org.junit.Assert;
 
-import org.apache.commons.weaver.spi.Weaver;
-
 /**
  */
-public class TestWeaver implements Weaver
-{
-    public static boolean preWeaveExecuted = false;
-    public static boolean postWeaveExecuted = false;
+public class TestWeaver implements Weaver {
     public static List<Method> wovenMethods = new ArrayList<Method>();
-    public static List<Class> wovenClasses = new ArrayList<Class>();
+    public static List<Class<?>> wovenClasses = new ArrayList<Class<?>>();
 
     @Override
-    public void configure(List<String> classPath, File target, Properties config)
-    {
+    public void configure(List<String> classPath, File target, Properties config) {
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.size());
 
@@ -52,34 +50,25 @@ public class TestWeaver implements Weaver
     }
 
     @Override
-    public List<Class<? extends Annotation>> getInterest()
-    {
-        List<Class<? extends Annotation>> interests = new ArrayList<Class<? extends Annotation>>();
-        interests.add(TestAnnotation.class);
-        return interests;
+    public ScanRequest getScanRequest() {
+        return new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
+            WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
     }
 
     @Override
-    public void preWeave()
-    {
-        preWeaveExecuted = true;
+    public boolean process(ScanResult scanResult) {
+        boolean result = false;
+        for (WeavableClass<?> weavableClass : scanResult.getClasses().with(TestAnnotation.class)) {
+            if (wovenClasses.add(weavableClass.getTarget())) {
+                result = true;
+            }
+        }
+        for (WeavableMethod<?> weavableMethod : scanResult.getMethods().with(TestAnnotation.class)) {
+            if (wovenMethods.add(weavableMethod.getTarget())) {
+                result = true;
+            }
+        }
+        return result;
     }
 
-    @Override
-    public boolean weave(Class classToWeave, Class<? extends Annotation> processingAnnotation)
-    {
-        return wovenClasses.add(classToWeave);
-    }
-
-    @Override
-    public boolean weave(Method methodToWeave, Class<? extends Annotation> processingAnnotation)
-    {
-        return wovenMethods.add(methodToWeave);
-    }
-
-    @Override
-    public void postWeave()
-    {
-        postWeaveExecuted = true;
-    }
 }

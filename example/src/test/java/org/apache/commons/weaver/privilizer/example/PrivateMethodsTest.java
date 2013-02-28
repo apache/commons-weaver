@@ -15,17 +15,15 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
+import static org.junit.Assert.assertEquals;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import junit.framework.TestCase;
-
-public class PrivateMethodsTest extends TestCase {
+public class PrivateMethodsTest {
     private PrivateMethods privateMethods;
 
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {

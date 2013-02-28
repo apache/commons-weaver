@@ -15,6 +15,10 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
@@ -22,15 +26,10 @@ import java.util.Arrays;
 import org.apache.commons.weaver.privilizer.example.UsingArgs.CheckedException1;
 import org.apache.commons.weaver.privilizer.example.UsingArgs.CheckedException2;
 
-import junit.framework.TestCase;
-
-
-public class UsingArgsTest extends TestCase {
+public class UsingArgsTest {
     private UsingArgs usingArgs;
 
-    @Override
     public void setUp() throws Exception {
-        super.setUp();
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
             public Void run() {

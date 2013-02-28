@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
+import javassist.CodeConverter;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
@@ -39,12 +40,14 @@ import javassist.CtNewMethod;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.text.StrBuilder;
-
+import org.apache.commons.weaver.privilizer.Privilizing.CallTo;
 
 /**
  * Handles weaving of methods annotated with {@link Privileged}.
@@ -76,20 +79,18 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         NEVER,
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is
-         * done once only.
+         * Weaves such that the check for an active {@link SecurityManager} is done once only.
          */
         ON_INIT(generateName("hasSecurityManager")),
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is
-         * done for each {@link Privileged} method execution.
+         * Weaves such that the check for an active {@link SecurityManager} is done for each {@link Privileged} method
+         * execution.
          */
         DYNAMIC(HAS_SECURITY_MANAGER_CONDITION),
 
         /**
-         * Weaves such that {@link Privileged} methods are always executed as
-         * such.
+         * Weaves such that {@link Privileged} methods are always executed as such.
          */
         ALWAYS;
 
@@ -170,17 +171,33 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
     }
 
     /**
+     * Weave all {@link Privileged} methods found.
+     * 
+     * @param privilizing
+     * 
+     * @throws NotFoundException
+     * @throws IOException
+     * @throws CannotCompileException
+     * @throws ClassNotFoundException
+     */
+    public boolean weaveClass(Class<?> clazz, Privilizing privilizing) throws NotFoundException, IOException,
+        CannotCompileException, ClassNotFoundException, IllegalAccessException {
+        return weave(classPool.get(clazz.getName()), privilizing);
+    }
+
+    /**
      * Weave the specified class.
      * 
      * @param type
+     * @param privilizing
      * @return whether any work was done
      * @throws NotFoundException
      * @throws IOException
      * @throws CannotCompileException
      * @throws ClassNotFoundException
      */
-    public boolean weave(CtClass type)
-            throws NotFoundException, IOException, CannotCompileException, ClassNotFoundException, IllegalAccessException {
+    private boolean weave(CtClass type, Privilizing privilizing) throws NotFoundException, IOException,
+        CannotCompileException, ClassNotFoundException, IllegalAccessException {
         reportSettings();
         final String policyName = generateName(POLICY_NAME);
         final String policyValue = toString(type.getAttribute(policyName));
@@ -205,8 +222,11 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
                 securityManager.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
                 type.addField(securityManager, CtField.Initializer.byExpr(HAS_SECURITY_MANAGER_CONDITION));
             }
+
+            result = privilizeBlueprints(type, privilizing) | result;
+
             for (final CtMethod m : getPrivilegedMethods(type)) {
-                result |= weave(type, m);
+                result = weave(type, m) | result;
             }
             if (result) {
                 type.setAttribute(policyName, policy.name().getBytes(Charset.forName("UTF-8")));
@@ -214,6 +234,160 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             }
         }
         log.info(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
+        return result;
+    }
+
+    private boolean privilizeBlueprints(CtClass type, Privilizing annotation) throws CannotCompileException,
+        ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
+        boolean result = false;
+        if (annotation != null) {
+            final CallTo[] blueprintCalls = annotation.value();
+            for (CallTo callTo : blueprintCalls) {
+                Validate.isTrue(!callTo.value().equals(type.getName()),
+                    "Type %s cannot use itself as a privilizer blueprint", callTo.value());
+            }
+            for (CtMethod method : type.getDeclaredMethods()) {
+                result = privilizeBlueprints(type, method, blueprintCalls) | result;
+            }
+        }
+        return result;
+    }
+
+    private boolean privilizeBlueprints(final CtClass type, final CtMethod method, final CallTo[] blueprintCalls)
+        throws CannotCompileException, ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
+        boolean result = false;
+
+        final List<CtMethod> blueprints = new ArrayList<CtMethod>();
+        class CollectBlueprints extends ExprEditor {
+            @Override
+            public void edit(MethodCall call) throws CannotCompileException {
+                super.edit(call);
+                CtMethod called;
+                try {
+                    called = call.getMethod();
+                    if (!Modifier.isStatic(called.getModifiers())) {
+                        return;
+                    }
+                } catch (NotFoundException e) {
+                    return;
+                }
+                for (CallTo callTo : blueprintCalls) {
+                    final Class<?> owner = callTo.value();
+                    if (owner.getName().equals(call.getClassName())) {
+                        if (callTo.methods().length > 0) {
+                            boolean found = false;
+                            for (String m : callTo.methods()) {
+                                found = StringUtils.equals(call.getMethodName(), m);
+                                if (found) {
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                continue;
+                            }
+                        }
+                        blueprints.add(called);
+                        break;
+                    }
+                }
+            }
+        }
+        method.instrument(new CollectBlueprints());
+
+        for (CtMethod blueprint : blueprints) {
+            final String name = importedMethodName(blueprint);
+
+            CtMethod copy = copyBlueprintTo(type, name, blueprint, blueprintCalls);
+            method.instrument(redirect(blueprint, copy));
+            result = true;
+        }
+        return result;
+    }
+
+    private static String importedMethodName(CtMethod blueprint) {
+        return new StringBuilder(blueprint.getDeclaringClass().getName().replace('.', '_')).append('$')
+            .append(blueprint.getName()).toString();
+    }
+
+    /*
+     * This design is almost certainly non-optimal. Basically, we have:
+     * 
+     * for a declared method, look for calls to blueprint methods for each blueprint method, copy it when copying,
+     * inspect blueprint method's code and recursively copy in methods from the source class of *that particular method*
+     * because otherwise CtNewMethod will do it for us and we'll miss our window of opportunity now that we have a
+     * copied blueprint method, inspect it for blueprint calls from other classes and do this whole thing recursively.
+     * 
+     * It would *seem* that we could combine the recursion/copying of methods from all blueprint classes but I can't get
+     * my head around it right now. -MJB
+     */
+    private CtMethod copyBlueprintTo(final CtClass target, final String toName, final CtMethod method,
+        final CallTo[] blueprintCalls) throws ClassNotFoundException, NotFoundException, IOException,
+        IllegalAccessException {
+        if (!Modifier.isStatic(method.getModifiers())) {
+            return null;
+        }
+
+        try {
+            final CtMethod done = target.getDeclaredMethod(toName, method.getParameterTypes());
+            return done;
+        } catch (NotFoundException e1) {
+        }
+        final CtClass declaring = method.getDeclaringClass();
+
+        final List<CtMethod> ownBlueprints = new ArrayList<CtMethod>();
+        class CollectBlueprints extends ExprEditor {
+            @Override
+            public void edit(MethodCall m) throws CannotCompileException {
+                super.edit(m);
+                CtMethod called;
+                try {
+                    called = m.getMethod();
+                } catch (NotFoundException e) {
+                    return;
+                }
+                if (called.getDeclaringClass().equals(declaring)) {
+                    ownBlueprints.add(called);
+                }
+            }
+        }
+        try {
+            method.instrument(new CollectBlueprints());
+
+            boolean isRecursive = false;
+
+            for (CtMethod blueprint : ownBlueprints) {
+                if (blueprint.equals(method)) {
+                    // recursive method call identified:
+                    isRecursive = true;
+                    continue;
+                }
+                CtMethod local = copyBlueprintTo(target, importedMethodName(blueprint), blueprint, blueprintCalls);
+                if (local != null) {
+                    method.instrument(redirect(blueprint, local));
+                }
+            }
+            final CtMethod result = CtNewMethod.copy(method, toName, target, null);
+            result.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
+            target.addMethod(result);
+            if (isRecursive) {
+                CodeConverter redirect = new CodeConverter();
+                redirect.redirectMethodCall(method.getName(), result);
+                result.instrument(redirect);
+            }
+            // privilize other classes' blueprint methods recursively:
+            privilizeBlueprints(target, result, blueprintCalls);
+            // privilize:
+            weave(target, result);
+
+            return result;
+        } catch (CannotCompileException e) {
+            return null;
+        }
+    }
+
+    private static CodeConverter redirect(CtMethod origMethod, CtMethod substMethod) throws CannotCompileException {
+        final CodeConverter result = new CodeConverter();
+        result.redirectMethodCall(origMethod, substMethod);
         return result;
     }
 
@@ -350,9 +524,9 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         NotFoundException, IOException, IllegalAccessException {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
         if (!permitMethodWeaving(accessLevel)) {
-            throw new IllegalAccessException("Method " + type.getName() + "#" +  toString(method)
-                                             + " must have maximum access level '" + getTargetAccessLevel()
-                                             + "' but is defined wider ('" + accessLevel + "')");
+            throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
+                + " must have maximum access level '" + getTargetAccessLevel() + "' but is defined wider ('"
+                + accessLevel + "')");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
             warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
@@ -462,4 +636,5 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             debug("Weave policy == %s", policy);
         }
     }
+
 }
