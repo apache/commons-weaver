@@ -82,12 +82,12 @@ other lines of the paragraph.
   document.
 
 +----------------------------------------------------------------------------+
-				    ------
-				    Title
-				    ------
-				    Author
-				    ------
-				     Date
+                    ------
+                    Title
+                    ------
+                    Author
+                    ------
+                     Date
 +----------------------------------------------------------------------------+
 
   A title block is indented (centering it is nicer). It begins with a line
@@ -107,12 +107,12 @@ other lines of the paragraph.
   with no declared author.
 
 +----------------------------------------------------------------------------+
-				    ------
-				    Title
-				    ------
-				    ------
-				     Date
-				    ------
+                    ------
+                    Title
+                    ------
+                    ------
+                     Date
+                    ------
 +----------------------------------------------------------------------------+
 
   The last line is ignored. It is just there to make the block nicer.
@@ -163,11 +163,11 @@ Section title
 
       * List item 2.
 
-	Paragraph contained in list item 2.
+    Paragraph contained in list item 2.
 
-	    * Sub-list item 1.
+        * Sub-list item 1.
 
-	    * Sub-list item 2.
+        * Sub-list item 2.
 
       * List item 3.
 +---------------------------------------+
@@ -208,11 +208,11 @@ Verbatim text not contained in list item 3
 
       * List item 2.
 
-	    * Sub-list item 1.
+        * Sub-list item 1.
 
-	    * Sub-list item 2.
+        * Sub-list item 2.
 
-	    []
+        []
 
 -------------------------------------------------------------------
 Verbatim text contained in list item 2, but not in sub-list item 2
@@ -264,9 +264,9 @@ Verbatim text contained in list item 2, but not in sub-list item 2
 +----------------------------------------+
 ----------------------------------------
 Verbatim
-	 text,
-		preformatted,
-				escaped.
+     text,
+        preformatted,
+                escaped.
 ----------------------------------------
 +----------------------------------------+
 
@@ -493,12 +493,12 @@ Table caption
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ------------------------------------------------------------------------------
-				    ------
-				    Title
-				    ------
-				    Author
-				    ------
-				     Date
+                    ------
+                    Title
+                    ------
+                    Author
+                    ------
+                     Date
 
   Paragraph 1, line 1.
   Paragraph 1, line 2.
@@ -520,11 +520,11 @@ Section title
 
       * List item 2.
 
-	Paragraph contained in list item 2.
+    Paragraph contained in list item 2.
 
-	    * Sub-list item 1.
+        * Sub-list item 1.
 
-	    * Sub-list item 2.
+        * Sub-list item 2.
 
       * List item 3.
         Force end of list:
@@ -551,7 +551,7 @@ Verbatim text not contained in list item 3
 
 +-------------------------------+
 Verbatim text
-			in a box
+            in a box
 +-------------------------------+
 
   --- instead of +-- suppresses the box around verbatim text.
