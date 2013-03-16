@@ -25,11 +25,11 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 public @interface Privilizing {
-	public @interface CallTo {
-		Class<?> value();
+    public @interface CallTo {
+        Class<?> value();
 
-		String[] methods() default {};
-	}
+        String[] methods() default {};
+    }
 
-	CallTo[] value();
+    CallTo[] value();
 }
