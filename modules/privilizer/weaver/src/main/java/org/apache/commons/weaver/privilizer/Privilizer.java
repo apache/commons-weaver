@@ -48,6 +48,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.weaver.privilizer.Privilizing.CallTo;
+import org.apache.commons.weaver.utils.Body;
 
 /**
  * Handles weaving of methods annotated with {@link Privileged}.
@@ -449,22 +450,22 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             propagatedParameters.add(f);
         }
         {
-            final StrBuilder constructor = new StrBuilder(simpleName).append('(');
+            final StrBuilder sig = new StrBuilder(simpleName).append('(');
             boolean sep = false;
-            final Body body = new Body();
+            final Body body = new Body(this, "adding to %s: %s", result.getName(), sig);
 
             for (final CtField fld : result.getDeclaredFields()) {
                 if (sep) {
-                    constructor.append(", ");
+                    sig.append(", ");
                 } else {
                     sep = true;
                 }
-                constructor.append(fld.getType().getName()).append(' ').append(fld.getName());
+                sig.append(fld.getType().getName()).append(' ').append(fld.getName());
                 body.appendLine("this.%1$s = %1$s;", fld.getName());
             }
-            constructor.append(") ").append(body.complete());
+            sig.append(") ").append(body.complete());
 
-            final String c = constructor.toString();
+            final String c = sig.toString();
             debug("Creating action constructor:");
             debug(c);
             result.addConstructor(CtNewConstructor.make(c, result));
@@ -474,7 +475,7 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             if (exc) {
                 run.append("throws Exception ");
             }
-            final Body body = new Body();
+            final Body body = new Body(this, "add to %s: %s", result.getName(), run.toString());
             final CtClass rt = impl.getReturnType();
             final boolean isVoid = rt.equals(CtClass.voidType);
             if (!isVoid) {
@@ -540,7 +541,7 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         debug("Copied %2$s %1$s.%3$s to %4$s %1$s.%5$s", type.getName(), accessLevel, toString(method),
             AccessLevel.PRIVATE, toString(impl));
 
-        final Body body = new Body();
+        final Body body = new Body(this, "new body of %s", toString(method));
         if (policy.isConditional()) {
             body.startBlock("if (%s)", policy.condition);
         }
