@@ -18,8 +18,17 @@
  */
 package org.apache.commons.weaver.utils;
 
+/**
+ * Argument/Parameter-related utilities.
+ */
 public class Args {
 
+    /**
+     * Compare two parameter type arrays.
+     * @param paramTypes1
+     * @param paramTypes2
+     * @return int
+     */
     public static int compare(Class<?>[] paramTypes1, Class<?>[] paramTypes2) {
         int i = 0;
         while (i < paramTypes1.length) {
