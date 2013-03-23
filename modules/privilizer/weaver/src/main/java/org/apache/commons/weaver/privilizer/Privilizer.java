@@ -463,12 +463,8 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
                 sig.append(fld.getType().getName()).append(' ').append(fld.getName());
                 body.appendLine("this.%1$s = %1$s;", fld.getName());
             }
-            sig.append(") ").append(body.complete());
 
-            final String c = sig.toString();
-            debug("Creating action constructor:");
-            debug(c);
-            result.addConstructor(CtNewConstructor.make(c, result));
+            result.addConstructor(CtNewConstructor.make(sig.append(") ").append(body.complete()).toString(), result));
         }
         {
             final StrBuilder run = new StrBuilder("public Object run() ");
@@ -625,9 +621,7 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
             body.appendLine("%s($$);", impl.getName());
         }
 
-        final String block = body.complete().toString();
-        debug("Setting body of %s to:\n%s", toString(method), block);
-        method.setBody(block);
+        method.setBody(body.complete().toString());
         return true;
     }
 
