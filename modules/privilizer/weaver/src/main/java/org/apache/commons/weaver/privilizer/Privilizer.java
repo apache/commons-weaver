@@ -58,18 +58,6 @@ public abstract class Privilizer<SELF extends Privilizer<SELF>> {
         void write(CtClass type) throws CannotCompileException, IOException;
     }
 
-    public interface Log {
-        void debug(String message);
-
-        void verbose(String message);
-
-        void error(String message);
-
-        void info(String message);
-
-        void warn(String message);
-    }
-
     /**
      * Weaving policy: when to use {@link PrivilegedAction}s.
      */
