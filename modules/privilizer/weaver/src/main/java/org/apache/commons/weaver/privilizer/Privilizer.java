@@ -53,7 +53,7 @@ import org.apache.commons.weaver.utils.Body;
 /**
  * Handles weaving of methods annotated with {@link Privileged}.
  */
-public abstract class Privilizer<SELF extends Privilizer<SELF>> {
+public abstract class Privilizer {
     public interface ClassFileWriter {
         void write(CtClass type) throws CannotCompileException, IOException;
     }

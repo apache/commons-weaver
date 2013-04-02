@@ -23,7 +23,7 @@ public class PrivilizerWeaver implements Weaver {
     public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
     public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
 
-    private Privilizer<FilesystemPrivilizer> privilizer;
+    private FilesystemPrivilizer privilizer;
 
     private Privilizer.Policy policy;
 

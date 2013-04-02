@@ -30,7 +30,7 @@ import org.apache.commons.lang3.Validate;
 /**
  * Handles weaving of methods annotated with {@link Privileged}.
  */
-public class FilesystemPrivilizer extends Privilizer<FilesystemPrivilizer> {
+public class FilesystemPrivilizer extends Privilizer {
 
     private static ClassPool createClassPool(ClassLoader classpath, File target) {
         final ClassPool result = new ClassPool();
