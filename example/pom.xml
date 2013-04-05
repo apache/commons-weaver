@@ -27,12 +27,18 @@
   <name>Commons Weaver Privilizer Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <privilizer.policy>ON_INIT</privilizer.policy>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-privilizer-api</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -49,7 +55,7 @@
         <configuration>
           <weaverConfig>
             <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
-            <privilizer.policy>ON_INIT</privilizer.policy>
+            <privilizer.policy>${privilizer.policy}</privilizer.policy>
           </weaverConfig>
         </configuration>
         <executions>
@@ -103,6 +109,11 @@
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.2.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

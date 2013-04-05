@@ -21,6 +21,10 @@ import org.apache.commons.weaver.privilizer.Privilizing.CallTo;
 @Privilizing({ @CallTo(Utils.class), @CallTo(value = Utils.More.class, methods = "getProperty") })
 public class UsingBlueprints {
 
+    public String utilsReadPublicConstant() {
+        return Utils.readPublicConstant();
+    }
+
     public String utilsGetProperty() {
         return Utils.getProperty();
     }
@@ -39,8 +43,5 @@ public class UsingBlueprints {
 
     public String moreGetTopStackElementClassName() {
         return Utils.More.getTopStackElementClassName();
-    }
-
-    private void foo() {
     }
 }
