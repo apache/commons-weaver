@@ -42,6 +42,11 @@ public class UsingBlueprintsTest {
     }
 
     @Test
+    public void testUtilsReadPublicConstant() {
+        assertEquals(Utils.FOO, usingBlueprints.utilsReadPublicConstant());
+    }
+
+    @Test
     public void testUtilsGetProperty() {
         assertEquals("foo-value", usingBlueprints.utilsGetProperty());
     }

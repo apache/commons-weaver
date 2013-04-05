@@ -42,4 +42,5 @@ grant codeBase "file:${user.dir}/target/classes/-"
   permission java.util.PropertyPermission "foo", "read";
   permission java.util.PropertyPermission "bar", "read";
   permission java.util.PropertyPermission "baz", "read";
+  #permission java.lang.RuntimePermission "getClassLoader";
 };

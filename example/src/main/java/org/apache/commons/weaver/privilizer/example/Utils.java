@@ -32,6 +32,12 @@ public class Utils {
     private Utils() {
     }
 
+    public static final String FOO = "foo".intern();
+
+    public static String readPublicConstant() {
+        return FOO;
+    }
+
     public static String getProperty() {
         return getProperty("foo");
     }
