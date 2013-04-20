@@ -21,12 +21,12 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
-    <artifactId>commons-weaver</artifactId>
+    <artifactId>commons-weaver-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-weaver-processor</artifactId>
-  <name>Commons Privilizer Processor</name>
+  <artifactId>commons-weaver</artifactId>
+  <name>Commons Privilizer Core Processor</name>
   <description>
     The 'Processor' is responsible for picking up all Weavers
     configure them and make them perform the actual bytecode

@@ -25,7 +25,7 @@
     <version>10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-weaver</artifactId>
+  <artifactId>commons-weaver-parent</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -80,7 +80,7 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-processor</artifactId>
+        <artifactId>commons-weaver</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
