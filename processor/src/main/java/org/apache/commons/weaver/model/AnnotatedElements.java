@@ -19,8 +19,22 @@
 package org.apache.commons.weaver.model;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.AnnotatedElement;
 
+/**
+ * Interface defining a means of iterating over a particular type of {@link AnnotatedElement} as well as filtering by
+ * annotation type (including annotations with {@link RetentionPolicy#CLASS} retention in addition to those with
+ * {@link RetentionPolicy#RUNTIME} retention.
+ * 
+ * @param <T>
+ */
 public interface AnnotatedElements<T extends AnnotatedElement> extends Iterable<T> {
+    /**
+     * Filter by annotation type.
+     * 
+     * @param annotationType
+     * @return {@link AnnotatedElements}, narrowed
+     */
     AnnotatedElements<T> with(Class<? extends Annotation> annotationType);
 }
