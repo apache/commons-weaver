@@ -29,12 +29,30 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.apache.commons.weaver.WeaveProcessor;
+import org.apache.commons.weaver.spi.Weaver;
+
 /**
- * Encapsulates the result of scanning based on a {@link ScanRequest}.
+ * Encapsulates the result of scanning based on a {@link ScanRequest}. The scan results are available in a structure
+ * corresponding to the Java class hierarchy; i.e.:
+ * 
+ * <pre>
+ *   package
+ *   |_class
+ *     |_field
+ *     |_method
+ *     | |_method parameter
+ *     |_constructor
+ *       |_constructor parameter
+ * </pre>
+ * 
+ * The tree of results can be iterated in this manner using {@link #getPackages()}. However, if a given {@link Weaver}
+ * is known not to handle packages but some other element, convenience methods are provided here giving direct access to
+ * the various elements that may have been discovered.
  */
 public class ScanResult {
     private static abstract class Projection<PARENT, CHILD extends AnnotatedElement> implements
-        AnnotatedElements<CHILD> {
+            AnnotatedElements<CHILD> {
         private final Iterable<PARENT> parents;
 
         Projection(Iterable<PARENT> parents) {
@@ -149,9 +167,14 @@ public class ScanResult {
 
     }
 
-    private final ConcurrentNavigableMap<String, WeavablePackage> packages =
-        new ConcurrentSkipListMap<String, WeavablePackage>();
+    private final ConcurrentNavigableMap<String, WeavablePackage> packages = new ConcurrentSkipListMap<String, WeavablePackage>();
 
+    /**
+     * Public for use by {@link WeaveProcessor}.
+     * 
+     * @param pkg
+     * @return {@link WeavablePackage}
+     */
     public WeavablePackage getWeavable(Package pkg) {
         final String key = pkg.getName();
         if (packages.containsKey(key)) {
@@ -162,18 +185,42 @@ public class ScanResult {
         return faster == null ? result : faster;
     }
 
+    /**
+     * Public for use by {@link WeaveProcessor}.
+     * 
+     * @param cls
+     * @return {@link WeavableClass}
+     */
     public <T> WeavableClass<T> getWeavable(Class<T> cls) {
         return getWeavable(cls.getPackage()).getWeavable(cls);
     }
 
+    /**
+     * Public for use by {@link WeaveProcessor}.
+     * 
+     * @param fld
+     * @return {@link WeavableField}
+     */
     public WeavableField<?> getWeavable(Field fld) {
         return getWeavable(fld.getDeclaringClass()).getWeavable(fld);
     }
 
+    /**
+     * Public for use by {@link WeaveProcessor}.
+     * 
+     * @param mt
+     * @return {@link WeavableMethod}
+     */
     public WeavableMethod<?> getWeavable(Method mt) {
         return getWeavable(mt.getDeclaringClass()).getWeavable(mt);
     }
 
+    /**
+     * Public for use by {@link WeaveProcessor}.
+     * 
+     * @param ctor
+     * @return {@link WeavableConstructor}
+     */
     public <T> WeavableConstructor<T> getWeavable(Constructor<T> ctor) {
         return getWeavable(ctor.getDeclaringClass()).getWeavable(ctor);
     }
