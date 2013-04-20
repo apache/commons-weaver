@@ -26,11 +26,10 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver</artifactId>
-  <name>Commons Privilizer Core Processor</name>
+  <name>Commons Privilizer Core</name>
   <description>
-    The 'Processor' is responsible for picking up all Weavers
-    configure them and make them perform the actual bytecode
-    enhancing.
+    Defines the Weaver SPI as well as the processor, whose job is
+    to detect, configure, and invoke available weaver modules.
   </description>
 
   <dependencies>
