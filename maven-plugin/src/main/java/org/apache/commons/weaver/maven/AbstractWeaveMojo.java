@@ -41,21 +41,18 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
     protected abstract File getTarget();
 
     @Override
-    public void execute() throws MojoExecutionException
-    {
+    public void execute() throws MojoExecutionException {
         Log mojoLog = getLog();
         JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(mojoLog);
         logRedirector.activate();
 
         try {
-
             WeaveProcessor wp = WeaveProcessor.getInstance();
             configure(wp);
             wp.weave();
         } catch (Exception e) {
             throw new MojoExecutionException("weaving failed", e);
-        }
-        finally {
+        } finally {
             logRedirector.deactivate();
         }
     }

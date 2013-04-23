@@ -18,7 +18,6 @@
  */
 package org.apache.commons.weaver.maven;
 
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +31,10 @@ import java.util.logging.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-
 /**
  * This class redirects calls to java.util.Logging to Mojo logging.
  */
-public class JavaLoggingToMojoLoggingRedirector
-{
+public class JavaLoggingToMojoLoggingRedirector {
     private JDKLogHandler activeHandler;
     private List<Handler> removedHandlers = new ArrayList<Handler>();
 
@@ -49,8 +46,7 @@ public class JavaLoggingToMojoLoggingRedirector
     /**
      * @param mojoLogger the Maven mojo logger to delegate messages to.
      */
-    public JavaLoggingToMojoLoggingRedirector(Log mojoLogger)
-    {
+    public JavaLoggingToMojoLoggingRedirector(Log mojoLogger) {
         this.mojoLogger = mojoLogger;
     }
 
@@ -97,7 +93,6 @@ public class JavaLoggingToMojoLoggingRedirector
         }
     }
 
-
     private class JDKLogHandler extends Handler {
 
         @Override
@@ -106,17 +101,13 @@ public class JavaLoggingToMojoLoggingRedirector
             Level level = record.getLevel();
             if (level == Level.SEVERE && mojoLogger.isErrorEnabled()) {
                 mojoLogger.error(getMessage(record), exception);
-            }
-            else if (level == Level.WARNING && mojoLogger.isWarnEnabled()) {
+            } else if (level == Level.WARNING && mojoLogger.isWarnEnabled()) {
                 mojoLogger.warn(getMessage(record), exception);
-            }
-            else if (level == Level.INFO && mojoLogger.isInfoEnabled()) {
+            } else if (level == Level.INFO && mojoLogger.isInfoEnabled()) {
                 mojoLogger.info(getMessage(record), exception);
-            }
-            else if (level == Level.CONFIG && mojoLogger.isDebugEnabled()) {
+            } else if (level == Level.CONFIG && mojoLogger.isDebugEnabled()) {
                 mojoLogger.debug(getMessage(record), exception);
-            }
-            else if (mojoLogger.isDebugEnabled()) {
+            } else if (mojoLogger.isDebugEnabled()) {
                 mojoLogger.debug(getMessage(record), exception);
             }
         }
