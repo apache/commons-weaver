@@ -34,7 +34,7 @@ public interface Weaver
 {
     /**
      * This is for now a simple way to configure any weaver.
-     * Any configuration property of a weaver should start with it's 'name'
+     * Any configuration property of a weaver should start with its 'name'
      * e.g. 'privilizer'
      * @param classPath the classpath to look up cross-references in during weaving
      * @param target the File path where the classes to weave reside
