@@ -23,7 +23,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-
 /**
  * Goal to weave test classes.
  */
@@ -35,7 +34,6 @@ public class TestWeaveMojo extends AbstractWeaveMojo {
 
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
     protected File target;
-
 
     @Override
     protected List<String> getClasspath() {
