@@ -41,7 +41,8 @@ public class PrivilizerWeaver implements Weaver {
         }
         policy = Privilizer.Policy.valueOf(policyConfig);
 
-        privilizer = new FilesystemPrivilizer(policy, new URLClassLoader(URLArray.fromPaths(classPath)), target) {
+        final URLClassLoader urlClassLoader = new URLClassLoader(URLArray.fromPaths(classPath));
+        privilizer = new FilesystemPrivilizer(policy, urlClassLoader, target) {
             @Override
             protected boolean permitMethodWeaving(final AccessLevel accessLevel) {
                 return targetAccessLevel.compareTo(accessLevel) <= 0;
