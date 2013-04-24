@@ -23,9 +23,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.weaver.WeaveProcessor;
-
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DynamicElement;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.EnumeratedAttribute;
 import org.apache.tools.ant.types.Path;
@@ -37,35 +35,6 @@ import org.apache.tools.ant.types.Reference;
  * Weave Ant task.
  */
 public class WeaveTask extends Task {
-    /**
-     * Structure to allow the inline specification of weaver properties.
-     */
-    public class InlineProperties implements DynamicElement {
-        /**
-         * Represents a single inline property.
-         */
-        public class InlineProperty {
-            private final String name;
-
-            private InlineProperty(String name) {
-                this.name = name;
-            }
-
-            public void addText(String text) {
-                if (properties.containsKey(name)) {
-                    text = StringUtils.join(properties.getProperty(name), text);
-                }
-                properties.setProperty(name, text);
-            }
-        }
-
-        private final Properties properties = new Properties();
-
-        public InlineProperty createDynamicElement(String name) {
-            return new InlineProperty(name);
-        }
-    } 
-
     private File target;
     private Path classpath;
     private String classpathref;
@@ -75,8 +44,7 @@ public class WeaveTask extends Task {
     @Override
     public void execute() throws BuildException {
         try {
-            WeaveProcessor wp = WeaveProcessor.getInstance();
-            wp.configure(getClassPathEntries(), target, getProperties());
+            final WeaveProcessor wp = new WeaveProcessor(getClassPathEntries(), target, getProperties());
             wp.weave();
         } catch (Exception e) {
             throw new BuildException(e);

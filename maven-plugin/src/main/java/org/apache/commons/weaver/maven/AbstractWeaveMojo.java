@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.apache.commons.weaver.WeaveProcessor;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
@@ -42,22 +41,23 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        Log mojoLog = getLog();
-        JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(mojoLog);
+        final JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(getLog());
         logRedirector.activate();
 
+        final List<String> classpath = getClasspath();
+        final File target = getTarget();
+        final Properties config = weaverConfig == null ? new Properties() : weaverConfig;
+
+        getLog().debug(String.format("classpath=%s%ntarget=%s%nconfig=%s", classpath, target, config));
+
         try {
-            WeaveProcessor wp = WeaveProcessor.getInstance();
-            configure(wp);
+            final WeaveProcessor wp = new WeaveProcessor(classpath, target, config);
             wp.weave();
         } catch (Exception e) {
-            throw new MojoExecutionException("weaving failed", e);
+            throw new MojoExecutionException("weaving failed due to " + e.getMessage(), e);
         } finally {
             logRedirector.deactivate();
         }
     }
 
-    protected void configure(WeaveProcessor wp) {
-        wp.configure(getClasspath(), getTarget(), weaverConfig);
-    }
 }
