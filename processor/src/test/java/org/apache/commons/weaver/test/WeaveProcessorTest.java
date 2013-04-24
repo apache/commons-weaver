@@ -38,12 +38,10 @@ public class WeaveProcessorTest extends WeaverTestBase {
         addClassForScanning(TestBeanWithMethodAnnotation.class);
         addClassForScanning(TestBeanWithClassAnnotation.class);
 
-        WeaveProcessor wp = WeaveProcessor.getInstance();
-
-        Properties config = new Properties();
+        final Properties config = new Properties();
         config.put("configKey", "configValue");
 
-        wp.configure(getClassPathEntries(), getTargetFolder(), config);
+        WeaveProcessor wp = new WeaveProcessor(getClassPathEntries(), getTargetFolder(), config);
 
         TestWeaver.wovenClasses.clear();
         TestWeaver.wovenMethods.clear();

@@ -24,11 +24,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Weaver;
@@ -38,124 +39,112 @@ import org.apache.xbean.finder.Parameter;
 import org.apache.xbean.finder.archive.FileArchive;
 
 /**
- * This class picks up all Weaver plugins and process them in one go.
+ * This class discovers and invokes available {@link Weaver} plugins.
  */
 public class WeaveProcessor {
 
-    private static WeaveProcessor instance;
-
-    /**
-     * The classpath which will be used to look up cross references during
-     * weaving.
-     */
-    private List<String> classPath;
-
-    /**
-     * The actual path which gets weaved. All the classes in this path will get
-     * weaved. The weaved classes will replace the original classes.
-     */
-    private File target;
-
     /** List of picked up weaver plugins */
-    private List<Weaver> weavers = new ArrayList<Weaver>();
+    private static List<Weaver> WEAVERS = new ArrayList<Weaver>();
 
-    public static synchronized WeaveProcessor getInstance() {
-        if (instance == null) {
-            instance = new WeaveProcessor();
-            instance.init();
+    static {
+        List<Weaver> weavers = new ArrayList<Weaver>();
+        for (Weaver w : ServiceLoader.load(Weaver.class)) {
+            weavers.add(w);
         }
-        return instance;
-    }
-
-    private WeaveProcessor() {
-    }
-
-    private void init() {
-        ServiceLoader<Weaver> loader = ServiceLoader.load(Weaver.class);
-        Iterator<Weaver> it = loader.iterator();
-
-        while (it.hasNext()) {
-            weavers.add(it.next());
-        }
+        WEAVERS = Collections.unmodifiableList(weavers);
     }
 
     /**
-     * Configure all Weavers.
-     * 
-     * @param classPath
-     *            the classpath to look up cross-references in during weaving
-     * @param target
-     *            the File path where the classes to weave reside
-     * @param config
-     *            additional configuration for all plugins.
+     * The classpath which will be used to look up cross references during weaving.
      */
-    public void configure(List<String> classPath, File target, Properties config) {
-        this.classPath = classPath;
-        this.target = target;
+    private final List<String> classpath;
 
-        for (Weaver weaver : weavers) {
-            weaver.configure(classPath, target, config);
-        }
+    /**
+     * The actual path to be woven, replacing any affected classes.
+     */
+    private final File target;
+
+    /**
+     * Properties for configuring discovered plugin modules.
+     */
+    private final Properties configuration;
+
+    /**
+     * Create a new {@link WeaveProcessor} instance.
+     * 
+     * @param classpath not {@code null}
+     * @param target not {@code null}
+     * @param configuration not {@code null}
+     */
+    public WeaveProcessor(List<String> classpath, File target, Properties configuration) {
+        super();
+        this.classpath = Validate.notNull(classpath, "classpath");
+        this.target = Validate.notNull(target, "target");
+        this.configuration = Validate.notNull(configuration, "configuration");
     }
 
     /**
-     * perform the weaving on all specified classpath entries
+     * Weave classes in target directory.
      */
     public void weave() {
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classPath));
+        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        for (Weaver weaver : weavers) {
+        for (Weaver weaver : WEAVERS) {
             weave(finder, weaver);
         }
     }
 
-    private void weave(Finder finder, Weaver weaver) {
+    private void weave(final Finder finder, final Weaver weaver) {
+        weaver.configure(classpath, target, configuration);
         final ScanResult result = new ScanResult();
 
         for (WeaveInterest interest : weaver.getScanRequest().getInterests()) {
             switch (interest.target) {
-            case PACKAGE:
-                for (Annotated<Package> pkg : finder.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
-                    result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotation(interest.annotationType));
-                }
-            case TYPE:
-                for (Annotated<Class<?>> type : finder.withAnnotations().findAnnotatedClasses(interest.annotationType)) {
-                    result.getWeavable(type.get()).addAnnotations(type.getAnnotation(interest.annotationType));
-                }
-                break;
-            case METHOD:
-                for (Annotated<Method> method : finder.withAnnotations().findAnnotatedMethods(interest.annotationType)) {
-                    result.getWeavable(method.get()).addAnnotations(method.getAnnotation(interest.annotationType));
-                }
-                break;
-            case CONSTRUCTOR:
-                for (Annotated<Constructor<?>> cs : finder.withAnnotations().findAnnotatedConstructors(
-                    interest.annotationType)) {
-                    result.getWeavable(cs.get()).addAnnotations(cs.getAnnotation(interest.annotationType));
-                }
-                break;
-            case FIELD:
-                for (Annotated<Field> fld : finder.withAnnotations().findAnnotatedFields(interest.annotationType)) {
-                    result.getWeavable(fld.get()).addAnnotations(fld.getAnnotation(interest.annotationType));
-                }
-                break;
-            case PARAMETER:
-                for (Annotated<Parameter<Method>> parameter : finder.withAnnotations().findAnnotatedMethodParameters(
-                    interest.annotationType)) {
-                    result.getWeavable(parameter.get().getDeclaringExecutable())
-                        .getWeavableParameter(parameter.get().getIndex())
-                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
-                }
-                for (Annotated<Parameter<Constructor<?>>> parameter : finder.withAnnotations()
-                    .findAnnotatedConstructorParameters(interest.annotationType)) {
-                    result.getWeavable(parameter.get().getDeclaringExecutable())
-                        .getWeavableParameter(parameter.get().getIndex())
-                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
-                }
-                break;
-            default:
-                // should we log something?
-                break;
+                case PACKAGE:
+                    for (Annotated<Package> pkg : finder.withAnnotations().findAnnotatedPackages(
+                        interest.annotationType)) {
+                        result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotation(interest.annotationType));
+                    }
+                case TYPE:
+                    for (Annotated<Class<?>> type : finder.withAnnotations().findAnnotatedClasses(
+                        interest.annotationType)) {
+                        result.getWeavable(type.get()).addAnnotations(type.getAnnotation(interest.annotationType));
+                    }
+                    break;
+                case METHOD:
+                    for (Annotated<Method> method : finder.withAnnotations().findAnnotatedMethods(
+                        interest.annotationType)) {
+                        result.getWeavable(method.get()).addAnnotations(method.getAnnotation(interest.annotationType));
+                    }
+                    break;
+                case CONSTRUCTOR:
+                    for (Annotated<Constructor<?>> cs : finder.withAnnotations().findAnnotatedConstructors(
+                        interest.annotationType)) {
+                        result.getWeavable(cs.get()).addAnnotations(cs.getAnnotation(interest.annotationType));
+                    }
+                    break;
+                case FIELD:
+                    for (Annotated<Field> fld : finder.withAnnotations().findAnnotatedFields(interest.annotationType)) {
+                        result.getWeavable(fld.get()).addAnnotations(fld.getAnnotation(interest.annotationType));
+                    }
+                    break;
+                case PARAMETER:
+                    for (Annotated<Parameter<Method>> parameter : finder.withAnnotations()
+                        .findAnnotatedMethodParameters(interest.annotationType)) {
+                        result.getWeavable(parameter.get().getDeclaringExecutable())
+                            .getWeavableParameter(parameter.get().getIndex())
+                            .addAnnotations(parameter.getAnnotation(interest.annotationType));
+                    }
+                    for (Annotated<Parameter<Constructor<?>>> parameter : finder.withAnnotations()
+                        .findAnnotatedConstructorParameters(interest.annotationType)) {
+                        result.getWeavable(parameter.get().getDeclaringExecutable())
+                            .getWeavableParameter(parameter.get().getIndex())
+                            .addAnnotations(parameter.getAnnotation(interest.annotationType));
+                    }
+                    break;
+                default:
+                    // should we log something?
+                    break;
             }
         }
         weaver.process(result);
