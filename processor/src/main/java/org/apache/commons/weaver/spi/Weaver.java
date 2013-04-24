@@ -26,30 +26,28 @@ import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.ScanResult;
 
 /**
- * An implementation of a 'Weaver' takes care about
- * certain weaving jobs and will perform the byte code
- * enhancement in the classes.
+ * A {@link Weaver} implementation performs the byte code enhancement in the classes.
  */
-public interface Weaver
-{
+public interface Weaver {
     /**
-     * This is for now a simple way to configure any weaver.
-     * Any configuration property of a weaver should start with its 'name'
-     * e.g. 'privilizer'
-     * @param classPath the classpath to look up cross-references in during weaving
+     * This is for now a simple way to configure a {@link Weaver}. By convention, any configuration property should
+     * start with its name, e.g. "privilizer".
+     * 
+     * @param classpath the classpath to look up cross-references in during weaving
      * @param target the File path where the classes to weave reside
      * @param config additional configuration for all plugins.
      */
-    void configure(List<String> classPath, File target, Properties config);
+    void configure(List<String> classpath, File target, Properties config);
 
     /**
-     * Get the scan request of this {@link Weaver}.
+     * Get the scan request.
      */
     ScanRequest getScanRequest();
 
     /**
      * Process the scanning results.
-     * @param scanResult
+     * 
+     * @param scanResult to process
      * @return whether any work was done.
      */
     boolean process(ScanResult scanResult);
