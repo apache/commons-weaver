@@ -49,6 +49,7 @@ public abstract class WeaverTestBase {
 
     /**
      * Add a class (and its inner classes) to the temporary folder.
+     * 
      * @param clazz
      */
     protected void addClassForScanning(Class<?> clazz) throws IOException {
@@ -57,7 +58,7 @@ public abstract class WeaverTestBase {
         targetDirFile.mkdirs();
 
         String fileName = baseName(clazz) + ".class";
-        String clazzFileName =  clazzDirName + "/" + fileName;
+        String clazzFileName = clazzDirName + "/" + fileName;
         URL clazzUrl = getClass().getClassLoader().getResource(clazzFileName);
         File targetClazzFile = new File(targetDirFile, fileName);
 
@@ -72,7 +73,7 @@ public abstract class WeaverTestBase {
         }
         fos.flush();
         fos.close();
-        
+
         for (Class<?> inner : clazz.getClasses()) {
             addClassForScanning(inner);
         }
@@ -99,7 +100,7 @@ public abstract class WeaverTestBase {
      */
     protected File getTargetFolder() {
         if (targetFolder == null) {
-            targetFolder =  new File(temporaryFolder.getRoot(), TARGET_FOLDER);
+            targetFolder = new File(temporaryFolder.getRoot(), TARGET_FOLDER);
         }
         return targetFolder;
     }
@@ -107,18 +108,14 @@ public abstract class WeaverTestBase {
     protected List<String> getClassPathEntries() {
         if (classPathEntries == null) {
             classPathEntries = new ArrayList<String>(1);
-            try
-            {
+            try {
                 classPathEntries.add(getTargetFolder().getCanonicalPath());
-            }
-            catch (IOException ioe)
-            {
+            } catch (IOException ioe) {
                 throw new RuntimeException(ioe);
             }
         }
 
         return classPathEntries;
     }
-
 
 }
