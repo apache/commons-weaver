@@ -15,33 +15,34 @@
  */
 package org.apache.commons.weaver.maven;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
+import java.io.File;
+import java.util.List;
+
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 
 /**
- * Prepare for weaving by deleting test classes previously woven with a different
- * policy.
+ * Prepare for weaving by deleting test classes previously woven with a different policy.
  */
 @Mojo(name = "test-prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.TEST)
-public class TestPrepareMojo extends TestWeaveMojo {
-    @Component
-    private MavenProject project;
+public class TestPrepareMojo extends AbstractPrepareMojo {
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.testClasspathElements}")
+    protected List<String> classpath;
+
+    @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
+    protected File target;
 
     @Override
-    public void execute() throws MojoExecutionException {
-        if (target.exists()) {
-/*X TODO do we need the prepare mojo at all?
-            try {
-                createWeaver().prepare();
-            } catch (Exception e) {
-                throw new MojoExecutionException("error", e);
-            }
-*/
-        }
+    protected List<String> getClasspath() {
+        return classpath;
+    }
+
+    @Override
+    protected File getTarget() {
+        return target;
     }
 
 }

@@ -17,5 +17,6 @@
 
  -->
 <antlib>
+  <taskdef name="clean" classname="org.apache.commons.weaver.ant.CleanTask" />
   <taskdef name="weave" classname="org.apache.commons.weaver.ant.WeaveTask" />
 </antlib>
