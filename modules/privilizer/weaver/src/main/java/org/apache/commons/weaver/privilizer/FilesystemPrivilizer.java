@@ -52,7 +52,7 @@ public class FilesystemPrivilizer extends Privilizer {
 
     private final File target;
 
-    private final ClassFileWriter classFileWriter = new ClassFileWriter() {
+    private final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
         @Override
         public void write(CtClass type) throws CannotCompileException, IOException {
             type.writeFile(target.getAbsolutePath());
@@ -70,8 +70,8 @@ public class FilesystemPrivilizer extends Privilizer {
     }
 
     @Override
-    protected ClassFileWriter getClassFileWriter() {
-        return classFileWriter;
+    protected ModifiedClassWriter getModifiedClassWriter() {
+        return modifiedClassWriter;
     }
 
 }

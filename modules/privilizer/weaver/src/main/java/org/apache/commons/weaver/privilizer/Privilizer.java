@@ -64,7 +64,10 @@ import org.apache.commons.weaver.utils.Body;
  * @see Privilizing
  */
 public abstract class Privilizer {
-    public interface ClassFileWriter {
+    /**
+     * Simple interface to abstract the act of saving modifications to a class.
+     */
+    public interface ModifiedClassWriter {
         void write(CtClass type) throws CannotCompileException, IOException;
     }
 
@@ -234,7 +237,7 @@ public abstract class Privilizer {
             }
             if (result) {
                 type.setAttribute(policyName, policy.name().getBytes(Charset.forName("UTF-8")));
-                getClassFileWriter().write(type);
+                getModifiedClassWriter().write(type);
             }
         }
         log.info(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
@@ -548,7 +551,7 @@ public abstract class Privilizer {
         log.warning(String.format(message, args));
     }
 
-    protected abstract ClassFileWriter getClassFileWriter();
+    protected abstract ModifiedClassWriter getModifiedClassWriter();
 
     protected void info(String message, Object... args) {
         log.info(String.format(message, args));
@@ -639,7 +642,7 @@ public abstract class Privilizer {
 
             result.addMethod(CtNewMethod.make(run.append(body.complete()).toString(), result));
         }
-        getClassFileWriter().write(result);
+        getModifiedClassWriter().write(result);
         debug("Returning action type %s", result);
         return result;
     }
