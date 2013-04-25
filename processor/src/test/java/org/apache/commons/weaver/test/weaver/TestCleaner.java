@@ -37,7 +37,7 @@ public class TestCleaner implements Cleaner {
     private File target;
 
     @Override
-    public void configure(List<String> classPath, File target, Properties config) {
+    public void configure(List<String> classpath, File target, Properties config) {
         Assert.assertNotNull(config);
         Assert.assertEquals(1, config.size());
 
