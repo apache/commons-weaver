@@ -159,21 +159,32 @@ public abstract class Privilizer {
         return result;
     }
 
-    protected final Policy policy;
+    private static String importedMethodName(CtMethod blueprint) {
+        return new StringBuilder(blueprint.getDeclaringClass().getName().replace('.', '_')).append('$')
+            .append(blueprint.getName()).toString();
+    }
 
-    protected final ClassPool classPool;
+    private static CodeConverter redirect(CtMethod origMethod, CtMethod substMethod) throws CannotCompileException {
+        final CodeConverter result = new CodeConverter();
+        result.redirectMethodCall(origMethod, substMethod);
+        return result;
+    }
+
+    private final Policy policy;
+    private final ClassPool classPool;
+    private final ModifiedClassWriter modifiedClassWriter;
+    private final Assistant assistant;
 
     private boolean settingsReported;
 
-    private final Assistant assistant;
-
-    public Privilizer(ClassPool classPool) {
-        this(Policy.DYNAMIC, classPool);
+    public Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter) {
+        this(classPool, modifiedClassWriter, Policy.DYNAMIC);
     }
 
-    public Privilizer(Policy policy, ClassPool classPool) {
+    public Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter, Policy policy) {
         this.policy = Validate.notNull(policy, "policy");
         this.classPool = Validate.notNull(classPool, "classPool");
+        this.modifiedClassWriter = Validate.notNull(modifiedClassWriter, "modifiedClassWriter");
         this.assistant = new Assistant(classPool, "__privilizer_");
     }
 
@@ -239,7 +250,7 @@ public abstract class Privilizer {
             }
             if (result) {
                 type.setAttribute(policyName, policy.name().getBytes(Charset.forName("UTF-8")));
-                getModifiedClassWriter().write(type);
+                modifiedClassWriter.write(type);
             }
         }
         log.info(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
@@ -323,11 +334,6 @@ public abstract class Privilizer {
             }
         });
         return result.booleanValue();
-    }
-
-    private static String importedMethodName(CtMethod blueprint) {
-        return new StringBuilder(blueprint.getDeclaringClass().getName().replace('.', '_')).append('$')
-            .append(blueprint.getName()).toString();
     }
 
     /*
@@ -451,12 +457,6 @@ public abstract class Privilizer {
         return result;
     }
 
-    private static CodeConverter redirect(CtMethod origMethod, CtMethod substMethod) throws CannotCompileException {
-        final CodeConverter result = new CodeConverter();
-        result.redirectMethodCall(origMethod, substMethod);
-        return result;
-    }
-
     private void handleReferencedFields(final CtClass target, final CtMethod method, final CtMethod source,
         final List<CtField> referencedFields) throws CannotCompileException, NotFoundException {
 
@@ -556,8 +556,6 @@ public abstract class Privilizer {
         log.warning(String.format(message, args));
     }
 
-    protected abstract ModifiedClassWriter getModifiedClassWriter();
-
     protected void info(String message, Object... args) {
         log.info(String.format(message, args));
     }
@@ -644,7 +642,7 @@ public abstract class Privilizer {
 
             result.addMethod(CtNewMethod.make(run.append(body.complete()).toString(), result));
         }
-        getModifiedClassWriter().write(result);
+        modifiedClassWriter.write(result);
         debug("Returning action type %s", result);
         return result;
     }

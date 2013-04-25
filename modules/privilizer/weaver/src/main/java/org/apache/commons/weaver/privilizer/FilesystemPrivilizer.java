@@ -50,28 +50,23 @@ public class FilesystemPrivilizer extends Privilizer {
         return target;
     }
 
-    private final File target;
-
-    private final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
-        @Override
-        public void write(CtClass type) throws CannotCompileException, IOException {
-            type.writeFile(target.getAbsolutePath());
-        }
-    };
-
-    public FilesystemPrivilizer(ClassLoader classpath, File target) {
-        super(createClassPool(classpath, target));
-        this.target = target;
+    public FilesystemPrivilizer(final ClassLoader classpath, final File target) {
+        super(createClassPool(classpath, target), new ModifiedClassWriter() {
+            
+            @Override
+            public void write(CtClass type) throws CannotCompileException, IOException {
+                type.writeFile(target.getAbsolutePath());
+            }
+        });
     }
 
-    public FilesystemPrivilizer(Policy policy, ClassLoader classpath, File target) {
-        super(policy, createClassPool(classpath, target));
-        this.target = target;
-    }
-
-    @Override
-    protected ModifiedClassWriter getModifiedClassWriter() {
-        return modifiedClassWriter;
+    public FilesystemPrivilizer(final Policy policy, final ClassLoader classpath, final File target) {
+        super(createClassPool(classpath, target), new ModifiedClassWriter() {
+            @Override
+            public void write(CtClass type) throws CannotCompileException, IOException {
+                type.writeFile(target.getAbsolutePath());
+            }
+        }, policy);
     }
 
 }
