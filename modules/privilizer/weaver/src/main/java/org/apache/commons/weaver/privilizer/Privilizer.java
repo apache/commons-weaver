@@ -564,10 +564,6 @@ public abstract class Privilizer {
         return AccessLevel.PRIVATE;
     }
 
-    protected boolean permitMethodWeaving(AccessLevel accessLevel) {
-        return true;
-    }
-
     private CtClass createAction(CtClass type, CtMethod impl, Class<?> iface) throws NotFoundException,
         CannotCompileException, IOException {
         final boolean exc = impl.getExceptionTypes().length > 0;
@@ -664,7 +660,7 @@ public abstract class Privilizer {
     private boolean weave(CtClass type, CtMethod method) throws ClassNotFoundException, CannotCompileException,
         NotFoundException, IOException, IllegalAccessException {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
-        if (!permitMethodWeaving(accessLevel)) {
+        if (getTargetAccessLevel().compareTo(accessLevel) > 0) {
             throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
                 + " must have maximum access level '" + getTargetAccessLevel() + "' but is defined wider ('"
                 + accessLevel + "')");
