@@ -25,17 +25,15 @@ import java.util.Properties;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.LoaderClassPath;
-import javassist.NotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.privilizer.Privilizer.ModifiedClassWriter;
 import org.apache.commons.weaver.spi.Weaver;
+import org.apache.commons.weaver.utils.Assistant;
 import org.apache.commons.weaver.utils.URLArray;
 
 /**
@@ -48,53 +46,12 @@ public class PrivilizerWeaver implements Weaver {
     public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
     public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
 
-    private static ClassPool createClassPool(ClassLoader classpath, File target) {
-        final ClassPool result = new ClassPool();
-        try {
-            result.appendClassPath(validTarget(target).getAbsolutePath());
-            result.appendClassPath(new LoaderClassPath(classpath));
-            result.appendPathList(System.getProperty("java.class.path"));
-        } catch (final NotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
-
-    private static File validTarget(File target) {
-        Validate.notNull(target, "target");
-        Validate.isTrue(target.isDirectory(), "not a directory");
-        return target;
-    }
-
     private Privilizer privilizer;
-    private Privilizer.Policy policy;
-    private AccessLevel targetAccessLevel;
 
     @Override
     public void configure(final List<String> classPath, final File target, final Properties config) {
         final URLClassLoader urlClassLoader = new URLClassLoader(URLArray.fromPaths(classPath));
-
-        final String accessLevel = config.getProperty(CONFIG_ACCESS_LEVEL);
-        if (StringUtils.isNotEmpty(accessLevel)) {
-            targetAccessLevel = AccessLevel.valueOf(accessLevel);
-        }
-
-        class ConfiguredPrivilizer extends Privilizer {
-
-            ConfiguredPrivilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter, Policy policy) {
-                super(classPool, modifiedClassWriter, policy);
-            }
-
-            ConfiguredPrivilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter) {
-                super(classPool, modifiedClassWriter);
-            }
-
-            @Override
-            protected AccessLevel getTargetAccessLevel() {
-                return targetAccessLevel == null ? super.getTargetAccessLevel() : targetAccessLevel;
-            }
-        }
-        final ClassPool classPool = createClassPool(urlClassLoader, target);
+        final ClassPool classPool = Assistant.createClassPool(urlClassLoader, target);
         final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
 
             @Override
@@ -103,14 +60,20 @@ public class PrivilizerWeaver implements Weaver {
             }
         };
 
+        final Privilizer.Builder builder = new Privilizer.Builder(classPool, modifiedClassWriter);
+
+        final String accessLevel = config.getProperty(CONFIG_ACCESS_LEVEL);
+        if (StringUtils.isNotEmpty(accessLevel)) {
+            builder.withTargetAccessLevel(AccessLevel.valueOf(accessLevel));
+        }
+
         final String policyConfig = config.getProperty(CONFIG_POLICY);
 
         if (StringUtils.isNotEmpty(policyConfig)) {
-            policy = Privilizer.Policy.valueOf(policyConfig);
-            privilizer = new ConfiguredPrivilizer(classPool, modifiedClassWriter, policy);
-        } else {
-            privilizer = new ConfiguredPrivilizer(classPool, modifiedClassWriter);
+            builder.withPolicy(Privilizer.Policy.valueOf(policyConfig));
         }
+
+        privilizer = builder.build();
     }
 
     @Override

@@ -53,4 +53,13 @@ public enum AccessLevel {
     public String toString() {
         return name().toLowerCase(Locale.US);
     }
+
+    /**
+     * Get the {@link AccessLevel} value that should be used as a default.
+     * 
+     * @return {@link AccessLevel#PRIVATE}
+     */
+    public static AccessLevel defaultValue() {
+        return AccessLevel.PRIVATE;
+    }
 }
