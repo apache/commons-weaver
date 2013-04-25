@@ -32,11 +32,11 @@ public interface Cleaner {
     /**
      * @see Weaver#configure(List, File, Properties)
      * 
-     * @param classPath the classpath to look up cross-references in during weaving
+     * @param classpath the classpath to look up cross-references in during weaving
      * @param target the File path where the classes to weave reside
      * @param config additional configuration for all plugins.
      */
-    void configure(List<String> classPath, File target, Properties config);
+    void configure(List<String> classpath, File target, Properties config);
 
     /**
      * Get the scan request of this {@link Cleaner}.
