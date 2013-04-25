@@ -81,18 +81,20 @@ public abstract class Privilizer {
         NEVER,
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is done once only.
+         * Weaves such that the check for an active {@link SecurityManager} is
+         * done once only.
          */
         ON_INIT(generateName("hasSecurityManager")),
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is done for each {@link Privileged} method
-         * execution.
+         * Weaves such that the check for an active {@link SecurityManager} is
+         * done for each {@link Privileged} method execution.
          */
         DYNAMIC(HAS_SECURITY_MANAGER_CONDITION),
 
         /**
-         * Weaves such that {@link Privileged} methods are always executed as such.
+         * Weaves such that {@link Privileged} methods are always executed as
+         * such.
          */
         ALWAYS;
 
@@ -118,6 +120,8 @@ public abstract class Privilizer {
     private static final String GENERATE_NAME = "__privileged_%s";
     private static final String HAS_SECURITY_MANAGER_CONDITION = "System.getSecurityManager() != null";
 
+    private static final Logger log = Logger.getLogger(Privilizer.class.getName());
+
     protected static String generateName(String simple) {
         return String.format(GENERATE_NAME, simple);
     }
@@ -125,14 +129,6 @@ public abstract class Privilizer {
     protected static String toString(byte[] b) {
         return b == null ? null : new String(b, Charset.forName("UTF-8"));
     }
-
-    protected final Policy policy;
-
-    protected final ClassPool classPool;
-
-    private boolean settingsReported;
-
-    private static final Logger log = Logger.getLogger(Privilizer.class.getName());
 
     private static final Comparator<CtMethod> CTMETHOD_COMPARATOR = new Comparator<CtMethod>() {
 
@@ -163,6 +159,12 @@ public abstract class Privilizer {
         return result;
     }
 
+    protected final Policy policy;
+
+    protected final ClassPool classPool;
+
+    private boolean settingsReported;
+
     private final Assistant assistant;
 
     public Privilizer(ClassPool classPool) {
@@ -176,8 +178,8 @@ public abstract class Privilizer {
     }
 
     /**
-     * Weave the specified class. Handles all {@link Privileged} methods as well as calls described by
-     * {@code privilizing}.
+     * Weave the specified class. Handles all {@link Privileged} methods as well
+     * as calls described by {@code privilizing}.
      * 
      * @param privilizing
      * 
@@ -187,7 +189,7 @@ public abstract class Privilizer {
      * @throws ClassNotFoundException
      */
     public boolean weaveClass(Class<?> clazz, Privilizing privilizing) throws NotFoundException, IOException,
-            CannotCompileException, ClassNotFoundException, IllegalAccessException {
+        CannotCompileException, ClassNotFoundException, IllegalAccessException {
         return weave(classPool.get(clazz.getName()), privilizing);
     }
 
@@ -203,7 +205,7 @@ public abstract class Privilizer {
      * @throws ClassNotFoundException
      */
     private boolean weave(CtClass type, Privilizing privilizing) throws NotFoundException, IOException,
-            CannotCompileException, ClassNotFoundException, IllegalAccessException {
+        CannotCompileException, ClassNotFoundException, IllegalAccessException {
         reportSettings();
         final String policyName = generateName(POLICY_NAME);
         final String policyValue = toString(type.getAttribute(policyName));
@@ -223,7 +225,7 @@ public abstract class Privilizer {
 
             if (policy == Policy.ON_INIT) {
                 debug("Initializing field %s.%s to %s", type.getName(), policy.condition,
-                        HAS_SECURITY_MANAGER_CONDITION);
+                    HAS_SECURITY_MANAGER_CONDITION);
 
                 CtField securityManager = new CtField(CtClass.booleanType, policy.condition, type);
                 securityManager.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
@@ -245,13 +247,13 @@ public abstract class Privilizer {
     }
 
     private boolean privilizeBlueprints(CtClass type, Privilizing annotation) throws CannotCompileException,
-            ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
+        ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
         boolean result = false;
         if (annotation != null) {
             final CallTo[] blueprintCalls = annotation.value();
             for (CallTo callTo : blueprintCalls) {
                 Validate.isTrue(!callTo.value().equals(type.getName()),
-                        "Type %s cannot use itself as a privilizer blueprint", callTo.value());
+                    "Type %s cannot use itself as a privilizer blueprint", callTo.value());
             }
             for (CtMethod method : type.getDeclaredMethods()) {
                 result = privilizeBlueprints(type, method, blueprintCalls) | result;
@@ -261,8 +263,7 @@ public abstract class Privilizer {
     }
 
     private boolean privilizeBlueprints(final CtClass type, final CtMethod method, final CallTo[] blueprintCalls)
-            throws CannotCompileException, ClassNotFoundException, NotFoundException, IOException,
-            IllegalAccessException {
+        throws CannotCompileException, ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
         final MutableBoolean result = new MutableBoolean();
 
         method.instrument(new ExprEditor() {
@@ -275,8 +276,7 @@ public abstract class Privilizer {
                     if (!Modifier.isStatic(called.getModifiers())) {
                         return;
                     }
-                }
-                catch (NotFoundException e) {
+                } catch (NotFoundException e) {
                     return;
                 }
                 boolean found = false;
@@ -301,12 +301,12 @@ public abstract class Privilizer {
                     CtMethod copy;
                     try {
                         copy = copyBlueprintTo(type, name, called, blueprintCalls);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                     if (copy == null) {
-                        debug("Unable to use %s as blueprint method in %s", Privilizer.this.toString(called), Privilizer.this.toString(method));
+                        debug("Unable to use %s as blueprint method in %s", Privilizer.this.toString(called),
+                            Privilizer.this.toString(method));
                         return;
                     }
                     Body redirect = new Body(Privilizer.this, "call %s", Privilizer.this.toString(called));
@@ -327,23 +327,27 @@ public abstract class Privilizer {
 
     private static String importedMethodName(CtMethod blueprint) {
         return new StringBuilder(blueprint.getDeclaringClass().getName().replace('.', '_')).append('$')
-                .append(blueprint.getName()).toString();
+            .append(blueprint.getName()).toString();
     }
 
     /*
      * This design is almost certainly suboptimal. Basically, we have:
      * 
-     * for a declared method, look for calls to blueprint methods for each blueprint method, copy it when copying,
-     * inspect blueprint method's code and recursively copy in methods from the source class of *that particular method*
-     * because otherwise CtNewMethod will do it for us and we'll miss our window of opportunity now that we have a
-     * copied blueprint method, inspect it for blueprint calls from other classes and do this whole thing recursively.
+     * for a declared method, look for calls to blueprint methods for each
+     * blueprint method, copy it when copying, inspect blueprint method's code
+     * and recursively copy in methods from the source class of *that particular
+     * method* because otherwise CtNewMethod will do it for us and we'll miss
+     * our window of opportunity now that we have a copied blueprint method,
+     * inspect it for blueprint calls from other classes and do this whole thing
+     * recursively.
      * 
-     * It would *seem* that we could combine the recursion/copying of methods from all blueprint classes but I can't get
-     * my head around it right now. -MJB
+     * It would *seem* that we could combine the recursion/copying of methods
+     * from all blueprint classes but I can't get my head around it right now.
+     * -MJB
      */
     private CtMethod copyBlueprintTo(final CtClass target, final String toName, final CtMethod method,
-            final CallTo[] blueprintCalls) throws ClassNotFoundException, NotFoundException, IOException,
-            IllegalAccessException, CannotCompileException {
+        final CallTo[] blueprintCalls) throws ClassNotFoundException, NotFoundException, IOException,
+        IllegalAccessException, CannotCompileException {
         if (!Modifier.isStatic(method.getModifiers())) {
             return null;
         }
@@ -351,8 +355,7 @@ public abstract class Privilizer {
         try {
             final CtMethod done = target.getDeclaredMethod(toName, method.getParameterTypes());
             return done;
-        }
-        catch (NotFoundException e1) {
+        } catch (NotFoundException e1) {
         }
         final CtClass declaring = method.getDeclaringClass();
 
@@ -365,8 +368,7 @@ public abstract class Privilizer {
                 CtMethod called;
                 try {
                     called = m.getMethod();
-                }
-                catch (NotFoundException e) {
+                } catch (NotFoundException e) {
                     return;
                 }
                 if (called.getDeclaringClass().equals(declaring)) {
@@ -379,8 +381,7 @@ public abstract class Privilizer {
                 super.edit(f);
                 try {
                     referencedFields.add(f.getField());
-                }
-                catch (NotFoundException e) {
+                } catch (NotFoundException e) {
                 }
             }
         }
@@ -400,12 +401,14 @@ public abstract class Privilizer {
             }
         }
 
-        // we have code to handle non-public fields, but the generated code gets VerifyErrors at runtime;
+        // we have code to handle non-public fields, but the generated code gets
+        // VerifyErrors at runtime;
         // for now we must skip blueprinting such methods.
         boolean referencesPublicFieldsOnly = true;
         for (CtField refd : referencedFields) {
             if (!Modifier.isPublic(refd.getModifiers())) {
-            	warn("Method %s references non-public field %s.%s", toString(method), refd.getDeclaringClass().getName(), refd.getName());
+                warn("Method %s references non-public field %s.%s", toString(method), refd.getDeclaringClass()
+                    .getName(), refd.getName());
                 referencesPublicFieldsOnly = false;
             }
         }
@@ -429,14 +432,18 @@ public abstract class Privilizer {
         privilizeBlueprints(target, result, blueprintCalls);
 
         if (!referencedFields.isEmpty()) {
-            // more referenced fields handling, but reduces the amount of generated code we read through
+            // more referenced fields handling, but reduces the amount of
+            // generated code we read through
             // when blueprinting recursively
             makeAccessible(target, result, referencedFields);
         }
-        // not really possible to check for what truly may throw a SecurityException and thus requires privilizing,
-        // but we'll assume any public method must be. As anything else, once copied,
+        // not really possible to check for what truly may throw a
+        // SecurityException and thus requires privilizing,
+        // but we'll assume any public method must be. As anything else, once
+        // copied,
         // can only be called from something we have already privilized
-        // TODO? only privilize methods the instrumented class called originally, directly
+        // TODO? only privilize methods the instrumented class called
+        // originally, directly
         if (Modifier.isPublic(method.getModifiers())) {
             weave(target, result);
         }
@@ -451,11 +458,11 @@ public abstract class Privilizer {
     }
 
     private void handleReferencedFields(final CtClass target, final CtMethod method, final CtMethod source,
-            final List<CtField> referencedFields) throws CannotCompileException, NotFoundException {
+        final List<CtField> referencedFields) throws CannotCompileException, NotFoundException {
 
         for (CtField ctField : referencedFields) {
             Validate.validState(!ctField.getDeclaringClass().equals(target),
-                    "Circular reference; cannot blueprint method %s", toString(source));
+                "Circular reference; cannot blueprint method %s", toString(source));
         }
 
         method.instrument(new ExprEditor() {
@@ -467,9 +474,9 @@ public abstract class Privilizer {
                 try {
                     fld = f.getField();
                     primitive = fld.getType().isPrimitive();
-                }
-                catch (NotFoundException e) {
-                    // no such field implies a reference copied such that the field doesn't exist, probably the usual
+                } catch (NotFoundException e) {
+                    // no such field implies a reference copied such that the
+                    // field doesn't exist, probably the usual
                     // case with blueprinted methods containing field refs
 
                     fld = null;
@@ -480,13 +487,11 @@ public abstract class Privilizer {
                             fld = host.getDeclaredField(f.getFieldName());
                             primitive = fld.getType().isPrimitive();
                             break;
-                        }
-                        catch (NotFoundException e1) {
+                        } catch (NotFoundException e1) {
                         }
                         try {
                             host = host.getSuperclass();
-                        }
-                        catch (NotFoundException e1) {
+                        } catch (NotFoundException e1) {
                             break;
                         }
                     }
@@ -513,7 +518,7 @@ public abstract class Privilizer {
                     }
                 }
                 debug("Replacing %s access of %s.%s", f.isReader() ? "read" : "write", fld.getDeclaringClass()
-                        .getName(), f.getFieldName());
+                    .getName(), f.getFieldName());
                 debug(replacement);
                 f.replace(replacement);
             }
@@ -521,7 +526,7 @@ public abstract class Privilizer {
     }
 
     private void makeAccessible(final CtClass target, final CtMethod method, final List<CtField> referencedFields)
-            throws CannotCompileException {
+        throws CannotCompileException {
         boolean allPublic = true;
         for (CtField ctField : referencedFields) {
             if (!Modifier.isPublic(ctField.getModifiers())) {
@@ -536,7 +541,7 @@ public abstract class Privilizer {
         method.insertBefore(assistant.callPushFieldAccess(target, referencedFields));
         final boolean asFinally = true;
         method.insertAfter(new StringBuilder(assistant.popFieldAccess(target).getName()).append("();").toString(),
-                asFinally);
+            asFinally);
     }
 
     protected void debug(String message, Object... args) {
@@ -566,7 +571,7 @@ public abstract class Privilizer {
     }
 
     private CtClass createAction(CtClass type, CtMethod impl, Class<?> iface) throws NotFoundException,
-            CannotCompileException, IOException {
+        CannotCompileException, IOException {
         final boolean exc = impl.getExceptionTypes().length > 0;
 
         final CtClass actionType = classPool.get(iface.getName());
@@ -579,8 +584,7 @@ public abstract class Privilizer {
         final CtField owner;
         if (Modifier.isStatic(impl.getModifiers())) {
             owner = null;
-        }
-        else {
+        } else {
             owner = new CtField(type, generateName("owner"), result);
             owner.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
             debug("Adding owner field %s to %s", owner.getName(), simpleName);
@@ -605,8 +609,7 @@ public abstract class Privilizer {
             for (final CtField fld : result.getDeclaredFields()) {
                 if (sep) {
                     sig.append(", ");
-                }
-                else {
+                } else {
                     sep = true;
                 }
                 sig.append(fld.getType().getName()).append(' ').append(fld.getName());
@@ -626,13 +629,12 @@ public abstract class Privilizer {
                 body.append("return ");
             }
             final String deref = Modifier.isStatic(impl.getModifiers()) ? type.getName() : owner.getName();
-            final String call = String.format("%s.%s(%s)", deref, impl.getName(),
-                    StringUtils.join(propagatedParameters, ", "));
+            final String call =
+                String.format("%s.%s(%s)", deref, impl.getName(), StringUtils.join(propagatedParameters, ", "));
 
             if (!isVoid && rt.isPrimitive()) {
                 body.appendLine("%2$s.valueOf(%1$s);", call, ((CtPrimitiveType) rt).getWrapperName());
-            }
-            else {
+            } else {
                 body.append(call).append(';').appendNewLine();
 
                 if (isVoid) {
@@ -651,8 +653,8 @@ public abstract class Privilizer {
         final StringBuilder b = new StringBuilder(m.getName());
         if (m.getParameterTypes().length > 0) {
             b.append("$$").append(
-                    StringUtils.strip(Descriptor.getParamDescriptor(m.getSignature()), "(;)").replace("[", "ARRAYOF_")
-                            .replace('/', '_').replace(';', '$'));
+                StringUtils.strip(Descriptor.getParamDescriptor(m.getSignature()), "(;)").replace("[", "ARRAYOF_")
+                    .replace('/', '_').replace(';', '$'));
         }
         return b.append(ACTION_SUFFIX).toString();
     }
@@ -662,16 +664,16 @@ public abstract class Privilizer {
     }
 
     private boolean weave(CtClass type, CtMethod method) throws ClassNotFoundException, CannotCompileException,
-            NotFoundException, IOException, IllegalAccessException {
+        NotFoundException, IOException, IllegalAccessException {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
         if (!permitMethodWeaving(accessLevel)) {
             throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
-                    + " must have maximum access level '" + getTargetAccessLevel() + "' but is defined wider ('"
-                    + accessLevel + "')");
+                + " must have maximum access level '" + getTargetAccessLevel() + "' but is defined wider ('"
+                + accessLevel + "')");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
             warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
-                    toString(method));
+                toString(method));
         }
         final String implName = generateName(method.getName());
 
@@ -679,7 +681,7 @@ public abstract class Privilizer {
         impl.setModifiers(AccessLevel.PRIVATE.merge(method.getModifiers()));
         type.addMethod(impl);
         debug("Copied %2$s %1$s.%3$s to %4$s %1$s.%5$s", type.getName(), accessLevel, toString(method),
-                AccessLevel.PRIVATE, toString(impl));
+            AccessLevel.PRIVATE, toString(impl));
 
         final Body body = new Body(this, "new body of %s", toString(method));
 
@@ -701,16 +703,14 @@ public abstract class Privilizer {
         boolean firstParam;
         if (Modifier.isStatic(impl.getModifiers())) {
             firstParam = true;
-        }
-        else {
+        } else {
             body.append("$0");
             firstParam = false;
         }
         for (int i = 1, sz = impl.getParameterTypes().length; i <= sz; i++) {
             if (firstParam) {
                 firstParam = false;
-            }
-            else {
+            } else {
                 body.append(", ");
             }
             body.append('$').append(Integer.toString(i));
@@ -726,8 +726,7 @@ public abstract class Privilizer {
             if (policy.isConditional()) {
                 body.appendLine("return;");
             }
-        }
-        else {
+        } else {
             final String cast = rt.isPrimitive() ? ((CtPrimitiveType) rt).getWrapperName() : rt.getName();
             // don't worry about wrapper NPEs because we should be simply
             // passing back an autoboxed value, then unboxing again
@@ -754,8 +753,8 @@ public abstract class Privilizer {
                 body.endBlock();
             }
             body.appendLine(
-                    "throw %1$s instanceof RuntimeException ? (RuntimeException) %1$s : new RuntimeException(%1$s);",
-                    wrapped);
+                "throw %1$s instanceof RuntimeException ? (RuntimeException) %1$s : new RuntimeException(%1$s);",
+                wrapped);
             body.endBlock();
         }
 
