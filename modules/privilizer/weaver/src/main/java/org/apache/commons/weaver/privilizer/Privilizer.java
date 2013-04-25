@@ -63,7 +63,7 @@ import org.apache.commons.weaver.utils.Body;
  * @see Privileged
  * @see Privilizing
  */
-public abstract class Privilizer {
+public class Privilizer {
     /**
      * Simple interface to abstract the act of saving modifications to a class.
      */
@@ -81,24 +81,31 @@ public abstract class Privilizer {
         NEVER,
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is
-         * done once only.
+         * Weaves such that the check for an active {@link SecurityManager} is done once only.
          */
         ON_INIT(generateName("hasSecurityManager")),
 
         /**
-         * Weaves such that the check for an active {@link SecurityManager} is
-         * done for each {@link Privileged} method execution.
+         * Weaves such that the check for an active {@link SecurityManager} is done for each {@link Privileged} method
+         * execution.
          */
         DYNAMIC(HAS_SECURITY_MANAGER_CONDITION),
 
         /**
-         * Weaves such that {@link Privileged} methods are always executed as
-         * such.
+         * Weaves such that {@link Privileged} methods are always executed as such.
          */
         ALWAYS;
 
         private final String condition;
+
+        /**
+         * Get the {@link Policy} value that should be used as a default.
+         * 
+         * @return {@link Policy#DYNAMIC}
+         */
+        public static Policy defaultValue() {
+            return DYNAMIC;
+        }
 
         private Policy() {
             this(null);
@@ -110,6 +117,36 @@ public abstract class Privilizer {
 
         private boolean isConditional() {
             return condition != null;
+        }
+    }
+
+    /**
+     * Privilizer builder.
+     */
+    public static class Builder {
+        private final ClassPool classPool;
+        private final ModifiedClassWriter modifiedClassWriter;
+        private Policy policy = Policy.defaultValue();
+        private AccessLevel targetAccessLevel = AccessLevel.defaultValue();
+
+        public Builder(ClassPool classPool, ModifiedClassWriter modifiedClassWriter) {
+            super();
+            this.classPool = classPool;
+            this.modifiedClassWriter = modifiedClassWriter;
+        }
+
+        public Builder withPolicy(Policy policy) {
+            this.policy = policy;
+            return this;
+        }
+
+        public Builder withTargetAccessLevel(AccessLevel targetAccessLevel) {
+            this.targetAccessLevel = targetAccessLevel;
+            return this;
+        }
+
+        public Privilizer build() {
+            return new Privilizer(classPool, modifiedClassWriter, policy, targetAccessLevel);
         }
     }
 
@@ -174,23 +211,22 @@ public abstract class Privilizer {
     private final ClassPool classPool;
     private final ModifiedClassWriter modifiedClassWriter;
     private final Assistant assistant;
+    private final AccessLevel targetAccessLevel;
 
     private boolean settingsReported;
 
-    public Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter) {
-        this(classPool, modifiedClassWriter, Policy.DYNAMIC);
-    }
-
-    public Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter, Policy policy) {
-        this.policy = Validate.notNull(policy, "policy");
+    private Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter, Policy policy,
+        AccessLevel targetAccessLevel) {
         this.classPool = Validate.notNull(classPool, "classPool");
         this.modifiedClassWriter = Validate.notNull(modifiedClassWriter, "modifiedClassWriter");
+        this.policy = Validate.notNull(policy, "policy");
+        this.targetAccessLevel = Validate.notNull(targetAccessLevel, "targetAccessLevel");
         this.assistant = new Assistant(classPool, "__privilizer_");
     }
 
     /**
-     * Weave the specified class. Handles all {@link Privileged} methods as well
-     * as calls described by {@code privilizing}.
+     * Weave the specified class. Handles all {@link Privileged} methods as well as calls described by
+     * {@code privilizing}.
      * 
      * @param privilizing
      * 
@@ -339,17 +375,13 @@ public abstract class Privilizer {
     /*
      * This design is almost certainly suboptimal. Basically, we have:
      * 
-     * for a declared method, look for calls to blueprint methods for each
-     * blueprint method, copy it when copying, inspect blueprint method's code
-     * and recursively copy in methods from the source class of *that particular
-     * method* because otherwise CtNewMethod will do it for us and we'll miss
-     * our window of opportunity now that we have a copied blueprint method,
-     * inspect it for blueprint calls from other classes and do this whole thing
-     * recursively.
+     * for a declared method, look for calls to blueprint methods for each blueprint method, copy it when copying,
+     * inspect blueprint method's code and recursively copy in methods from the source class of *that particular method*
+     * because otherwise CtNewMethod will do it for us and we'll miss our window of opportunity now that we have a
+     * copied blueprint method, inspect it for blueprint calls from other classes and do this whole thing recursively.
      * 
-     * It would *seem* that we could combine the recursion/copying of methods
-     * from all blueprint classes but I can't get my head around it right now.
-     * -MJB
+     * It would *seem* that we could combine the recursion/copying of methods from all blueprint classes but I can't get
+     * my head around it right now. -MJB
      */
     private CtMethod copyBlueprintTo(final CtClass target, final String toName, final CtMethod method,
         final CallTo[] blueprintCalls) throws ClassNotFoundException, NotFoundException, IOException,
@@ -560,10 +592,6 @@ public abstract class Privilizer {
         log.info(String.format(message, args));
     }
 
-    protected AccessLevel getTargetAccessLevel() {
-        return AccessLevel.PRIVATE;
-    }
-
     private CtClass createAction(CtClass type, CtMethod impl, Class<?> iface) throws NotFoundException,
         CannotCompileException, IOException {
         final boolean exc = impl.getExceptionTypes().length > 0;
@@ -660,9 +688,9 @@ public abstract class Privilizer {
     private boolean weave(CtClass type, CtMethod method) throws ClassNotFoundException, CannotCompileException,
         NotFoundException, IOException, IllegalAccessException {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
-        if (getTargetAccessLevel().compareTo(accessLevel) > 0) {
+        if (targetAccessLevel.compareTo(accessLevel) > 0) {
             throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
-                + " must have maximum access level '" + getTargetAccessLevel() + "' but is defined wider ('"
+                + " must have maximum access level '" + targetAccessLevel + "' but is defined wider ('"
                 + accessLevel + "')");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {

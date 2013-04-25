@@ -15,6 +15,7 @@
  */
 package org.apache.commons.weaver.utils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.LoaderClassPath;
 import javassist.NotFoundException;
 
 import org.apache.commons.lang3.Validate;
@@ -59,6 +61,29 @@ public class Assistant {
                 .endBlock();
             return super.complete();
         }
+    }
+
+    /**
+     * Create a {@link ClassPool} including the target directory and an associated classpath.
+     * 
+     * @param classpath
+     * @param target
+     * @return ClassPool
+     */
+    public static ClassPool createClassPool(ClassLoader classpath, File target) {
+        Validate.notNull(classpath, "classpath");
+        Validate.notNull(target, "target");
+        Validate.isTrue(target.isDirectory(), "not a directory");
+
+        final ClassPool result = new ClassPool();
+        try {
+            result.appendClassPath(target.getAbsolutePath());
+            result.appendClassPath(new LoaderClassPath(classpath));
+            result.appendPathList(System.getProperty("java.class.path"));
+        } catch (final NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
     }
 
     private final ClassPool classPool;
