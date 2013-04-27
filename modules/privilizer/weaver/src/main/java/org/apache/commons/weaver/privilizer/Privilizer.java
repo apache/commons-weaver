@@ -126,7 +126,7 @@ public class Privilizer {
     }
 
     /**
-     * Class-retention annotation to mark woven classes.
+     * Class-retention annotation to mark privilized classes.
      */
     @Target(ElementType.TYPE)
     public @interface Privilized {
@@ -275,9 +275,10 @@ public class Privilizer {
             Annotation privilized = invisibleAnnotations.getAnnotation(Privilized.class.getName());
             if (privilized != null) {
                 final String policyValue = ((EnumMemberValue) privilized.getMemberValue("value")).getValue();
-                verbose("%s already woven with policy %s", type.getName(), policyValue);
+                final String alreadyPrivilized = String.format("%s already privilized with policy %s", type.getName(), policyValue);
+                verbose(alreadyPrivilized);
                 if (!policy.name().equals(policyValue)) {
-                    throw new AlreadyWovenException(type.getName(), Policy.valueOf(policyValue));
+                    throw new IllegalStateException(alreadyPrivilized);
                 }
                 return false;
             }
@@ -315,7 +316,7 @@ public class Privilizer {
                 modifiedClassWriter.write(type);
             }
         }
-        log.info(String.format(result ? "Wove class %s" : "Nothing to do for class %s", type.getName()));
+        log.info(String.format(result ? "Privilized class %s" : "Nothing to do for class %s", type.getName()));
         return result;
     }
 
