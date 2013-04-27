@@ -16,6 +16,8 @@
 package org.apache.commons.weaver.privilizer;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.security.AccessController;
@@ -39,7 +41,10 @@ import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
+import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.Descriptor;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 import javassist.expr.MethodCall;
@@ -118,6 +123,14 @@ public class Privilizer {
         private boolean isConditional() {
             return condition != null;
         }
+    }
+
+    /**
+     * Class-retention annotation to mark woven classes.
+     */
+    @Target(ElementType.TYPE)
+    public @interface Privilized {
+        Policy value();
     }
 
     /**
@@ -254,22 +267,23 @@ public class Privilizer {
     private boolean weave(CtClass type, Privilizing privilizing) throws NotFoundException, IOException,
         CannotCompileException, ClassNotFoundException, IllegalAccessException {
         reportSettings();
-        final String policyName = generateName(POLICY_NAME);
-        final String policyValue = toString(type.getAttribute(policyName));
-        if (policyValue != null) {
-            verbose("%s already woven with policy %s", type.getName(), policyValue);
-            if (!policy.name().equals(policyValue)) {
-                throw new AlreadyWovenException(type.getName(), Policy.valueOf(policyValue));
+
+        AnnotationsAttribute invisibleAnnotations =
+            (AnnotationsAttribute) type.getClassFile().getAttribute(AnnotationsAttribute.invisibleTag);
+
+        if (invisibleAnnotations != null) {
+            Annotation privilized = invisibleAnnotations.getAnnotation(Privilized.class.getName());
+            if (privilized != null) {
+                final String policyValue = ((EnumMemberValue) privilized.getMemberValue("value")).getValue();
+                verbose("%s already woven with policy %s", type.getName(), policyValue);
+                if (!policy.name().equals(policyValue)) {
+                    throw new AlreadyWovenException(type.getName(), Policy.valueOf(policyValue));
+                }
+                return false;
             }
-            return false;
         }
         boolean result = false;
         if (policy.compareTo(Policy.NEVER) > 0) {
-            if (type.getAttribute(policyName) != null) {
-                // if this class already got enhanced then abort
-                return false;
-            }
-
             if (policy == Policy.ON_INIT) {
                 debug("Initializing field %s.%s to %s", type.getName(), policy.condition,
                     HAS_SECURITY_MANAGER_CONDITION);
@@ -285,7 +299,19 @@ public class Privilizer {
                 result = weave(type, m) | result;
             }
             if (result) {
-                type.setAttribute(policyName, policy.name().getBytes(Charset.forName("UTF-8")));
+                if (invisibleAnnotations == null) {
+                    invisibleAnnotations =
+                        new AnnotationsAttribute(type.getClassFile().getConstPool(), AnnotationsAttribute.invisibleTag);
+                    type.getClassFile().addAttribute(invisibleAnnotations);
+                }
+                final Annotation privilized =
+                    new Annotation(Privilized.class.getName(), type.getClassFile().getConstPool());
+                final EnumMemberValue policyMember = new EnumMemberValue(type.getClassFile().getConstPool());
+                policyMember.setType(Policy.class.getName());
+                policyMember.setValue(policy.name());
+                privilized.addMemberValue("value", policyMember);
+                invisibleAnnotations.addAnnotation(privilized);
+
                 modifiedClassWriter.write(type);
             }
         }
@@ -690,8 +716,8 @@ public class Privilizer {
         final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
         if (targetAccessLevel.compareTo(accessLevel) > 0) {
             throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
-                + " must have maximum access level '" + targetAccessLevel + "' but is defined wider ('"
-                + accessLevel + "')");
+                + " must have maximum access level '" + targetAccessLevel + "' but is defined wider ('" + accessLevel
+                + "')");
         }
         if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
             warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
