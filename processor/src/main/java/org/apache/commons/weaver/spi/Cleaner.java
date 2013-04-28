@@ -18,36 +18,20 @@
  */
 package org.apache.commons.weaver.spi;
 
-import java.io.File;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.commons.weaver.model.ScanRequest;
-import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
+import org.apache.commons.weaver.model.WeaveEnvironment;
 
 /**
  * SPI to provide a means for a weaver module to remove woven classes during incremental builds, if necessary.
  */
 public interface Cleaner {
     /**
-     * @see Weaver#configure(List, File, Properties)
+     * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
      * 
-     * @param classpath the classpath to look up cross-references in during weaving
-     * @param target the File path where the classes to weave reside
-     * @param config additional configuration for all plugins.
-     */
-    void configure(List<String> classpath, File target, Properties config);
-
-    /**
-     * Get the scan request of this {@link Cleaner}.
-     */
-    ScanRequest getScanRequest();
-
-    /**
-     * Process the scanning results.
-     * 
-     * @param scanResult
+     * @param environment
+     * @param scanner
      * @return whether any work was done.
      */
-    boolean clean(ScanResult scanResult);
+    boolean clean(WeaveEnvironment environment, Scanner scanner);
+
 }

@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.weaver.model.ScanRequest;
+import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
+import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.utils.Annotations;
 import org.apache.xbean.asm.AnnotationVisitor;
 import org.apache.xbean.asm.Attribute;
@@ -29,7 +33,10 @@ import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.Parameter;
 import org.apache.xbean.finder.archive.Archive;
 
-class Finder extends AnnotationFinder {
+/**
+ * Scanner implementation.
+ */
+class Finder extends AnnotationFinder implements Scanner {
 
     private abstract class AnnotationInflater extends AnnotationCapturer {
         final Class<? extends Annotation> annotationType;
@@ -270,6 +277,9 @@ class Finder extends AnnotationFinder {
 
     }
 
+    /**
+     * Helper class for finding elements with annotations (including those with classfile-level retention).
+     */
     public class WithAnnotations {
         private WithAnnotations() {
         }
@@ -486,7 +496,12 @@ class Finder extends AnnotationFinder {
     }
 
     private final Map<Info, List<Annotation>> classfileAnnotations;
+    private final WithAnnotations withAnnotations = new WithAnnotations();
 
+    /**
+     * Create a new {@link Finder} instance.
+     * @param archive
+     */
     public Finder(Archive archive) {
         super(archive, false);
         classfileAnnotations = CLASSFILE_ANNOTATIONS.get();
@@ -494,7 +509,7 @@ class Finder extends AnnotationFinder {
     }
 
     public WithAnnotations withAnnotations() {
-        return new WithAnnotations();
+        return withAnnotations;
     }
 
     protected void readClassDef(InputStream in) throws IOException {
@@ -520,4 +535,58 @@ class Finder extends AnnotationFinder {
     public AnnotationFinder select(String... clazz) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public ScanResult scan(ScanRequest request) {
+        final ScanResult result = new ScanResult();
+
+        for (WeaveInterest interest : request.getInterests()) {
+            switch (interest.target) {
+            case PACKAGE:
+                for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
+                    result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotation(interest.annotationType));
+                }
+            case TYPE:
+                for (Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(interest.annotationType)) {
+                    result.getWeavable(type.get()).addAnnotations(type.getAnnotation(interest.annotationType));
+                }
+                break;
+            case METHOD:
+                for (Annotated<Method> method : this.withAnnotations().findAnnotatedMethods(interest.annotationType)) {
+                    result.getWeavable(method.get()).addAnnotations(method.getAnnotation(interest.annotationType));
+                }
+                break;
+            case CONSTRUCTOR:
+                for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
+                    interest.annotationType)) {
+                    result.getWeavable(cs.get()).addAnnotations(cs.getAnnotation(interest.annotationType));
+                }
+                break;
+            case FIELD:
+                for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
+                    result.getWeavable(fld.get()).addAnnotations(fld.getAnnotation(interest.annotationType));
+                }
+                break;
+            case PARAMETER:
+                for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
+                    interest.annotationType)) {
+                    result.getWeavable(parameter.get().getDeclaringExecutable())
+                        .getWeavableParameter(parameter.get().getIndex())
+                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
+                }
+                for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
+                    .findAnnotatedConstructorParameters(interest.annotationType)) {
+                    result.getWeavable(parameter.get().getDeclaringExecutable())
+                        .getWeavableParameter(parameter.get().getIndex())
+                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
+                }
+                break;
+            default:
+                // should we log something?
+                break;
+            }
+        }
+        return result;
+    }
+
 }

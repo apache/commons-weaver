@@ -20,14 +20,14 @@ import java.lang.annotation.ElementType;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.weaver.model.ScanRequest;
-import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
+import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.privilizer.Privilizer.Policy;
 import org.apache.commons.weaver.privilizer.Privilizer.Privilized;
@@ -48,33 +48,21 @@ public class PrivilizerCleaner implements Cleaner {
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
     private static final Logger LOG = Logger.getLogger(PrivilizerCleaner.class.getName());
 
-    private File target;
-    private Privilizer.Policy policy;
-    private FileArchive fileArchive;
-
     @Override
-    public void configure(List<String> classpath, File target, Properties config) {
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
-        fileArchive = new FileArchive(classLoader, target);
+    public boolean clean(WeaveEnvironment environment, Scanner scanner) {
+        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(environment.classpath));
+        final FileArchive fileArchive = new FileArchive(classLoader, environment.target);
 
-        final String policyConfig = config.getProperty(PrivilizerWeaver.CONFIG_POLICY);
-        policy =
+        final String policyConfig = environment.config.getProperty(PrivilizerWeaver.CONFIG_POLICY);
+        final Privilizer.Policy policy =
             StringUtils.isEmpty(policyConfig) ? Privilizer.Policy.defaultValue() : Privilizer.Policy
                 .valueOf(policyConfig);
-        this.target = target;
-    }
-
-    @Override
-    public ScanRequest getScanRequest() {
-        return new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
-    }
-
-    @Override
-    public boolean clean(ScanResult scanResult) {
         final List<String> toDelete = new ArrayList<String>();
 
+        final ScanRequest scanRequest = new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
+
         LOG.log(Level.FINE, "Cleaning classes privilized with policy other than {0}", policy);
-        for (WeavableClass<?> weavableClass : scanResult.getClasses().with(Privilized.class)) {
+        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
             final Policy privilizedPolicy = weavableClass.getAnnotation(Privilized.class).value();
             if (privilizedPolicy == policy) {
                 continue;
@@ -105,7 +93,7 @@ public class PrivilizerCleaner implements Cleaner {
         }
         boolean result = false;
         for (String className : toDelete) {
-            final File classfile = new File(target, toResourcePath(className));
+            final File classfile = new File(environment.target, toResourcePath(className));
             final boolean success = classfile.delete();
             LOG.log(Level.FINE, "Deletion of {0} was {1}.", new Object[] { classfile,
                 success ? "successful" : "unsuccessful" });
@@ -117,4 +105,5 @@ public class PrivilizerCleaner implements Cleaner {
     private static String toResourcePath(String className) {
         return className.replace('.', '/') + ".class";
     }
+
 }

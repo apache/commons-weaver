@@ -18,17 +18,17 @@
  */
 package org.apache.commons.weaver.test.weaver;
 
-import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeavableMethod;
+import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Weaver;
 import org.apache.commons.weaver.test.beans.TestAnnotation;
@@ -41,23 +41,21 @@ public class TestWeaver implements Weaver {
     public static List<Class<?>> wovenClasses = new ArrayList<Class<?>>();
 
     @Override
-    public void configure(List<String> classPath, File target, Properties config) {
-        Assert.assertNotNull(config);
-        Assert.assertEquals(1, config.size());
+    public boolean process(WeaveEnvironment environment, Scanner scanner) {
+        Assert.assertNotNull(environment.config);
+        Assert.assertEquals(1, environment.config.size());
 
-        String configValue = (String) config.get("configKey");
+        String configValue = environment.config.getProperty("configKey");
+
         Assert.assertEquals("configValue", configValue);
-    }
-
-    @Override
-    public ScanRequest getScanRequest() {
-        return new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
-            WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
-    }
-
-    @Override
-    public boolean process(ScanResult scanResult) {
         boolean result = false;
+
+        final ScanRequest scanRequest =
+            new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
+                WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
+
+        final ScanResult scanResult = scanner.scan(scanRequest);
+
         for (WeavableClass<?> weavableClass : scanResult.getClasses().with(TestAnnotation.class)) {
             if (wovenClasses.add(weavableClass.getTarget())) {
                 result = true;
