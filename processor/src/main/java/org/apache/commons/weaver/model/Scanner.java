@@ -16,22 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.weaver.spi;
-
-import org.apache.commons.weaver.model.Scanner;
-import org.apache.commons.weaver.model.WeaveEnvironment;
+package org.apache.commons.weaver.model;
 
 /**
- * A {@link Weaver} implementation performs the byte code enhancement in the classes.
+ * Scanner interface.
  */
-public interface Weaver {
-    /**
-     * Using the supplied {@link Scanner}, process a {@link WeaveEnvironment}.
-     * 
-     * @param environment
-     * @param scanner
-     * @return whether any work was done.
-     */
-    boolean process(WeaveEnvironment environment, Scanner scanner);
+public interface Scanner {
 
+    /**
+     * Perform the requested scan.
+     * 
+     * @param request
+     * @return ScanResult
+     */
+    ScanResult scan(ScanRequest request);
 }

@@ -15,12 +15,9 @@
  */
 package org.apache.commons.weaver.privilizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.net.URLClassLoader;
-import java.util.List;
-import java.util.Properties;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -28,8 +25,9 @@ import javassist.CtClass;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.weaver.model.ScanRequest;
-import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
+import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.privilizer.Privilizer.ModifiedClassWriter;
 import org.apache.commons.weaver.spi.Weaver;
@@ -46,46 +44,16 @@ public class PrivilizerWeaver implements Weaver {
     public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
     public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
 
-    private Privilizer privilizer;
-
     @Override
-    public void configure(final List<String> classPath, final File target, final Properties config) {
-        final URLClassLoader urlClassLoader = new URLClassLoader(URLArray.fromPaths(classPath));
-        final ClassPool classPool = Assistant.createClassPool(urlClassLoader, target);
-        final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
-
-            @Override
-            public void write(CtClass type) throws CannotCompileException, IOException {
-                type.writeFile(target.getAbsolutePath());
-            }
-        };
-
-        final Privilizer.Builder builder = new Privilizer.Builder(classPool, modifiedClassWriter);
-
-        final String accessLevel = config.getProperty(CONFIG_ACCESS_LEVEL);
-        if (StringUtils.isNotEmpty(accessLevel)) {
-            builder.withTargetAccessLevel(AccessLevel.valueOf(accessLevel));
-        }
-
-        final String policyConfig = config.getProperty(CONFIG_POLICY);
-
-        if (StringUtils.isNotEmpty(policyConfig)) {
-            builder.withPolicy(Privilizer.Policy.valueOf(policyConfig));
-        }
-
-        privilizer = builder.build();
-    }
-
-    @Override
-    public ScanRequest getScanRequest() {
-        return new ScanRequest().add(WeaveInterest.of(Privileged.class, ElementType.METHOD)).add(
-            WeaveInterest.of(Privilizing.class, ElementType.TYPE));
-    }
-
-    @Override
-    public boolean process(ScanResult scanResult) {
+    public boolean process(WeaveEnvironment environment, Scanner scanner) {
         boolean result = false;
-        for (WeavableClass<?> weavableClass : scanResult.getClasses()) {
+        final Privilizer privilizer = buildPrivilizer(environment);
+
+        final ScanRequest scanRequest =
+            new ScanRequest().add(WeaveInterest.of(Privileged.class, ElementType.METHOD)).add(
+                WeaveInterest.of(Privilizing.class, ElementType.TYPE));
+
+        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
             try {
                 result =
                     privilizer.weaveClass(weavableClass.getTarget(), weavableClass.getAnnotation(Privilizing.class))
@@ -96,4 +64,32 @@ public class PrivilizerWeaver implements Weaver {
         }
         return result;
     }
+
+    private Privilizer buildPrivilizer(final WeaveEnvironment env) {
+        final URLClassLoader urlClassLoader = new URLClassLoader(URLArray.fromPaths(env.classpath));
+        final ClassPool classPool = Assistant.createClassPool(urlClassLoader, env.target);
+        final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
+
+            @Override
+            public void write(CtClass type) throws CannotCompileException, IOException {
+                type.writeFile(env.target.getAbsolutePath());
+            }
+        };
+
+        final Privilizer.Builder builder = new Privilizer.Builder(classPool, modifiedClassWriter);
+
+        final String accessLevel = env.config.getProperty(CONFIG_ACCESS_LEVEL);
+        if (StringUtils.isNotEmpty(accessLevel)) {
+            builder.withTargetAccessLevel(AccessLevel.valueOf(accessLevel));
+        }
+
+        final String policyConfig = env.config.getProperty(CONFIG_POLICY);
+
+        if (StringUtils.isNotEmpty(policyConfig)) {
+            builder.withPolicy(Privilizer.Policy.valueOf(policyConfig));
+        }
+
+        return builder.build();
+    }
+
 }

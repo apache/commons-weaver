@@ -20,47 +20,32 @@ package org.apache.commons.weaver.test.weaver;
 
 import java.io.File;
 import java.lang.annotation.ElementType;
-import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.weaver.model.ScanRequest;
-import org.apache.commons.weaver.model.ScanResult;
+import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
+import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.apache.commons.weaver.test.beans.TestAnnotation;
-import org.junit.Assert;
 
 /**
  */
 public class TestCleaner implements Cleaner {
-    private File target;
 
     @Override
-    public void configure(List<String> classpath, File target, Properties config) {
-        Assert.assertNotNull(config);
-        Assert.assertEquals(1, config.size());
-
-        String configValue = (String) config.get("configKey");
-        Assert.assertEquals("configValue", configValue);
-
-        Assert.assertNotNull(target);
-        this.target = target;
-    }
-
-    @Override
-    public ScanRequest getScanRequest() {
-        return new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
-            WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
-    }
-
-    @Override
-    public boolean clean(ScanResult scanResult) {
+    public boolean clean(WeaveEnvironment environment, Scanner scanner) {
         boolean result = false;
-        for (WeavableClass<?> weavableClass : scanResult.getClasses()) {
+
+        final ScanRequest scanRequest =
+            new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
+                WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
+
+        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
 
             final File classFile =
-                new File(target, weavableClass.getTarget().getName().replace('.', File.separatorChar) + ".class");
+                new File(environment.target, weavableClass.getTarget().getName().replace('.', File.separatorChar)
+                    + ".class");
             if (classFile.delete()) {
                 result = true;
             } else {
