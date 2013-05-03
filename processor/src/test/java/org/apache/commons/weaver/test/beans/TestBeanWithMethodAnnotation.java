@@ -21,13 +21,13 @@ package org.apache.commons.weaver.test.beans;
 /**
  * Simple test bean
  */
-public class TestBeanWithMethodAnnotation
-{
+public class TestBeanWithMethodAnnotation extends AbstractTestBean {
     @TestAnnotation
     private int annotatedMethod() {
         return 42;
     }
 
+    @SuppressWarnings("unused")
     private int nonAnnotatedMethod() {
         return 21;
     }

@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.WeaveProcessor;
 import org.apache.commons.weaver.spi.Weaver;
 
@@ -52,7 +53,7 @@ import org.apache.commons.weaver.spi.Weaver;
  */
 public class ScanResult {
     private static abstract class Projection<PARENT, CHILD extends AnnotatedElement> implements
-            AnnotatedElements<CHILD> {
+        AnnotatedElements<CHILD> {
         private final Iterable<PARENT> parents;
 
         Projection(Iterable<PARENT> parents) {
@@ -167,7 +168,8 @@ public class ScanResult {
 
     }
 
-    private final ConcurrentNavigableMap<String, WeavablePackage> packages = new ConcurrentSkipListMap<String, WeavablePackage>();
+    private final ConcurrentNavigableMap<String, WeavablePackage> packages =
+        new ConcurrentSkipListMap<String, WeavablePackage>();
 
     /**
      * Public for use by {@link WeaveProcessor}.
@@ -246,6 +248,60 @@ public class ScanResult {
             @Override
             protected Iterable<WeavableClass<?>> childrenOf(WeavablePackage parent) {
                 return parent.getClasses();
+            }
+        };
+    }
+
+    public AnnotatedElements<WeavableClass<?>> getClassesAssignableTo(final Class<?> supertype) {
+        Validate.notNull(supertype, "supertype");
+
+        return new Projection<WeavablePackage, WeavableClass<?>>(getPackages()) {
+
+            @Override
+            protected Iterable<WeavableClass<?>> childrenOf(WeavablePackage parent) {
+                return parent.getClasses();
+            }
+
+            @Override
+            public Iterator<WeavableClass<?>> iterator() {
+                final Iterator<WeavableClass<?>> toWrap = super.iterator();
+                return new Iterator<WeavableClass<?>>() {
+                    {
+                        read();
+                    }
+
+                    private WeavableClass<?> next;
+
+                    private void read() {
+                        while (toWrap.hasNext()) {
+                            final WeavableClass<?> test = toWrap.next();
+                            if (supertype.isAssignableFrom(test.getTarget())) {
+                                next = test;
+                                return;
+                            }
+                        }
+                        next = null;
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return next != null;
+                    }
+
+                    @Override
+                    public WeavableClass<?> next() {
+                        try {
+                            return next;
+                        } finally {
+                            read();
+                        }
+                    }
+
+                    @Override
+                    public void remove() {
+                        toWrap.remove();
+                    }
+                };
             }
         };
     }

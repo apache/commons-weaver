@@ -21,14 +21,22 @@ package org.apache.commons.weaver.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.weaver.spi.Cleaner;
+import org.apache.commons.weaver.spi.Weaver;
 
 /**
- * Weave plan, extensible in future to include e.g. scanning strategy hints.
+ * Scan request object describing the types of elements in which a given {@link Weaver} or {@link Cleaner} is
+ * interested.
  */
 public class ScanRequest {
 
     private final List<WeaveInterest> interests = new ArrayList<WeaveInterest>();
+    private final Set<Class<?>> supertypes = new LinkedHashSet<Class<?>>();
 
     public ScanRequest add(WeaveInterest interest) {
         if (interest == null) {
@@ -38,7 +46,17 @@ public class ScanRequest {
         return this;
     }
 
+    public ScanRequest addSupertypes(Class<?>... types) {
+        Collections.addAll(supertypes, Validate.noNullElements(types, "null element at [%s]"));
+        return this;
+    }
+
     public Iterable<WeaveInterest> getInterests() {
         return Collections.unmodifiableList(interests);
     }
+
+    public Set<Class<?>> getSupertypes() {
+        return Collections.unmodifiableSet(supertypes);
+    }
+
 }

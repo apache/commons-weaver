@@ -22,8 +22,8 @@ package org.apache.commons.weaver.test.beans;
  * Simple test bean
  */
 @TestAnnotation
-public class TestBeanWithClassAnnotation
-{
+public class TestBeanWithClassAnnotation extends AbstractTestBean implements TestBeanInterface {
+    @SuppressWarnings("unused")
     private int someMethod() {
         return 42;
     }
