@@ -15,13 +15,19 @@ import java.lang.reflect.Field;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.weaver.test.WeaverTestBase;
+import org.apache.commons.weaver.test.beans.AbstractTestBean;
 import org.apache.commons.weaver.test.beans.ComplexAnnotations;
 import org.apache.commons.weaver.test.beans.ComplexAnnotations.NestAnnotation;
 import org.apache.commons.weaver.test.beans.ComplexAnnotations.Stooge;
 import org.apache.commons.weaver.test.beans.ComplexAnnotations.TestAnnotation;
+import org.apache.commons.weaver.test.beans.TestBeanInterface;
+import org.apache.commons.weaver.test.beans.TestBeanWithClassAnnotation;
+import org.apache.commons.weaver.test.beans.TestBeanWithMethodAnnotation;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.Annotated;
 import org.apache.xbean.finder.archive.FileArchive;
@@ -234,5 +240,28 @@ public class FinderTest extends WeaverTestBase {
             assertFalse(anno.hashCode() == 0);
             assertTrue(anno.equals(anno));
         }
+    }
+
+    @Test
+    public void testFindAssignableTypes() throws IOException {
+        addClassForScanning(TestBeanInterface.class);
+        addClassForScanning(AbstractTestBean.class);
+        addClassForScanning(TestBeanWithClassAnnotation.class);
+        addClassForScanning(TestBeanWithMethodAnnotation.class);
+
+        final Set<Class<?>> implementors = new HashSet<Class<?>>();
+        for (Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(TestBeanInterface.class)) {
+            implementors.add(annotated.get());
+        }
+        assertEquals(1, implementors.size());
+        assertTrue(implementors.contains(TestBeanWithClassAnnotation.class));
+
+        final Set<Class<?>> subclasses = new HashSet<Class<?>>();
+        for (Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(AbstractTestBean.class)) {
+            subclasses.add(annotated.get());
+        }
+        assertEquals(2, subclasses.size());
+        assertTrue(subclasses.contains(TestBeanWithClassAnnotation.class));
+        assertTrue(subclasses.contains(TestBeanWithMethodAnnotation.class));
     }
 }

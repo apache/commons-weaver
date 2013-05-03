@@ -31,14 +31,19 @@ import org.apache.commons.weaver.model.WeavableMethod;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Weaver;
+import org.apache.commons.weaver.test.beans.AbstractTestBean;
 import org.apache.commons.weaver.test.beans.TestAnnotation;
+import org.apache.commons.weaver.test.beans.TestBeanInterface;
 import org.junit.Assert;
 
 /**
+ * 
  */
 public class TestWeaver implements Weaver {
     public static List<Method> wovenMethods = new ArrayList<Method>();
     public static List<Class<?>> wovenClasses = new ArrayList<Class<?>>();
+    public static List<Class<?>> implementors = new ArrayList<Class<?>>();
+    public static List<Class<?>> subclasses = new ArrayList<Class<?>>();
 
     @Override
     public boolean process(WeaveEnvironment environment, Scanner scanner) {
@@ -51,8 +56,9 @@ public class TestWeaver implements Weaver {
         boolean result = false;
 
         final ScanRequest scanRequest =
-            new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
-                WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
+            new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE))
+                .add(WeaveInterest.of(TestAnnotation.class, ElementType.METHOD))
+                .addSupertypes(AbstractTestBean.class, TestBeanInterface.class);
 
         final ScanResult scanResult = scanner.scan(scanRequest);
 
@@ -63,6 +69,16 @@ public class TestWeaver implements Weaver {
         }
         for (WeavableMethod<?> weavableMethod : scanResult.getMethods().with(TestAnnotation.class)) {
             if (wovenMethods.add(weavableMethod.getTarget())) {
+                result = true;
+            }
+        }
+        for (WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(TestBeanInterface.class)) {
+            if (implementors.add(weavableClass.getTarget())) {
+                result = true;
+            }
+        }
+        for (WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(AbstractTestBean.class)) {
+            if (subclasses.add(weavableClass.getTarget())) {
                 result = true;
             }
         }

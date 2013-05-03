@@ -205,12 +205,10 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         private List<Annotation> classfileAnnotationsFor(Info info) {
-            synchronized (CLASSFILE_ANNOTATIONS) {
-                if (!CLASSFILE_ANNOTATIONS.get().containsKey(info)) {
-                    final List<Annotation> result = new ArrayList<Annotation>();
-                    CLASSFILE_ANNOTATIONS.get().put(info, result);
-                    return result;
-                }
+            if (!CLASSFILE_ANNOTATIONS.get().containsKey(info)) {
+                final List<Annotation> result = new ArrayList<Annotation>();
+                CLASSFILE_ANNOTATIONS.get().put(info, result);
+                return result;
             }
             return CLASSFILE_ANNOTATIONS.get().get(info);
         }
@@ -321,6 +319,29 @@ class Finder extends AnnotationFinder implements Scanner {
                         result.add(annotated);
                     }
                 }
+            }
+            return result;
+        }
+
+        public List<Annotated<Class<?>>> findAssignableTypes(Class<?> supertype) {
+            final List<Annotated<Class<?>>> result = new ArrayList<Annotated<Class<?>>>();
+            final List<?> assignableTypes;
+            if (supertype.isInterface()) {
+                assignableTypes = Finder.this.findImplementations(supertype);
+            } else {
+                assignableTypes = Finder.this.findSubclasses(supertype);
+            }
+
+            for (Object object : assignableTypes) {
+                final ClassInfo classInfo = classInfos.get(((Class<?>) object).getName());
+                final IncludesClassfile<Class<?>> annotated;
+                try {
+                    annotated =
+                        new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
+                } catch (ClassNotFoundException e) {
+                    continue;
+                }
+                result.add(annotated);
             }
             return result;
         }
@@ -468,6 +489,11 @@ class Finder extends AnnotationFinder implements Scanner {
 
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
 
+    /**
+     * The {@link #classfileAnnotations} member stores these; however the scanning takes place in the scope of the super
+     * constructor call, thus there is no opportunity to set the reference beforehand. To work around this, we use a
+     * static ThreadLocal with an initializer and pull/clear its value when we return from the super constructor. :P
+     */
     private static final ThreadLocal<Map<Info, List<Annotation>>> CLASSFILE_ANNOTATIONS =
         new ThreadLocal<Map<Info, List<Annotation>>>() {
             protected java.util.Map<Info, java.util.List<Annotation>> initialValue() {
@@ -475,37 +501,20 @@ class Finder extends AnnotationFinder implements Scanner {
             }
         };
 
-    private Class<?> toClass(Type type) {
-        final String className = (type.getSort() == Type.ARRAY ? type.getElementType() : type).getClassName();
-        Class<?> result;
-        try {
-            result = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            try {
-                result = getArchive().loadClass(className);
-            } catch (ClassNotFoundException e1) {
-                throw new RuntimeException(e1);
-            }
-        }
-        if (type.getSort() == Type.ARRAY) {
-            int[] dims = new int[type.getDimensions()];
-            Arrays.fill(dims, 0);
-            result = Array.newInstance(result, dims).getClass();
-        }
-        return result;
-    }
-
     private final Map<Info, List<Annotation>> classfileAnnotations;
     private final WithAnnotations withAnnotations = new WithAnnotations();
 
     /**
      * Create a new {@link Finder} instance.
+     * 
      * @param archive
      */
     public Finder(Archive archive) {
         super(archive, false);
         classfileAnnotations = CLASSFILE_ANNOTATIONS.get();
         CLASSFILE_ANNOTATIONS.remove();
+        enableFindImplementations();
+        enableFindSubclasses();
     }
 
     public WithAnnotations withAnnotations() {
@@ -542,51 +551,77 @@ class Finder extends AnnotationFinder implements Scanner {
 
         for (WeaveInterest interest : request.getInterests()) {
             switch (interest.target) {
-            case PACKAGE:
-                for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
-                    result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotation(interest.annotationType));
+                case PACKAGE:
+                    for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
+                        result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotations());
+                    }
+                case TYPE:
+                    for (Annotated<Class<?>> type : this.withAnnotations()
+                        .findAnnotatedClasses(interest.annotationType)) {
+                        result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
+                    }
+                    break;
+                case METHOD:
+                    for (Annotated<Method> method : this.withAnnotations()
+                        .findAnnotatedMethods(interest.annotationType)) {
+                        result.getWeavable(method.get()).addAnnotations(method.getAnnotations());
+                    }
+                    break;
+                case CONSTRUCTOR:
+                    for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
+                        interest.annotationType)) {
+                        result.getWeavable(cs.get()).addAnnotations(cs.getAnnotations());
+                    }
+                    break;
+                case FIELD:
+                    for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
+                        result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
+                    }
+                    break;
+                case PARAMETER:
+                    for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
+                        interest.annotationType)) {
+                        result.getWeavable(parameter.get().getDeclaringExecutable())
+                            .getWeavableParameter(parameter.get().getIndex())
+                            .addAnnotations(parameter.getAnnotations());
+                    }
+                    for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
+                        .findAnnotatedConstructorParameters(interest.annotationType)) {
+                        result.getWeavable(parameter.get().getDeclaringExecutable())
+                            .getWeavableParameter(parameter.get().getIndex())
+                            .addAnnotations(parameter.getAnnotations());
+                    }
+                    break;
+                default:
+                    // should we log something?
+                    break;
+            }
+            for (Class<?> supertype : request.getSupertypes()) {
+                for (Annotated<Class<?>> type : this.withAnnotations().findAssignableTypes(supertype)) {
+                    result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
                 }
-            case TYPE:
-                for (Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(interest.annotationType)) {
-                    result.getWeavable(type.get()).addAnnotations(type.getAnnotation(interest.annotationType));
-                }
-                break;
-            case METHOD:
-                for (Annotated<Method> method : this.withAnnotations().findAnnotatedMethods(interest.annotationType)) {
-                    result.getWeavable(method.get()).addAnnotations(method.getAnnotation(interest.annotationType));
-                }
-                break;
-            case CONSTRUCTOR:
-                for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
-                    interest.annotationType)) {
-                    result.getWeavable(cs.get()).addAnnotations(cs.getAnnotation(interest.annotationType));
-                }
-                break;
-            case FIELD:
-                for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
-                    result.getWeavable(fld.get()).addAnnotations(fld.getAnnotation(interest.annotationType));
-                }
-                break;
-            case PARAMETER:
-                for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
-                    interest.annotationType)) {
-                    result.getWeavable(parameter.get().getDeclaringExecutable())
-                        .getWeavableParameter(parameter.get().getIndex())
-                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
-                }
-                for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
-                    .findAnnotatedConstructorParameters(interest.annotationType)) {
-                    result.getWeavable(parameter.get().getDeclaringExecutable())
-                        .getWeavableParameter(parameter.get().getIndex())
-                        .addAnnotations(parameter.getAnnotation(interest.annotationType));
-                }
-                break;
-            default:
-                // should we log something?
-                break;
             }
         }
         return result;
     }
 
+    private Class<?> toClass(Type type) {
+        final String className = (type.getSort() == Type.ARRAY ? type.getElementType() : type).getClassName();
+        Class<?> result;
+        try {
+            result = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            try {
+                result = getArchive().loadClass(className);
+            } catch (ClassNotFoundException e1) {
+                throw new RuntimeException(e1);
+            }
+        }
+        if (type.getSort() == Type.ARRAY) {
+            int[] dims = new int[type.getDimensions()];
+            Arrays.fill(dims, 0);
+            result = Array.newInstance(result, dims).getClass();
+        }
+        return result;
+    }
 }
