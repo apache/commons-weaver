@@ -38,7 +38,7 @@ import org.apache.xbean.finder.archive.FileArchive;
 public class CleanProcessor {
 
     /** List of picked up cleaner plugins */
-    private static List<Cleaner> CLEANERS = new ArrayList<Cleaner>();
+    private static final List<Cleaner> CLEANERS;
     static {
         List<Cleaner> cleaners = new ArrayList<Cleaner>();
         for (Cleaner c : ServiceLoader.load(Cleaner.class)) {
