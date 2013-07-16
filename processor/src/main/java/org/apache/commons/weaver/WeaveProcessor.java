@@ -38,7 +38,7 @@ import org.apache.xbean.finder.archive.FileArchive;
 public class WeaveProcessor {
 
     /** List of picked up weaver plugins */
-    private static List<Weaver> WEAVERS = new ArrayList<Weaver>();
+    private static final List<Weaver> WEAVERS;
 
     static {
         List<Weaver> weavers = new ArrayList<Weaver>();
