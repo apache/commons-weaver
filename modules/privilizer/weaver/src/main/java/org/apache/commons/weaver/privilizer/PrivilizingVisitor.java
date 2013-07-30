@@ -99,8 +99,8 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                             + localAccessLevel + "')"));
                     }
                     if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
-                        Object[] args = { localAccessLevel, className, m };
-                        privilizer().env.warn("Possible security leak: granting privileges to %s method %s.%s", args);
+                        privilizer().env.warn("Possible security leak: granting privileges to %s method %s.%s",
+                            localAccessLevel, className, m);
                     }
                     privilegedMethods.put(m, privilizer().generateName(name));
                 }
