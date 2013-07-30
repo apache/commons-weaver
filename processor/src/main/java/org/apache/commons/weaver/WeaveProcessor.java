@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
@@ -66,12 +67,9 @@ public class WeaveProcessor {
     /**
      * Create a new {@link WeaveProcessor} instance.
      * 
-     * @param classpath
-     *            not {@code null}
-     * @param target
-     *            not {@code null}
-     * @param configuration
-     *            not {@code null}
+     * @param classpath not {@code null}
+     * @param target not {@code null}
+     * @param configuration not {@code null}
      */
     public WeaveProcessor(List<String> classpath, File target, Properties configuration) {
         super();
@@ -86,8 +84,9 @@ public class WeaveProcessor {
     public void weave() {
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        final WeaveEnvironment env = new WeaveEnvironment(classpath, target, configuration);
         for (Weaver weaver : WEAVERS) {
+            final WeaveEnvironment env =
+                new WeaveEnvironment(classpath, target, configuration, Logger.getLogger(weaver.getClass().getName()));
             weaver.process(env, finder);
         }
     }

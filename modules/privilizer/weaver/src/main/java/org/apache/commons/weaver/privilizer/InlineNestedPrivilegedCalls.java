@@ -66,7 +66,8 @@ class InlineNestedPrivilegedCalls extends ClassNode {
                                 final Method m = new Method(name, desc);
                                 if (privilegedMethods.containsKey(m)) {
                                     name = privilegedMethods.get(m);
-                                    privilizer.debug("Inlining call from %s to %s as %s", outer, m, name);
+                                    privilizer.env.debug("Inlining call from %s to %s as %s", outer, m,
+                                        name);
                                 }
                             }
                             super.visitMethodInsn(opcode, owner, name, desc);

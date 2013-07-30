@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.spi.Cleaner;
@@ -46,6 +47,8 @@ public class WeaveEnvironment {
      * "privilizer".
      */
     public final Properties config;
+    
+    private final Logger log;
 
     /**
      * Create a new {@link WeaveEnvironment}.
@@ -53,12 +56,34 @@ public class WeaveEnvironment {
      * @param classpath
      * @param target
      * @param config
+     * @param log
      */
-    public WeaveEnvironment(List<String> classpath, File target, Properties config) {
+    public WeaveEnvironment(List<String> classpath, File target, Properties config, Logger log) {
         super();
         this.classpath = Collections.unmodifiableList(Validate.notNull(classpath, "classpath"));
         this.target = Validate.notNull(target, "target");
         this.config = (Properties) Validate.notNull(config, "config").clone();
+        this.log = log;
+    }
+
+    public void debug(String message, Object... args) {
+        log.fine(String.format(message, args));
+    }
+
+    public void verbose(String message, Object... args) {
+        log.fine(String.format(message, args));
+    }
+
+    public void warn(String message, Object... args) {
+        log.warning(String.format(message, args));
+    }
+
+    public void info(String message, Object... args) {
+        log.info(String.format(message, args));
+    }
+
+    public void error(String message, Object... args) {
+        log.severe(String.format(message, args));
     }
 
 }

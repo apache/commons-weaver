@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
@@ -65,12 +66,9 @@ public class CleanProcessor {
     /**
      * Create a new {@link CleanProcessor} instance.
      * 
-     * @param classpath
-     *            not {@code null}
-     * @param target
-     *            not {@code null}
-     * @param configuration
-     *            not {@code null}
+     * @param classpath not {@code null}
+     * @param target not {@code null}
+     * @param configuration not {@code null}
      */
     public CleanProcessor(List<String> classpath, File target, Properties configuration) {
         super();
@@ -85,8 +83,9 @@ public class CleanProcessor {
     public void clean() {
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        final WeaveEnvironment env = new WeaveEnvironment(classpath, target, configuration);
         for (Cleaner cleaner : CLEANERS) {
+            final WeaveEnvironment env =
+                new WeaveEnvironment(classpath, target, configuration, Logger.getLogger(cleaner.getClass().getName()));
             cleaner.clean(env, finder);
         }
     }
