@@ -7,6 +7,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,13 +22,13 @@ import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.utils.Annotations;
-import org.apache.xbean.asm.AnnotationVisitor;
-import org.apache.xbean.asm.Attribute;
-import org.apache.xbean.asm.ClassReader;
-import org.apache.xbean.asm.FieldVisitor;
-import org.apache.xbean.asm.MethodVisitor;
-import org.apache.xbean.asm.Type;
-import org.apache.xbean.asm.commons.EmptyVisitor;
+import org.apache.xbean.asm4.AnnotationVisitor;
+import org.apache.xbean.asm4.ClassReader;
+import org.apache.xbean.asm4.ClassVisitor;
+import org.apache.xbean.asm4.FieldVisitor;
+import org.apache.xbean.asm4.MethodVisitor;
+import org.apache.xbean.asm4.Opcodes;
+import org.apache.xbean.asm4.Type;
 import org.apache.xbean.finder.Annotated;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.Parameter;
@@ -42,8 +43,8 @@ class Finder extends AnnotationFinder implements Scanner {
         final Class<? extends Annotation> annotationType;
         final Map<String, Object> elements = new LinkedHashMap<String, Object>();
 
-        AnnotationInflater(String desc) {
-            super();
+        AnnotationInflater(String desc, AnnotationVisitor wrapped) {
+            super(wrapped);
             this.annotationType = toClass(Type.getType(desc)).asSubclass(Annotation.class);
         }
 
@@ -80,7 +81,10 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
-    private abstract class AnnotationCapturer implements AnnotationVisitor {
+    private abstract class AnnotationCapturer extends AnnotationVisitor {
+        public AnnotationCapturer(AnnotationVisitor wrapped) {
+            super(Opcodes.ASM4, wrapped);
+        }
 
         protected abstract void storeValue(String name, Object value);
 
@@ -92,7 +96,7 @@ class Finder extends AnnotationFinder implements Scanner {
         @Override
         public AnnotationVisitor visitAnnotation(final String name, final String desc) {
             final AnnotationCapturer owner = this;
-            return new AnnotationInflater(desc) {
+            return new AnnotationInflater(desc, super.visitAnnotation(name, desc)) {
 
                 @Override
                 public void visitEnd() {
@@ -105,11 +109,12 @@ class Finder extends AnnotationFinder implements Scanner {
         public AnnotationVisitor visitArray(final String name) {
             final AnnotationCapturer owner = this;
             final List<Object> values = new ArrayList<Object>();
-            return new AnnotationCapturer() {
+            return new AnnotationCapturer(super.visitArray(name)) {
 
                 @Override
                 public void visitEnd() {
                     owner.storeValue(name, values.toArray());
+                    super.visitEnd();
                 }
 
                 @Override
@@ -121,6 +126,7 @@ class Finder extends AnnotationFinder implements Scanner {
 
         @Override
         public void visitEnum(String name, String desc, String value) {
+            super.visitEnum(name, desc, value);
             @SuppressWarnings("rawtypes")
             final Class<? extends Enum> enumType;
             try {
@@ -135,84 +141,144 @@ class Finder extends AnnotationFinder implements Scanner {
 
     }
 
-    public class Visitor extends EmptyVisitor {
+    private class TopLevelAnnotationInflater extends AnnotationInflater {
+        private final Info info;
+
+        TopLevelAnnotationInflater(String desc, AnnotationVisitor wrapped, Info info) {
+            super(desc, wrapped);
+            this.info = info;
+        }
+
+        @Override
+        public void visitEnd() {
+            super.visitEnd();
+            classfileAnnotationsFor(info).add(inflate());
+        }
+
+        private List<Annotation> classfileAnnotationsFor(Info info) {
+            synchronized (CLASSFILE_ANNOTATIONS) {
+                if (!CLASSFILE_ANNOTATIONS.get().containsKey(info)) {
+                    final List<Annotation> result = new ArrayList<Annotation>();
+                    CLASSFILE_ANNOTATIONS.get().put(info, result);
+                    return result;
+                }
+            }
+            return CLASSFILE_ANNOTATIONS.get().get(info);
+        }
+    }
+
+    public class Visitor extends ClassVisitor {
         private final InfoBuildingVisitor wrapped;
 
         public Visitor(InfoBuildingVisitor wrapped) {
-            super();
+            super(Opcodes.ASM4, wrapped);
             this.wrapped = wrapped;
         }
 
         @Override
-        public void visit(int arg0, int arg1, String arg2, String arg3, String arg4, String[] arg5) {
-            wrapped.visit(arg0, arg1, arg2, arg3, arg4, arg5);
-        }
-
-        @Override
-        public void visitAttribute(Attribute attribute) {
-            wrapped.visitAttribute(attribute);
-        }
-
-        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-            FieldVisitor toWrap = wrapped.visitField(access, name, desc, signature, value);
-            return new Visitor((InfoBuildingVisitor) toWrap);
-        }
-
-        @Override
-        public void visitInnerClass(String name, String outerName, String innerName, int access) {
-            wrapped.visitInnerClass(name, outerName, innerName, access);
+            final FieldVisitor toWrap = wrapped.visitField(access, name, desc, signature, value);
+            final ClassInfo classInfo = (ClassInfo) wrapped.getInfo();
+            FieldInfo testFieldInfo = null;
+            // should be the most recently added field, so iterate backward:
+            for (int i = classInfo.getFields().size() - 1; i >= 0; i--) {
+                final FieldInfo atI = classInfo.getFields().get(i);
+                if (atI.getName().equals(name) && atI.getType().equals(desc)) {
+                    testFieldInfo = atI;
+                    break;
+                }
+            }
+            if (testFieldInfo == null) {
+                return toWrap;
+            }
+            final FieldInfo fieldInfo = testFieldInfo;
+            return new FieldVisitor(Opcodes.ASM4, toWrap) {
+                @Override
+                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                    final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
+                    return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, fieldInfo);
+                }
+            };
         }
 
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-            MethodVisitor toWrap = wrapped.visitMethod(access, name, desc, signature, exceptions);
-            return new Visitor((InfoBuildingVisitor) toWrap);
+            final MethodVisitor toWrap = wrapped.visitMethod(access, name, desc, signature, exceptions);
+            final ClassInfo classInfo = (ClassInfo) wrapped.getInfo();
+
+            // MethodInfo may not always come from a descriptor, so we must go by the
+            // Member represented. Make sure the method either has a valid name or is a constructor:
+            final MethodInfo compareMethodInfo = new MethodInfo(classInfo, name, desc);
+            if (!compareMethodInfo.isConstructor() && !isJavaIdentifier(name)) {
+                return toWrap;
+            }
+            MethodInfo testMethodInfo = null;
+            final Member m;
+            try {
+                m = compareMethodInfo.get();
+                // should be the most recently added method, so iterate backward:
+                for (int i = classInfo.getMethods().size() - 1; i >= 0; i--) {
+                    final MethodInfo atI = classInfo.getMethods().get(i);
+                    if (atI.getName().equals(name) && atI.get().equals(m)) {
+                        testMethodInfo = atI;
+                        break;
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+            }
+            if (testMethodInfo == null) {
+                return toWrap;
+            }
+            final MethodInfo methodInfo = testMethodInfo;
+            return new MethodVisitor(Opcodes.ASM4, toWrap) {
+                @Override
+                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                    final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
+                    return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, methodInfo);
+                }
+
+                @Override
+                public AnnotationVisitor visitParameterAnnotation(int param, String desc, boolean visible) {
+                    final AnnotationVisitor toWrap = super.visitParameterAnnotation(param, desc, visible);
+                    if (visible) {
+                        return toWrap;
+                    }
+                    ParameterInfo parameterInfo = null;
+
+                    // should be the most recently added parameter, so iterate backward:
+                    for (int i = methodInfo.getParameters().size() - 1; i >= 0; i--) {
+                        final ParameterInfo atI = methodInfo.getParameters().get(i);
+                        try {
+                            if (atI.get().getIndex() == param) {
+                                parameterInfo = atI;
+                                break;
+                            }
+                        } catch (ClassNotFoundException e) {
+
+                        }
+                    }
+                    return parameterInfo == null ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, parameterInfo);
+                }
+            };
         }
 
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            wrapped.visitAnnotation(desc, visible);
-            if (visible) {
-                return null;
+            final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
+            return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, wrapped.getInfo());
+        }
+
+        private boolean isJavaIdentifier(String s) {
+            if (s.isEmpty() || !Character.isJavaIdentifierStart(s.charAt(0))) {
+                return false;
             }
-            final Info info = wrapped.getInfo();
-
-            return new AnnotationInflater(desc) {
-
-                @Override
-                public void visitEnd() {
-                    classfileAnnotationsFor(info).add(inflate());
+            for (int i = 1, sz = s.length(); i < sz; i++) {
+                if (!Character.isJavaIdentifierPart(s.charAt(i))) {
+                    return false;
                 }
-            };
-        }
-
-        @Override
-        public AnnotationVisitor visitParameterAnnotation(int param, String desc, boolean visible) {
-            wrapped.visitParameterAnnotation(param, desc, visible);
-            if (visible) {
-                return null;
             }
-            final Info info = wrapped.getInfo();
-
-            return new AnnotationInflater(desc) {
-
-                @Override
-                public void visitEnd() {
-                    classfileAnnotationsFor(info).add(inflate());
-                }
-            };
+            return true;
         }
-
-        private List<Annotation> classfileAnnotationsFor(Info info) {
-            if (!CLASSFILE_ANNOTATIONS.get().containsKey(info)) {
-                final List<Annotation> result = new ArrayList<Annotation>();
-                CLASSFILE_ANNOTATIONS.get().put(info, result);
-                return result;
-            }
-            return CLASSFILE_ANNOTATIONS.get().get(info);
-        }
-
     }
 
     private static class IncludesClassfile<T extends AnnotatedElement> implements Annotated<T> {
