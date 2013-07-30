@@ -17,23 +17,18 @@ package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
 import java.lang.annotation.ElementType;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
-import org.apache.commons.weaver.privilizer.Privilizer.Policy;
-import org.apache.commons.weaver.privilizer.Privilizer.Privilized;
+import org.apache.commons.weaver.privilizer.Privilizer;
 import org.apache.commons.weaver.spi.Cleaner;
-import org.apache.commons.weaver.utils.URLArray;
-import org.apache.xbean.finder.archive.FileArchive;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
@@ -41,30 +36,22 @@ import org.objectweb.asm.Opcodes;
 /**
  * Removes classes privilized with a different policy.
  */
-/*
- * Implemented with ASM in anticipation of the rest of the privilizer being rewritten :P
- */
 public class PrivilizerCleaner implements Cleaner {
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
     private static final Logger LOG = Logger.getLogger(PrivilizerCleaner.class.getName());
 
     @Override
     public boolean clean(WeaveEnvironment environment, Scanner scanner) {
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(environment.classpath));
-        final FileArchive fileArchive = new FileArchive(classLoader, environment.target);
+        final Privilizer privilizer = new Privilizer(environment);
 
-        final String policyConfig = environment.config.getProperty(PrivilizerWeaver.CONFIG_POLICY);
-        final Privilizer.Policy policy =
-            StringUtils.isEmpty(policyConfig) ? Privilizer.Policy.defaultValue() : Privilizer.Policy
-                .valueOf(policyConfig);
         final List<String> toDelete = new ArrayList<String>();
 
         final ScanRequest scanRequest = new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
 
-        LOG.log(Level.FINE, "Cleaning classes privilized with policy other than {0}", policy);
+        LOG.log(Level.FINE, "Cleaning classes privilized with policy other than {0}", privilizer.policy);
         for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
             final Policy privilizedPolicy = weavableClass.getAnnotation(Privilized.class).value();
-            if (privilizedPolicy == policy) {
+            if (privilizedPolicy == privilizer.policy) {
                 continue;
             }
             final String className = weavableClass.getTarget().getName();
@@ -72,7 +59,7 @@ public class PrivilizerCleaner implements Cleaner {
                 new Object[] { className, privilizedPolicy });
 
             try {
-                final ClassReader classReader = new ClassReader(fileArchive.getBytecode(className));
+                final ClassReader classReader = new ClassReader(privilizer.fileArchive.getBytecode(className));
                 classReader.accept(new ClassVisitor(Opcodes.ASM4) {
                     @Override
                     public void visit(int version, int access, String name, String signature, String superName,

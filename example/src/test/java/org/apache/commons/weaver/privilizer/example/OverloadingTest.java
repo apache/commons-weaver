@@ -20,9 +20,13 @@ import static org.junit.Assert.assertEquals;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.junit.Before;
+import org.junit.Test;
+
 public class OverloadingTest {
     private Overloading overloading;
 
+    @Before
     public void setUp() throws Exception {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
@@ -36,14 +40,17 @@ public class OverloadingTest {
         overloading = new Overloading();
     }
 
+    @Test
     public void testNoArgs() {
         assertEquals("foo-value", overloading.get());
     }
 
+    @Test
     public void testStringArg() {
         assertEquals("bar-value", overloading.get("bar"));
     }
 
+    @Test
     public void testCharishArgs() {
         assertEquals("baz-value", overloading.get('b', 'a', (short) 'z'));
     }

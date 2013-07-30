@@ -1,606 +1,131 @@
 /*
- *  Copyright the original author or authors.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.commons.weaver.privilizer;
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-import java.lang.reflect.Modifier;
-import java.nio.charset.Charset;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URLClassLoader;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CodeConverter;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
-import javassist.CtNewConstructor;
-import javassist.CtNewMethod;
-import javassist.CtPrimitiveType;
-import javassist.NotFoundException;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.Descriptor;
-import javassist.bytecode.annotation.Annotation;
-import javassist.bytecode.annotation.EnumMemberValue;
-import javassist.expr.ExprEditor;
-import javassist.expr.FieldAccess;
-import javassist.expr.MethodCall;
-
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.weaver.privilizer.Privilizing.CallTo;
-import org.apache.commons.weaver.utils.Assistant;
-import org.apache.commons.weaver.utils.Body;
+import org.apache.commons.weaver.model.WeaveEnvironment;
+import org.apache.commons.weaver.privilizer.AccessLevel;
+import org.apache.commons.weaver.privilizer.Policy;
+import org.apache.commons.weaver.privilizer.Privilizing;
+import org.apache.commons.weaver.utils.URLArray;
+import org.apache.xbean.finder.archive.FileArchive;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
 
-/**
- * Handles:
- * <ul>
- * <li>weaving of methods annotated with {@link Privileged}</li>
- * <li>weaving of blueprint annotation methods</li>
- * </ul>
- * 
- * @see Privileged
- * @see Privilizing
- */
 public class Privilizer {
-    /**
-     * Simple interface to abstract the act of saving modifications to a class.
-     */
-    public interface ModifiedClassWriter {
-        void write(CtClass type) throws CannotCompileException, IOException;
-    }
+    abstract class PrivilizerClassVisitor extends ClassVisitor {
+        String className;
+        Type target;
 
-    /**
-     * Weaving policy: when to use {@link PrivilegedAction}s.
-     */
-    public enum Policy {
-        /**
-         * Disables weaving.
-         */
-        NEVER,
-
-        /**
-         * Weaves such that the check for an active {@link SecurityManager} is done once only.
-         */
-        ON_INIT(generateName("hasSecurityManager")),
-
-        /**
-         * Weaves such that the check for an active {@link SecurityManager} is done for each {@link Privileged} method
-         * execution.
-         */
-        DYNAMIC(HAS_SECURITY_MANAGER_CONDITION),
-
-        /**
-         * Weaves such that {@link Privileged} methods are always executed as such.
-         */
-        ALWAYS;
-
-        private final String condition;
-
-        /**
-         * Get the {@link Policy} value that should be used as a default.
-         * 
-         * @return {@link Policy#DYNAMIC}
-         */
-        public static Policy defaultValue() {
-            return DYNAMIC;
-        }
-
-        private Policy() {
+        protected PrivilizerClassVisitor() {
             this(null);
         }
 
-        private Policy(String condition) {
-            this.condition = condition;
+        protected PrivilizerClassVisitor(ClassVisitor cv) {
+            super(Opcodes.ASM4, cv);
         }
 
-        private boolean isConditional() {
-            return condition != null;
+        protected Privilizer privilizer() {
+            return Privilizer.this;
         }
-    }
-
-    /**
-     * Class-retention annotation to mark privilized classes.
-     */
-    @Target(ElementType.TYPE)
-    public @interface Privilized {
-        Policy value();
-    }
-
-    /**
-     * Privilizer builder.
-     */
-    public static class Builder {
-        private final ClassPool classPool;
-        private final ModifiedClassWriter modifiedClassWriter;
-        private Policy policy = Policy.defaultValue();
-        private AccessLevel targetAccessLevel = AccessLevel.defaultValue();
-
-        public Builder(ClassPool classPool, ModifiedClassWriter modifiedClassWriter) {
-            super();
-            this.classPool = classPool;
-            this.modifiedClassWriter = modifiedClassWriter;
-        }
-
-        public Builder withPolicy(Policy policy) {
-            this.policy = policy;
-            return this;
-        }
-
-        public Builder withTargetAccessLevel(AccessLevel targetAccessLevel) {
-            this.targetAccessLevel = targetAccessLevel;
-            return this;
-        }
-
-        public Privilizer build() {
-            return new Privilizer(classPool, modifiedClassWriter, policy, targetAccessLevel);
-        }
-    }
-
-    protected static final String POLICY_NAME = "policyName";
-
-    private static final String ACTION_SUFFIX = "_ACTION";
-
-    private static final String GENERATE_NAME = "__privileged_%s";
-    private static final String HAS_SECURITY_MANAGER_CONDITION = "System.getSecurityManager() != null";
-
-    private static final Logger log = Logger.getLogger(Privilizer.class.getName());
-
-    protected static String generateName(String simple) {
-        return String.format(GENERATE_NAME, simple);
-    }
-
-    protected static String toString(byte[] b) {
-        return b == null ? null : new String(b, Charset.forName("UTF-8"));
-    }
-
-    private static final Comparator<CtMethod> CTMETHOD_COMPARATOR = new Comparator<CtMethod>() {
 
         @Override
-        public int compare(CtMethod arg0, CtMethod arg1) {
-            if (ObjectUtils.equals(arg0, arg1)) {
-                return 0;
-            }
-            if (arg0 == null) {
-                return -1;
-            }
-            if (arg1 == null) {
-                return 1;
-            }
-            final int result = ObjectUtils.compare(arg0.getName(), arg1.getName());
-            return result == 0 ? ObjectUtils.compare(arg0.getSignature(), arg1.getSignature()) : result;
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            super.visit(version, access, name, signature, superName, interfaces);
+            className = name;
+            target = Type.getObjectType(name);
         }
-    };
-
-    private static Set<CtMethod> getPrivilegedMethods(CtClass type) throws ClassNotFoundException {
-        final TreeSet<CtMethod> result = new TreeSet<CtMethod>(CTMETHOD_COMPARATOR);
-        for (final CtMethod m : type.getDeclaredMethods()) {
-            if (Modifier.isAbstract(m.getModifiers()) || m.getAnnotation(Privileged.class) == null) {
-                continue;
-            }
-            result.add(m);
-        }
-        return result;
     }
 
-    private static String importedMethodName(CtMethod blueprint) {
-        return new StringBuilder(blueprint.getDeclaringClass().getName().replace('.', '_')).append('$')
-            .append(blueprint.getName()).toString();
+    class WriteClass extends PrivilizerClassVisitor {
+        WriteClass(ClassWriter cw) {
+            super(cw);
+        }
+
+        @Override
+        public void visitEnd() {
+            super.visitEnd();
+            final byte[] bytecode = ((ClassWriter) cv).toByteArray();
+
+            if (verify) {
+                verify(target, bytecode);
+            }
+
+            final File f = new File(fileArchive.getDir(), className.replace('.', File.separatorChar) + ".class");
+            try {
+                FileUtils.writeByteArrayToFile(f, bytecode);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
-    private static CodeConverter redirect(CtMethod origMethod, CtMethod substMethod) throws CannotCompileException {
-        final CodeConverter result = new CodeConverter();
-        result.redirectMethodCall(origMethod, substMethod);
-        return result;
-    }
+    public static final String CONFIG_WEAVER = "privilizer.";
 
-    private final Policy policy;
-    private final ClassPool classPool;
-    private final ModifiedClassWriter modifiedClassWriter;
-    private final Assistant assistant;
-    private final AccessLevel targetAccessLevel;
+    public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
 
-    private boolean settingsReported;
+    public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
 
-    private Privilizer(ClassPool classPool, ModifiedClassWriter modifiedClassWriter, Policy policy,
-        AccessLevel targetAccessLevel) {
-        this.classPool = Validate.notNull(classPool, "classPool");
-        this.modifiedClassWriter = Validate.notNull(modifiedClassWriter, "modifiedClassWriter");
-        this.policy = Validate.notNull(policy, "policy");
-        this.targetAccessLevel = Validate.notNull(targetAccessLevel, "targetAccessLevel");
-        this.assistant = new Assistant(classPool, "__privilizer_");
-    }
+    public static final String CONFIG_VERIFY = CONFIG_WEAVER + "verify";
 
-    /**
-     * Weave the specified class. Handles all {@link Privileged} methods as well as calls described by
-     * {@code privilizing}.
-     * 
-     * @param privilizing
-     * 
-     * @throws NotFoundException
-     * @throws IOException
-     * @throws CannotCompileException
-     * @throws ClassNotFoundException
-     */
-    public boolean weaveClass(Class<?> clazz, Privilizing privilizing) throws NotFoundException, IOException,
-        CannotCompileException, ClassNotFoundException, IllegalAccessException {
-        return weave(classPool.get(clazz.getName()), privilizing);
-    }
+    private static final Logger log = Logger.getLogger(PrivilizerWeaver.class.getName());
 
-    /**
-     * Weave the specified class.
-     * 
-     * @param type
-     * @param privilizing
-     * @return whether any work was done
-     * @throws NotFoundException
-     * @throws IOException
-     * @throws CannotCompileException
-     * @throws ClassNotFoundException
-     */
-    private boolean weave(CtClass type, Privilizing privilizing) throws NotFoundException, IOException,
-        CannotCompileException, ClassNotFoundException, IllegalAccessException {
-        reportSettings();
+    private static final String GENERATE_NAME = "__privileged_%s";
 
-        AnnotationsAttribute invisibleAnnotations =
-            (AnnotationsAttribute) type.getClassFile().getAttribute(AnnotationsAttribute.invisibleTag);
+    static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-        if (invisibleAnnotations != null) {
-            Annotation privilized = invisibleAnnotations.getAnnotation(Privilized.class.getName());
-            if (privilized != null) {
-                final String policyValue = ((EnumMemberValue) privilized.getMemberValue("value")).getValue();
-                final String alreadyPrivilized = String.format("%s already privilized with policy %s", type.getName(), policyValue);
-                verbose(alreadyPrivilized);
-                if (!policy.name().equals(policyValue)) {
-                    throw new IllegalStateException(alreadyPrivilized);
-                }
-                return false;
-            }
-        }
-        boolean result = false;
-        if (policy.compareTo(Policy.NEVER) > 0) {
-            if (policy == Policy.ON_INIT) {
-                debug("Initializing field %s.%s to %s", type.getName(), policy.condition,
-                    HAS_SECURITY_MANAGER_CONDITION);
+    public final AccessLevel accessLevel;
+    public final ClassLoader classLoader;
+    public final FileArchive fileArchive;
+    public final Policy policy;
+    public final boolean verify;
 
-                CtField securityManager = new CtField(CtClass.booleanType, policy.condition, type);
-                securityManager.setModifiers(Modifier.STATIC | Modifier.PRIVATE | Modifier.FINAL);
-                type.addField(securityManager, CtField.Initializer.byExpr(HAS_SECURITY_MANAGER_CONDITION));
-            }
+    private final List<String> classpath;
+    final Set<Class<?>> woven;
 
-            result = privilizeBlueprints(type, privilizing) | result;
-
-            for (final CtMethod m : getPrivilegedMethods(type)) {
-                result = weave(type, m) | result;
-            }
-            if (result) {
-                if (invisibleAnnotations == null) {
-                    invisibleAnnotations =
-                        new AnnotationsAttribute(type.getClassFile().getConstPool(), AnnotationsAttribute.invisibleTag);
-                    type.getClassFile().addAttribute(invisibleAnnotations);
-                }
-                final Annotation privilized =
-                    new Annotation(Privilized.class.getName(), type.getClassFile().getConstPool());
-                final EnumMemberValue policyMember = new EnumMemberValue(type.getClassFile().getConstPool());
-                policyMember.setType(Policy.class.getName());
-                policyMember.setValue(policy.name());
-                privilized.addMemberValue("value", policyMember);
-                invisibleAnnotations.addAnnotation(privilized);
-
-                modifiedClassWriter.write(type);
-            }
-        }
-        log.info(String.format(result ? "Privilized class %s" : "Nothing to do for class %s", type.getName()));
-        return result;
-    }
-
-    private boolean privilizeBlueprints(CtClass type, Privilizing annotation) throws CannotCompileException,
-        ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
-        boolean result = false;
-        if (annotation != null) {
-            final CallTo[] blueprintCalls = annotation.value();
-            for (CallTo callTo : blueprintCalls) {
-                Validate.isTrue(!callTo.value().equals(type.getName()),
-                    "Type %s cannot use itself as a privilizer blueprint", callTo.value());
-            }
-            for (CtMethod method : type.getDeclaredMethods()) {
-                result = privilizeBlueprints(type, method, blueprintCalls) | result;
-            }
-        }
-        return result;
-    }
-
-    private boolean privilizeBlueprints(final CtClass type, final CtMethod method, final CallTo[] blueprintCalls)
-        throws CannotCompileException, ClassNotFoundException, NotFoundException, IOException, IllegalAccessException {
-        final MutableBoolean result = new MutableBoolean();
-
-        method.instrument(new ExprEditor() {
-            @Override
-            public void edit(MethodCall call) throws CannotCompileException {
-                super.edit(call);
-                CtMethod called;
-                try {
-                    called = call.getMethod();
-                    if (!Modifier.isStatic(called.getModifiers())) {
-                        return;
-                    }
-                } catch (NotFoundException e) {
-                    return;
-                }
-                boolean found = false;
-                for (CallTo callTo : blueprintCalls) {
-                    final Class<?> owner = callTo.value();
-                    if (owner.getName().equals(call.getClassName())) {
-                        if (callTo.methods().length == 0) {
-                            found = true;
-                            break;
-                        }
-                        for (String m : callTo.methods()) {
-                            found = StringUtils.equals(call.getMethodName(), m);
-                            if (found) {
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (found) {
-                    final String name = importedMethodName(called);
-
-                    CtMethod copy;
-                    try {
-                        copy = copyBlueprintTo(type, name, called, blueprintCalls);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (copy == null) {
-                        debug("Unable to use %s as blueprint method in %s", Privilizer.this.toString(called),
-                            Privilizer.this.toString(method));
-                        return;
-                    }
-                    Body redirect = new Body(Privilizer.this, "call %s", Privilizer.this.toString(called));
-                    if (Privilizer.this.policy.isConditional()) {
-                        redirect.startBlock("if (%s)", Privilizer.this.policy.condition);
-                    }
-                    redirect.appendLine("$_ = %s($$);", copy.getName());
-                    if (Privilizer.this.policy.isConditional()) {
-                        redirect.endBlock().startBlock("else").appendLine("$_ = $proceed($$);").endBlock();
-                    }
-                    call.replace(redirect.complete().toString());
-                    result.setValue(Boolean.TRUE);
-                }
-            }
-        });
-        return result.booleanValue();
-    }
-
-    /*
-     * This design is almost certainly suboptimal. Basically, we have:
-     * 
-     * for a declared method, look for calls to blueprint methods for each blueprint method, copy it when copying,
-     * inspect blueprint method's code and recursively copy in methods from the source class of *that particular method*
-     * because otherwise CtNewMethod will do it for us and we'll miss our window of opportunity now that we have a
-     * copied blueprint method, inspect it for blueprint calls from other classes and do this whole thing recursively.
-     * 
-     * It would *seem* that we could combine the recursion/copying of methods from all blueprint classes but I can't get
-     * my head around it right now. -MJB
-     */
-    private CtMethod copyBlueprintTo(final CtClass target, final String toName, final CtMethod method,
-        final CallTo[] blueprintCalls) throws ClassNotFoundException, NotFoundException, IOException,
-        IllegalAccessException, CannotCompileException {
-        if (!Modifier.isStatic(method.getModifiers())) {
-            return null;
-        }
-
-        try {
-            final CtMethod done = target.getDeclaredMethod(toName, method.getParameterTypes());
-            return done;
-        } catch (NotFoundException e1) {
-        }
-        final CtClass declaring = method.getDeclaringClass();
-
-        final List<CtField> referencedFields = new ArrayList<CtField>();
-        final List<CtMethod> ownBlueprints = new ArrayList<CtMethod>();
-        class CollectOwnReferences extends ExprEditor {
-            @Override
-            public void edit(MethodCall m) throws CannotCompileException {
-                super.edit(m);
-                CtMethod called;
-                try {
-                    called = m.getMethod();
-                } catch (NotFoundException e) {
-                    return;
-                }
-                if (called.getDeclaringClass().equals(declaring)) {
-                    ownBlueprints.add(called);
-                }
-            }
-
-            @Override
-            public void edit(FieldAccess f) throws CannotCompileException {
-                super.edit(f);
-                try {
-                    referencedFields.add(f.getField());
-                } catch (NotFoundException e) {
-                }
-            }
-        }
-        method.instrument(new CollectOwnReferences());
-
-        boolean isRecursive = false;
-
-        for (CtMethod blueprint : ownBlueprints) {
-            if (blueprint.equals(method)) {
-                // recursive method call identified:
-                isRecursive = true;
-                continue;
-            }
-            CtMethod local = copyBlueprintTo(target, importedMethodName(blueprint), blueprint, blueprintCalls);
-            if (local != null) {
-                method.instrument(redirect(blueprint, local));
-            }
-        }
-
-        // we have code to handle non-public fields, but the generated code gets
-        // VerifyErrors at runtime;
-        // for now we must skip blueprinting such methods.
-        boolean referencesPublicFieldsOnly = true;
-        for (CtField refd : referencedFields) {
-            if (!Modifier.isPublic(refd.getModifiers())) {
-                warn("Method %s references non-public field %s.%s", toString(method), refd.getDeclaringClass()
-                    .getName(), refd.getName());
-                referencesPublicFieldsOnly = false;
-            }
-        }
-        if (!referencesPublicFieldsOnly) {
-            return null;
-        }
-
-        final CtMethod result = CtNewMethod.copy(method, toName, target, null);
-        result.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
-        target.addMethod(result);
-
-        if (!referencedFields.isEmpty()) {
-            handleReferencedFields(target, result, method, referencedFields);
-        }
-        if (isRecursive) {
-            CodeConverter redirectRecursive = new CodeConverter();
-            redirectRecursive.redirectMethodCall(method.getName(), result);
-            result.instrument(redirectRecursive);
-        }
-        // privilize other classes' blueprint methods recursively:
-        privilizeBlueprints(target, result, blueprintCalls);
-
-        if (!referencedFields.isEmpty()) {
-            // more referenced fields handling, but reduces the amount of
-            // generated code we read through
-            // when blueprinting recursively
-            makeAccessible(target, result, referencedFields);
-        }
-        // not really possible to check for what truly may throw a
-        // SecurityException and thus requires privilizing,
-        // but we'll assume any public method must be. As anything else, once
-        // copied,
-        // can only be called from something we have already privilized
-        // TODO? only privilize methods the instrumented class called
-        // originally, directly
-        if (Modifier.isPublic(method.getModifiers())) {
-            weave(target, result);
-        }
-
-        return result;
-    }
-
-    private void handleReferencedFields(final CtClass target, final CtMethod method, final CtMethod source,
-        final List<CtField> referencedFields) throws CannotCompileException, NotFoundException {
-
-        for (CtField ctField : referencedFields) {
-            Validate.validState(!ctField.getDeclaringClass().equals(target),
-                "Circular reference; cannot blueprint method %s", toString(source));
-        }
-
-        method.instrument(new ExprEditor() {
-            @Override
-            public void edit(FieldAccess f) throws CannotCompileException {
-                super.edit(f);
-                CtField fld;
-                boolean primitive;
-                try {
-                    fld = f.getField();
-                    primitive = fld.getType().isPrimitive();
-                } catch (NotFoundException e) {
-                    // no such field implies a reference copied such that the
-                    // field doesn't exist, probably the usual
-                    // case with blueprinted methods containing field refs
-
-                    fld = null;
-                    primitive = false;
-                    CtClass host = source.getDeclaringClass();
-                    while (host != null) {
-                        try {
-                            fld = host.getDeclaredField(f.getFieldName());
-                            primitive = fld.getType().isPrimitive();
-                            break;
-                        } catch (NotFoundException e1) {
-                        }
-                        try {
-                            host = host.getSuperclass();
-                        } catch (NotFoundException e1) {
-                            break;
-                        }
-                    }
-                    if (fld == null) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                final String replacement;
-                if (f.isReader()) {
-                    if (Modifier.isPublic(fld.getModifiers())) {
-                        replacement = String.format("$_ = %s.%s;", fld.getDeclaringClass().getName(), f.getFieldName());
-                    } else {
-                        replacement =
-                            String.format("$_ = ($%s) %s(%s.class, \"%s\", null);", primitive ? "w" : "r", assistant
-                                .fieldReader(target).getName(), fld.getDeclaringClass().getName(), f.getFieldName());
-                    }
-                } else {
-                    if (Modifier.isPublic(fld.getModifiers())) {
-                        replacement = String.format("%s.%s = $1;", fld.getDeclaringClass().getName(), f.getFieldName());
-                    } else {
-                        replacement =
-                            String.format("%s(%s.class, \"%s\", null, %s);", assistant.fieldWriter(target).getName(),
-                                fld.getDeclaringClass().getName(), f.getFieldName(), primitive ? "($w) $1" : "$1");
-                    }
-                }
-                debug("Replacing %s access of %s.%s", f.isReader() ? "read" : "write", fld.getDeclaringClass()
-                    .getName(), f.getFieldName());
-                debug(replacement);
-                f.replace(replacement);
-            }
-        });
-    }
-
-    private void makeAccessible(final CtClass target, final CtMethod method, final List<CtField> referencedFields)
-        throws CannotCompileException {
-        boolean allPublic = true;
-        for (CtField ctField : referencedFields) {
-            if (!Modifier.isPublic(ctField.getModifiers())) {
-                allPublic = false;
-                break;
-            }
-        }
-        if (allPublic) {
-            // no need to fiddle with access
-            return;
-        }
-        method.insertBefore(assistant.callPushFieldAccess(target, referencedFields));
-        final boolean asFinally = true;
-        method.insertAfter(new StringBuilder(assistant.popFieldAccess(target).getName()).append("();").toString(),
-            asFinally);
+    public Privilizer(WeaveEnvironment weaveEnvironment) {
+        super();
+        this.policy = Policy.parse(weaveEnvironment.config.getProperty(CONFIG_POLICY));
+        this.accessLevel = AccessLevel.parse(weaveEnvironment.config.getProperty(CONFIG_ACCESS_LEVEL));
+        this.classpath = weaveEnvironment.classpath;
+        classLoader = new URLClassLoader(URLArray.fromPaths(weaveEnvironment.classpath));
+        fileArchive = new FileArchive(classLoader, weaveEnvironment.target);
+        verify = BooleanUtils.toBoolean(weaveEnvironment.config.getProperty(CONFIG_VERIFY));
+        woven = new HashSet<Class<?>>();
     }
 
     protected void debug(String message, Object... args) {
@@ -619,213 +144,106 @@ public class Privilizer {
         log.info(String.format(message, args));
     }
 
-    private CtClass createAction(CtClass type, CtMethod impl, Class<?> iface) throws NotFoundException,
-        CannotCompileException, IOException {
-        final boolean exc = impl.getExceptionTypes().length > 0;
+    protected void error(String message, Object... args) {
+        log.severe(String.format(message, args));
+    }
 
-        final CtClass actionType = classPool.get(iface.getName());
+    String generateName(String simple) {
+        return String.format(GENERATE_NAME, simple);
+    }
 
-        final String simpleName = generateActionClassname(impl);
-        debug("Creating action type %s for method %s", simpleName, toString(impl));
-        final CtClass result = type.makeNestedClass(simpleName, true);
-        result.addInterface(actionType);
-
-        final CtField owner;
-        if (Modifier.isStatic(impl.getModifiers())) {
-            owner = null;
-        } else {
-            owner = new CtField(type, generateName("owner"), result);
-            owner.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
-            debug("Adding owner field %s to %s", owner.getName(), simpleName);
-            result.addField(owner);
+    Type wrap(Type t) {
+        switch (t.getSort()) {
+            case Type.BOOLEAN:
+                return Type.getType(Boolean.class);
+            case Type.BYTE:
+                return Type.getType(Byte.class);
+            case Type.SHORT:
+                return Type.getType(Short.class);
+            case Type.INT:
+                return Type.getType(Integer.class);
+            case Type.CHAR:
+                return Type.getType(Character.class);
+            case Type.LONG:
+                return Type.getType(Long.class);
+            case Type.FLOAT:
+                return Type.getType(Float.class);
+            case Type.DOUBLE:
+                return Type.getType(Double.class);
+            case Type.VOID:
+                return Type.getType(Void.class);
+            default:
+                return t;
         }
+    }
 
-        final List<String> propagatedParameters = new ArrayList<String>();
-        int index = -1;
-        for (final CtClass param : impl.getParameterTypes()) {
-            final String f = String.format("arg%s", Integer.valueOf(++index));
-            final CtField fld = new CtField(param, f, result);
-            fld.setModifiers(Modifier.PRIVATE | Modifier.FINAL);
-            debug("Copying parameter %s from %s to %s.%s", index, toString(impl), simpleName, f);
-            result.addField(fld);
-            propagatedParameters.add(f);
+    void blueprint(final Class<?> type, final Privilizing privilizing) {
+        debug("blueprinting class %s %s", type.getName(), privilizing);
+        try {
+            final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
+
+            ClassVisitor cv;
+            cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            cv = new PrivilizingVisitor(this, cv);
+            cv = new BlueprintingVisitor(this, cv, privilizing);
+
+            classReader.accept(cv, ClassReader.EXPAND_FRAMES);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        {
-            final StrBuilder sig = new StrBuilder(simpleName).append('(');
-            boolean sep = false;
-            final Body body = new Body(this, "adding to %s: %s", result.getName(), sig);
+    }
 
-            for (final CtField fld : result.getDeclaredFields()) {
-                if (sep) {
-                    sig.append(", ");
-                } else {
-                    sep = true;
+    void privilize(final Class<?> type) {
+        debug("privilizing class %s", type.getName());
+        try {
+            final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
+            ClassVisitor cv;
+            cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            cv = new PrivilizingVisitor(this, cv);
+
+            classReader.accept(cv, ClassReader.EXPAND_FRAMES);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void verify(final Type target, final byte[] bytecode) {
+        final ClassReader reader = new ClassReader(bytecode);
+
+        // use a new classloader that is always up to date:
+        final ClassLoader verifyClassLoader = new URLClassLoader(URLArray.fromPaths(classpath)) {
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException {
+                if (target.getClassName().equals(name)) {
+                    final Class<?> result = defineClass(target.getClassName(), bytecode, 0, bytecode.length);
+                    resolveClass(result);
+                    return result;
                 }
-                sig.append(fld.getType().getName()).append(' ').append(fld.getName());
-                body.appendLine("this.%1$s = %1$s;", fld.getName());
+                return super.findClass(name);
             }
-            result.addConstructor(CtNewConstructor.make(sig.append(") ").append(body.complete()).toString(), result));
+        };
+
+        final StringWriter w = new StringWriter();
+        CheckClassAdapter.verify(reader, verifyClassLoader, false, new PrintWriter(w));
+        final String error = w.toString();
+        if (!error.isEmpty()) {
+            error(error);
+            final StringWriter trace = new StringWriter();
+            reader.accept(new TraceClassVisitor(new PrintWriter(trace)), ClassReader.SKIP_DEBUG);
+            debug(trace.toString());
+            throw new IllegalStateException();
         }
-        {
-            final StrBuilder run = new StrBuilder("public Object run() ");
-            if (exc) {
-                run.append("throws Exception ");
-            }
-            final Body body = new Body(this, "add to %s: %s", result.getName(), run.toString());
-            final CtClass rt = impl.getReturnType();
-            final boolean isVoid = rt.equals(CtClass.voidType);
-            if (!isVoid) {
-                body.append("return ");
-            }
-            final String deref = Modifier.isStatic(impl.getModifiers()) ? type.getName() : owner.getName();
-            final String call =
-                String.format("%s.%s(%s)", deref, impl.getName(), StringUtils.join(propagatedParameters, ", "));
+        Validate.validState(StringUtils.isBlank(error), error);
 
-            if (!isVoid && rt.isPrimitive()) {
-                body.appendLine("%2$s.valueOf(%1$s);", call, ((CtPrimitiveType) rt).getWrapperName());
-            } else {
-                body.append(call).append(';').appendNewLine();
+        final ClassVisitor checkInnerClasses = new ClassVisitor(Opcodes.ASM4, null) {
+            final Set<String> innerNames = new HashSet<String>();
 
-                if (isVoid) {
-                    body.appendLine("return null;");
-                }
+            @Override
+            public void visitInnerClass(String name, String outerName, String innerName, int access) {
+                super.visitInnerClass(name, outerName, innerName, access);
+                Validate.validState(innerNames.add(innerName), "%s already defined", innerName);
             }
-
-            result.addMethod(CtNewMethod.make(run.append(body.complete()).toString(), result));
-        }
-        modifiedClassWriter.write(result);
-        debug("Returning action type %s", result);
-        return result;
+        };
+        reader.accept(checkInnerClasses, ClassReader.SKIP_CODE);
     }
-
-    private String generateActionClassname(CtMethod m) throws NotFoundException {
-        final StringBuilder b = new StringBuilder(m.getName());
-        if (m.getParameterTypes().length > 0) {
-            b.append("$$").append(
-                StringUtils.strip(Descriptor.getParamDescriptor(m.getSignature()), "(;)").replace("[", "ARRAYOF_")
-                    .replace('/', '_').replace(';', '$'));
-        }
-        return b.append(ACTION_SUFFIX).toString();
-    }
-
-    private String toString(CtMethod m) {
-        return String.format("%s%s", m.getName(), m.getSignature());
-    }
-
-    private boolean weave(CtClass type, CtMethod method) throws ClassNotFoundException, CannotCompileException,
-        NotFoundException, IOException, IllegalAccessException {
-        final AccessLevel accessLevel = AccessLevel.of(method.getModifiers());
-        if (targetAccessLevel.compareTo(accessLevel) > 0) {
-            throw new IllegalAccessException("Method " + type.getName() + "#" + toString(method)
-                + " must have maximum access level '" + targetAccessLevel + "' but is defined wider ('" + accessLevel
-                + "')");
-        }
-        if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
-            warn("Possible security leak: granting privileges to %s method %s.%s", accessLevel, type.getName(),
-                toString(method));
-        }
-        final String implName = generateName(method.getName());
-
-        final CtMethod impl = CtNewMethod.copy(method, implName, type, null);
-        impl.setModifiers(AccessLevel.PRIVATE.merge(method.getModifiers()));
-        type.addMethod(impl);
-        debug("Copied %2$s %1$s.%3$s to %4$s %1$s.%5$s", type.getName(), accessLevel, toString(method),
-            AccessLevel.PRIVATE, toString(impl));
-
-        final Body body = new Body(this, "new body of %s", toString(method));
-
-        if (policy.isConditional()) {
-            body.startBlock("if (%s)", policy.condition);
-        }
-
-        final boolean exc = method.getExceptionTypes().length > 0;
-
-        if (exc) {
-            body.startBlock("try");
-        }
-
-        final Class<?> iface = exc ? PrivilegedExceptionAction.class : PrivilegedAction.class;
-        final CtClass actionType = createAction(type, impl, iface);
-        final String action = generateName("action");
-
-        body.append("final %s %s = new %s(", iface.getName(), action, actionType.getName());
-        boolean firstParam;
-        if (Modifier.isStatic(impl.getModifiers())) {
-            firstParam = true;
-        } else {
-            body.append("$0");
-            firstParam = false;
-        }
-        for (int i = 1, sz = impl.getParameterTypes().length; i <= sz; i++) {
-            if (firstParam) {
-                firstParam = false;
-            } else {
-                body.append(", ");
-            }
-            body.append('$').append(Integer.toString(i));
-        }
-        body.appendLine(");");
-
-        final CtClass rt = method.getReturnType();
-        final boolean isVoid = rt.equals(CtClass.voidType);
-
-        final String doPrivileged = String.format("%1$s.doPrivileged(%2$s)", AccessController.class.getName(), action);
-        if (isVoid) {
-            body.append(doPrivileged).append(';').appendNewLine();
-            if (policy.isConditional()) {
-                body.appendLine("return;");
-            }
-        } else {
-            final String cast = rt.isPrimitive() ? ((CtPrimitiveType) rt).getWrapperName() : rt.getName();
-            // don't worry about wrapper NPEs because we should be simply
-            // passing back an autoboxed value, then unboxing again
-            final String result = generateName("result");
-            body.appendLine("final %1$s %3$s = (%1$s) %2$s;", cast, doPrivileged, result);
-            body.append("return %s", result);
-            if (rt.isPrimitive()) {
-                body.append(".%sValue()", rt.getName());
-            }
-            body.append(';').appendNewLine();
-        }
-
-        if (exc) {
-            body.endBlock();
-            final String e = generateName("e");
-            body.startBlock("catch (%1$s %2$s)", PrivilegedActionException.class.getName(), e).appendNewLine();
-
-            final String wrapped = generateName("wrapped");
-
-            body.appendLine("final Exception %1$s = %2$s.getCause();", wrapped, e);
-            for (final CtClass thrown : method.getExceptionTypes()) {
-                body.startBlock("if (%1$s instanceof %2$s)", wrapped, thrown.getName());
-                body.appendLine("throw (%2$s) %1$s;", wrapped, thrown.getName());
-                body.endBlock();
-            }
-            body.appendLine(
-                "throw %1$s instanceof RuntimeException ? (RuntimeException) %1$s : new RuntimeException(%1$s);",
-                wrapped);
-            body.endBlock();
-        }
-
-        if (policy.isConditional()) {
-            // close if block we opened before:
-            body.endBlock();
-            // no security manager=> just call impl:
-            if (!isVoid) {
-                body.append("return ");
-            }
-            body.appendLine("%s($$);", impl.getName());
-        }
-
-        method.setBody(body.complete().toString());
-        return true;
-    }
-
-    private void reportSettings() {
-        if (!settingsReported) {
-            settingsReported = true;
-            debug("Weave policy == %s", policy);
-        }
-    }
-
 }

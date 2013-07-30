@@ -15,5 +15,5 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# this class gets picked up by the WeaveProcessor
+# this class gets picked up by the CleanProcessor
 org.apache.commons.weaver.privilizer.PrivilizerCleaner

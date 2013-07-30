@@ -25,10 +25,13 @@ import java.util.Arrays;
 
 import org.apache.commons.weaver.privilizer.example.UsingArgs.CheckedException1;
 import org.apache.commons.weaver.privilizer.example.UsingArgs.CheckedException2;
+import org.junit.Before;
+import org.junit.Test;
 
 public class UsingArgsTest {
     private UsingArgs usingArgs;
 
+    @Before
     public void setUp() throws Exception {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
@@ -42,12 +45,14 @@ public class UsingArgsTest {
         usingArgs = new UsingArgs();
     }
 
+    @Test
     public void testGetProperty() {
         assertEquals("foo-value", usingArgs.getProperty("foo"));
         assertEquals("bar-value", usingArgs.getProperty("bar"));
         assertEquals("baz-value", usingArgs.getProperty("baz"));
     }
 
+    @Test
     public void testGetProperties() {
         assertTrue(Arrays.equals(new String[] { "foo-value", "bar-value", "baz-value" },
             usingArgs.getProperties("foo", "bar", "baz")));
@@ -55,16 +60,19 @@ public class UsingArgsTest {
         assertNull(usingArgs.getProperties((String[]) null));
     }
 
+    @Test
     public void testThrowAwayProperty() {
         usingArgs.throwAwayProperty('f', "o", 'o');
     }
 
+    @Test
     public void testAssembleAndGetProperty() {
         assertEquals("foo-value", usingArgs.assembleAndGetProperty('f', new StringBuilder().append('o'), 'o'));
         assertEquals("bar-value", usingArgs.assembleAndGetProperty('b', new StringBuilder().append('a'), 'r'));
         assertEquals("baz-value", usingArgs.assembleAndGetProperty('b', new StringBuilder().append('a'), 'z'));
     }
 
+    @Test
     public void testThrowingCheckedException() throws CheckedException1, CheckedException2 {
         assertEquals(0, usingArgs.throwingCheckedException(0, "foo"));
         try {

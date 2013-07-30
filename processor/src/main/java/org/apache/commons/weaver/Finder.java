@@ -336,8 +336,7 @@ class Finder extends AnnotationFinder implements Scanner {
                 final ClassInfo classInfo = classInfos.get(((Class<?>) object).getName());
                 final IncludesClassfile<Class<?>> annotated;
                 try {
-                    annotated =
-                        new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
+                    annotated = new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
                 } catch (ClassNotFoundException e) {
                     continue;
                 }
@@ -501,8 +500,9 @@ class Finder extends AnnotationFinder implements Scanner {
             }
         };
 
-    private final Map<Info, List<Annotation>> classfileAnnotations;
     private final WithAnnotations withAnnotations = new WithAnnotations();
+    private final Map<Info, List<Annotation>> classfileAnnotations;
+    private final Inflater inflater;
 
     /**
      * Create a new {@link Finder} instance.
@@ -513,6 +513,7 @@ class Finder extends AnnotationFinder implements Scanner {
         super(archive, false);
         classfileAnnotations = CLASSFILE_ANNOTATIONS.get();
         CLASSFILE_ANNOTATIONS.remove();
+        inflater = new Inflater(classfileAnnotations);
         enableFindImplementations();
         enableFindSubclasses();
     }
@@ -602,7 +603,7 @@ class Finder extends AnnotationFinder implements Scanner {
                 }
             }
         }
-        return result;
+        return inflater.inflate(result);
     }
 
     private Class<?> toClass(Type type) {

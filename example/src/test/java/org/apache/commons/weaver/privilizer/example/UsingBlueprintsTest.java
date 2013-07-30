@@ -47,6 +47,11 @@ public class UsingBlueprintsTest {
     }
 
     @Test
+    public void testUtilsReadPrivateField() {
+        assertEquals(999, usingBlueprints.utilsReadPrivateField());
+    }
+
+    @Test
     public void testUtilsGetProperty() {
         assertEquals("foo-value", usingBlueprints.utilsGetProperty());
     }

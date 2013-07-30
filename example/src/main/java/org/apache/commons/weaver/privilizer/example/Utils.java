@@ -52,4 +52,13 @@ public class Utils {
     public static String getProperty(String key) {
         return System.getProperty(key);
     }
+
+    private static Integer n;
+    static {
+        n = Integer.valueOf(999);
+    }
+
+    public static int readPrivateField() {
+        return n;
+    }
 }
