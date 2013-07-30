@@ -1,95 +1,84 @@
 /*
- *  Copyright the original author or authors.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.commons.weaver.privilizer;
 
-import java.io.IOException;
 import java.lang.annotation.ElementType;
-import java.net.URLClassLoader;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
-import org.apache.commons.weaver.privilizer.Privilizer.ModifiedClassWriter;
+import org.apache.commons.weaver.privilizer.Policy;
+import org.apache.commons.weaver.privilizer.Privileged;
+import org.apache.commons.weaver.privilizer.Privilized;
+import org.apache.commons.weaver.privilizer.Privilizing;
 import org.apache.commons.weaver.spi.Weaver;
-import org.apache.commons.weaver.utils.Assistant;
-import org.apache.commons.weaver.utils.URLArray;
 
-/**
- * Weaver which adds doPrivileged blocks for each method annotated with {@link Privileged}. An instance of this class
- * will automatically get picked up by the {@link org.apache.commons.weaver.WeaveProcessor} via the
- * {@link java.util.ServiceLoader}.
- */
 public class PrivilizerWeaver implements Weaver {
-    public static final String CONFIG_WEAVER = "privilizer.";
-    public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
-    public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
-
     @Override
-    public boolean process(WeaveEnvironment environment, Scanner scanner) {
-        boolean result = false;
-        final Privilizer privilizer = buildPrivilizer(environment);
+    public boolean process(WeaveEnvironment weaveEnvironment, Scanner scanner) {
+        final Privilizer privilizer = new Privilizer(weaveEnvironment);
 
-        final ScanRequest scanRequest =
-            new ScanRequest().add(WeaveInterest.of(Privileged.class, ElementType.METHOD)).add(
-                WeaveInterest.of(Privilizing.class, ElementType.TYPE));
+        final Set<Class<?>> privilizedTypes = new LinkedHashSet<Class<?>>();
 
-        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
-            try {
-                result =
-                    privilizer.weaveClass(weavableClass.getTarget(), weavableClass.getAnnotation(Privilizing.class))
-                        | result;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        // handle blueprints:
+        for (WeavableClass<?> type : scanner.scan(
+            new ScanRequest().add(WeaveInterest.of(Privilizing.class, ElementType.TYPE))).getClasses()) {
+
+            final Class<?> t = type.getTarget();
+            if (privilizedTypes.add(t) && validateRequest(privilizer, type)) {
+                privilizer.blueprint(t, type.getAnnotation(Privilizing.class));
             }
         }
-        return result;
-    }
 
-    private Privilizer buildPrivilizer(final WeaveEnvironment env) {
-        final URLClassLoader urlClassLoader = new URLClassLoader(URLArray.fromPaths(env.classpath));
-        final ClassPool classPool = Assistant.createClassPool(urlClassLoader, env.target);
-        final ModifiedClassWriter modifiedClassWriter = new ModifiedClassWriter() {
+        // handle remaining classes declaring @Privileged methods:
 
-            @Override
-            public void write(CtClass type) throws CannotCompileException, IOException {
-                type.writeFile(env.target.getAbsolutePath());
+        for (WeavableClass<?> type : scanner.scan(
+            new ScanRequest().add(WeaveInterest.of(Privileged.class, ElementType.METHOD))).getClasses()) {
+            final Class<?> t = type.getTarget();
+            if (privilizedTypes.add(t) && validateRequest(privilizer, type)) {
+                privilizer.privilize(t);
             }
-        };
-
-        final Privilizer.Builder builder = new Privilizer.Builder(classPool, modifiedClassWriter);
-
-        final String accessLevel = env.config.getProperty(CONFIG_ACCESS_LEVEL);
-        if (StringUtils.isNotEmpty(accessLevel)) {
-            builder.withTargetAccessLevel(AccessLevel.valueOf(accessLevel));
         }
-
-        final String policyConfig = env.config.getProperty(CONFIG_POLICY);
-
-        if (StringUtils.isNotEmpty(policyConfig)) {
-            builder.withPolicy(Privilizer.Policy.valueOf(policyConfig));
-        }
-
-        return builder.build();
+        return !privilizedTypes.isEmpty();
     }
 
+    /**
+     * Validate a weaving request for a given target type.
+     * 
+     * @param privilizer
+     * @param type
+     * 
+     * @return whether weaving should proceed
+     * @throws IllegalStateException if class has already been woven with some other policy
+     */
+    private boolean validateRequest(Privilizer privilizer, WeavableClass<?> type) {
+        Privilized marker = type.getAnnotation(Privilized.class);
+        if (marker == null) {
+            return privilizer.policy != Policy.NEVER;
+        }
+        Validate.validState(privilizer.policy == marker.value(), "%s already privilized with policy %s", type
+            .getTarget().getName(), marker.value());
+        return false;
+    }
 }

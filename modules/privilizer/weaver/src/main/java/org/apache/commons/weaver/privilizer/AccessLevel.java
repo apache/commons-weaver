@@ -18,6 +18,10 @@ package org.apache.commons.weaver.privilizer;
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 public enum AccessLevel {
     PUBLIC(Modifier.PUBLIC), PROTECTED(Modifier.PROTECTED), PACKAGE(0), PRIVATE(Modifier.PRIVATE);
@@ -29,16 +33,21 @@ public enum AccessLevel {
     }
 
     public static AccessLevel of(int mod) {
+        final Set<AccessLevel> matched = EnumSet.noneOf(AccessLevel.class);
         if (Modifier.isPublic(mod)) {
-            return PUBLIC;
+            matched.add(PUBLIC);
         }
         if (Modifier.isProtected(mod)) {
-            return PROTECTED;
+            matched.add(PROTECTED);
         }
         if (Modifier.isPrivate(mod)) {
-            return PRIVATE;
+            matched.add(PRIVATE);
         }
-        return PACKAGE;
+        if (matched.isEmpty()) {
+            return PACKAGE;
+        }
+        Validate.isTrue(matched.size() == 1, "%s seems to declare multiple access modifiers: %s", mod, matched);
+        return matched.iterator().next();
     }
 
     public int merge(int mod) {
@@ -61,5 +70,18 @@ public enum AccessLevel {
      */
     public static AccessLevel defaultValue() {
         return AccessLevel.PRIVATE;
+    }
+
+    /**
+     * Parse from a {@link String} returning {@link #defaultValue()} for blank/null input.
+     * 
+     * @param s
+     * @return {@link AccessLevel}
+     */
+    public static AccessLevel parse(String s) {
+        if (StringUtils.isBlank(s)) {
+            return defaultValue();
+        }
+        return valueOf(s.trim().toUpperCase(Locale.US));
     }
 }

@@ -20,9 +20,11 @@ package org.apache.commons.weaver.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.apache.commons.lang3.Validate;
 
 public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> implements Comparable<SELF>,
     AnnotatedElement {
@@ -33,15 +35,30 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
 
     protected Weavable(TARGET target) {
         this.target = target;
+        if (target instanceof AnnotatedElement) {
+            addAnnotations(((AnnotatedElement) target).getAnnotations());
+        }
     }
 
     public boolean addAnnotations(Annotation... toAdd) {
+        Validate.noNullElements(toAdd);
+        return addAnnotations(Arrays.asList(toAdd));
+    }
+
+    public boolean addAnnotations(Iterable<Annotation> toAdd) {
+        if (toAdd == null) {
+            return false;
+        }
         synchronized (this) {
             if (annotations == null) {
                 annotations = new LinkedHashSet<Annotation>();
             }
         }
-        return Collections.addAll(annotations, toAdd);
+        boolean result = false;
+        for (Annotation a : toAdd) {
+            result = a != null && annotations.add(a) || result;
+        }
+        return result;
     }
 
     public TARGET getTarget() {

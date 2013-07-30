@@ -20,8 +20,12 @@ import static org.junit.Assert.assertEquals;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.junit.Before;
+import org.junit.Test;
+
 public class StaticPrivateMethodsTest {
 
+    @Before
     public void setUp() throws Exception {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
             @Override
@@ -34,6 +38,7 @@ public class StaticPrivateMethodsTest {
         });
     }
 
+    @Test
     public void testGet() {
         assertEquals("foo-value", StaticPrivateMethods.get("foo"));
         assertEquals("bar-value", StaticPrivateMethods.get("bar"));

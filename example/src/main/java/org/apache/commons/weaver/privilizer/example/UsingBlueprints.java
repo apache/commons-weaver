@@ -25,6 +25,10 @@ public class UsingBlueprints {
         return Utils.readPublicConstant();
     }
 
+    public int utilsReadPrivateField() {
+        return Utils.readPrivateField();
+    }
+
     public String utilsGetProperty() {
         return Utils.getProperty();
     }

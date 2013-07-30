@@ -25,8 +25,11 @@ import java.security.PrivilegedAction;
 
 import org.apache.commons.weaver.privilizer.example.StaticNoArgs.CheckedException1;
 import org.apache.commons.weaver.privilizer.example.StaticNoArgs.CheckedException2;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StaticNoArgsTest {
+    @Before
     public void setUp() throws Exception {
         AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
@@ -38,22 +41,27 @@ public class StaticNoArgsTest {
         });
     }
 
+    @Test
     public void testThrowAwayFoo() {
         StaticNoArgs.throwAwayFoo();
     }
 
+    @Test
     public void testGetFoo() {
         assertEquals("foo-value", StaticNoArgs.getFoo());
     }
 
+    @Test
     public void testGetTrue() {
         assertSame(Boolean.TRUE, StaticNoArgs.getTrue());
     }
 
+    @Test
     public void testGetFalse() {
         assertFalse(StaticNoArgs.getFalse());
     }
 
+    @Test
     public void testThrowingCheckedException1() {
         try {
             StaticNoArgs.throwingCheckedException1();
@@ -62,6 +70,7 @@ public class StaticNoArgsTest {
         }
     }
 
+    @Test
     public void testThrowingCheckedException2() {
         try {
             StaticNoArgs.throwingCheckedException2();

@@ -45,18 +45,17 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-    </dependency>
   </dependencies>
-
   <build>
     <plugins>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-invoker-plugin</artifactId>
         <configuration>
@@ -79,7 +78,42 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>basic</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-commons</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-tree</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-util</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>dev</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-debug-all</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

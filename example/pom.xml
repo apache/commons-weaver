@@ -28,6 +28,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <privilizer.policy>ON_INIT</privilizer.policy>
+    <privilizer.verify>true</privilizer.verify>
   </properties>
   <dependencies>
     <dependency>
@@ -56,6 +57,7 @@
           <weaverConfig>
             <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
             <privilizer.policy>${privilizer.policy}</privilizer.policy>
+            <privilizer.verify>${privilizer.verify}</privilizer.verify>
           </weaverConfig>
         </configuration>
         <executions>
@@ -76,6 +78,25 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-weaver-privilizer</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-tree</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>${asm.version}</version>
           </dependency>
         </dependencies>
       </plugin>
