@@ -142,8 +142,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             new StringBuilder(key.getLeft().getInternalName().replace('/', '_')).append("$$")
                 .append(key.getRight().getName()).toString();
         importedMethods.put(key, result);
-
-        privilizer().debug("importing %s#%s as %s", key.getLeft().getClassName(), key.getRight(), result);
+        privilizer().env.debug("importing %s#%s as %s", key.getLeft().getClassName(), key.getRight(), result);
         final int access = Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC + Opcodes.ACC_SYNTHETIC;
 
         final MethodNode source = getMethods(key.getLeft()).get(key.getRight());
@@ -154,7 +153,17 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         // non-public fields accessed
         final Set<FieldAccess> fieldAccesses = new LinkedHashSet<FieldAccess>();
 
-        source.accept(new FieldAccessAccumulator(fieldAccesses));
+        source.accept(new MethodVisitor(Opcodes.ASM4) {
+            @Override
+            public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+                final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name, Type.getType(desc));
+
+                super.visitFieldInsn(opcode, owner, name, desc);
+                if (!Modifier.isPublic(fieldAccess.access)) {
+                    fieldAccesses.add(fieldAccess);
+                }
+            }
+        });
 
         final MethodNode withAccessibleAdvice =
             new MethodNode(access, result, source.desc, source.signature, exceptions);
@@ -227,11 +236,6 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     @Override
     public void visitEnd() {
         super.visitEnd();
-//        if (privilizer().verify) {
-//            final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-//            ((ClassNode) cv).accept(classWriter);
-//            privilizer().verify(target, classWriter.toByteArray());
-//        }
         ((ClassNode) cv).accept(next);
     }
 
@@ -287,26 +291,10 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         }
     }
 
-    private class FieldAccessAccumulator extends MethodVisitor {
-        final Set<FieldAccess> fieldAccesses;
-
-        FieldAccessAccumulator(Set<FieldAccess> fieldAccesses) {
-            super(Opcodes.ASM4);
-            this.fieldAccesses = fieldAccesses;
-        }
-
-        @Override
-        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-            final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name, Type.getType(desc));
-
-            super.visitFieldInsn(opcode, owner, name, desc);
-            if (!Modifier.isPublic(fieldAccess.access)) {
-                fieldAccesses.add(fieldAccess);
-            }
-        }
-
-    }
-
+    /**
+     * For every non-public referenced field of an imported method, replaces with reflective calls. Additionally, for
+     * every such field that is not accessible, sets the field's accessibility and clears it as the method exits.
+     */
     private class AccessibleAdvisor extends AdviceAdapter {
         final Type bitSetType = Type.getType(BitSet.class);
         final Type classType = Type.getType(Class.class);
@@ -396,8 +384,6 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             final FieldAccess fieldAccess = fieldAccessMap.get(key);
             Validate.isTrue(fieldAccesses.contains(fieldAccess), "Cannot find field %s", key);
             final int fieldIndex = fieldAccesses.indexOf(fieldAccess);
-
-            privilizer().debug("accessing field %s with opcode %s", fieldIndex, opcode);
             visitInsn(NOP);
             loadLocal(localFieldArray);
             push(fieldIndex);

@@ -26,7 +26,6 @@ import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -102,50 +101,28 @@ public class Privilizer {
 
     public static final String CONFIG_VERIFY = CONFIG_WEAVER + "verify";
 
-    private static final Logger log = Logger.getLogger(PrivilizerWeaver.class.getName());
-
     private static final String GENERATE_NAME = "__privileged_%s";
 
     static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-    public final AccessLevel accessLevel;
-    public final ClassLoader classLoader;
-    public final FileArchive fileArchive;
-    public final Policy policy;
-    public final boolean verify;
+    final WeaveEnvironment env;
+    final AccessLevel accessLevel;
+    final ClassLoader classLoader;
+    final FileArchive fileArchive;
+    final Policy policy;
+    final boolean verify;
 
     private final List<String> classpath;
-    final Set<Class<?>> woven;
 
-    public Privilizer(WeaveEnvironment weaveEnvironment) {
+    public Privilizer(WeaveEnvironment env) {
         super();
-        this.policy = Policy.parse(weaveEnvironment.config.getProperty(CONFIG_POLICY));
-        this.accessLevel = AccessLevel.parse(weaveEnvironment.config.getProperty(CONFIG_ACCESS_LEVEL));
-        this.classpath = weaveEnvironment.classpath;
-        classLoader = new URLClassLoader(URLArray.fromPaths(weaveEnvironment.classpath));
-        fileArchive = new FileArchive(classLoader, weaveEnvironment.target);
-        verify = BooleanUtils.toBoolean(weaveEnvironment.config.getProperty(CONFIG_VERIFY));
-        woven = new HashSet<Class<?>>();
-    }
-
-    protected void debug(String message, Object... args) {
-        log.fine(String.format(message, args));
-    }
-
-    protected void verbose(String message, Object... args) {
-        log.fine(String.format(message, args));
-    }
-
-    protected void warn(String message, Object... args) {
-        log.warning(String.format(message, args));
-    }
-
-    protected void info(String message, Object... args) {
-        log.info(String.format(message, args));
-    }
-
-    protected void error(String message, Object... args) {
-        log.severe(String.format(message, args));
+        this.env = env;
+        this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
+        this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));
+        this.classpath = env.classpath;
+        classLoader = new URLClassLoader(URLArray.fromPaths(env.classpath));
+        fileArchive = new FileArchive(classLoader, env.target);
+        verify = BooleanUtils.toBoolean(env.config.getProperty(CONFIG_VERIFY));
     }
 
     String generateName(String simple) {
@@ -178,7 +155,8 @@ public class Privilizer {
     }
 
     void blueprint(final Class<?> type, final Privilizing privilizing) {
-        debug("blueprinting class %s %s", type.getName(), privilizing);
+        Object[] args = { type.getName(), privilizing };
+        env.debug("blueprinting class %s %s", args);
         try {
             final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
 
@@ -194,7 +172,8 @@ public class Privilizer {
     }
 
     void privilize(final Class<?> type) {
-        debug("privilizing class %s", type.getName());
+        Object[] args = { type.getName() };
+        env.debug("privilizing class %s", args);
         try {
             final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
             ClassVisitor cv;
@@ -227,10 +206,10 @@ public class Privilizer {
         CheckClassAdapter.verify(reader, verifyClassLoader, false, new PrintWriter(w));
         final String error = w.toString();
         if (!error.isEmpty()) {
-            error(error);
+            env.error(error);
             final StringWriter trace = new StringWriter();
             reader.accept(new TraceClassVisitor(new PrintWriter(trace)), ClassReader.SKIP_DEBUG);
-            debug(trace.toString());
+            env.debug(trace.toString());
             throw new IllegalStateException();
         }
         Validate.validState(StringUtils.isBlank(error), error);

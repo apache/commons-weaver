@@ -114,7 +114,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         init();
         impl();
         visitEnd();
-        owner.privilizer().debug("Generated %s implementation %s to call %s#%s", actionInterface.getClassName(),
+        owner.privilizer().env.debug("Generated %s implementation %s to call %s#%s", actionInterface.getClassName(),
             action.getClassName(), owner.target.getClassName(), helper);
         return action;
     }
@@ -125,7 +125,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
      * (__privileged_):
      */
     private void generateHelper() {
-        owner.privilizer().debug("Generating static helper method %s.%s to call %s", owner.target.getClassName(),
+        owner.privilizer().env.debug("Generating static helper method %s.%s to call %s", owner.target.getClassName(),
             helper, impl);
         final GeneratorAdapter mg =
             new GeneratorAdapter(Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC, helper, null, exceptions, owner);
