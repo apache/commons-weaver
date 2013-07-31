@@ -32,15 +32,9 @@ public class StaticUsingArgsTest {
 
     @Before
     public void setUp() throws Exception {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            @Override
-            public Void run() {
-                System.setProperty("foo", "foo-value");
-                System.setProperty("bar", "bar-value");
-                System.setProperty("baz", "baz-value");
-                return null;
-            }
-        });
+        Setup.setProperty("foo", "foo-value");
+        Setup.setProperty("bar", "bar-value");
+        Setup.setProperty("baz", "baz-value");
     }
 
     @Test

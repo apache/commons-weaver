@@ -31,14 +31,7 @@ import org.junit.Test;
 public class StaticNoArgsTest {
     @Before
     public void setUp() throws Exception {
-        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-            @Override
-            public Void run() {
-                System.setProperty("foo", "foo-value");
-                return null;
-            }
-        });
+        Setup.setProperty("foo", "foo-value");
     }
 
     @Test
