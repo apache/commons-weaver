@@ -24,6 +24,19 @@ grant
   permission java.io.FilePermission "${user.dir}${/}target${/}-", "read";
 };
 
+// we don't care about the permissions of the testing infrastructure,
+// including maven;
+grant codeBase "file://${user.home}/.m2/repository/org/apache/maven/-"
+{
+  permission java.security.AllPermission;
+};
+
+// junit;
+grant codeBase "file://${user.home}/.m2/repository/junit/-"
+{
+  permission java.security.AllPermission;
+};
+
 // if you set up eclipse to propagate this property it will work :D
 grant codeBase "file://${eclipse.home}/-"
 {
@@ -32,15 +45,16 @@ grant codeBase "file://${eclipse.home}/-"
 
 // and our own testcases
 
-grant codeBase "file:${user.dir}/target/test-classes/-"
+grant codeBase "file://${user.dir}/target/test-classes/-"
 {
   permission java.security.AllPermission;
 };
 
-grant codeBase "file:${user.dir}/target/classes/-"
+grant codeBase "file://${user.dir}/target/classes/-"
 {
   permission java.util.PropertyPermission "foo", "read";
   permission java.util.PropertyPermission "bar", "read";
   permission java.util.PropertyPermission "baz", "read";
-  #permission java.lang.RuntimePermission "getClassLoader";
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };

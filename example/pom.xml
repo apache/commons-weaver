@@ -121,11 +121,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <forkMode>once</forkMode>
-              <systemPropertyVariables>
-                <surefire.security.manager>java.lang.SecurityManager</surefire.security.manager>
-                <java.security.policy>${project.basedir}/src/test/resources/java.policy</java.security.policy>
-              </systemPropertyVariables>
+              <argLine>-Djava.security.manager -Djava.security.policy=${basedir}/src/test/resources/java.policy</argLine>
             </configuration>
           </plugin>
         </plugins>
