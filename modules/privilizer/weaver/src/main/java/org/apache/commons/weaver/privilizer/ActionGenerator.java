@@ -171,7 +171,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final Method init = new Method("<init>", Type.VOID_TYPE, helper.getArgumentTypes());
 
         final GeneratorAdapter mg =
-            new GeneratorAdapter(Opcodes.ACC_PRIVATE, init, null, Privilizer.EMPTY_TYPE_ARRAY, this);
+            new GeneratorAdapter(0, init, null, Privilizer.EMPTY_TYPE_ARRAY, this);
 
         mg.visitCode();
         final Label begin = mg.mark();
@@ -206,7 +206,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
      * @param cv
      */
     private void impl() {
-        final Method run = new Method("run", result, Privilizer.EMPTY_TYPE_ARRAY);
+        final Method run = Method.getMethod("Object run()");
 
         final GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, run, null, exceptions, this);
 
