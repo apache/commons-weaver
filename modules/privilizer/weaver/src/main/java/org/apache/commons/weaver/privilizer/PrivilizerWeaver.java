@@ -77,8 +77,8 @@ public class PrivilizerWeaver implements Weaver {
         if (marker == null) {
             return privilizer.policy != Policy.NEVER;
         }
-        Validate.validState(privilizer.policy == marker.value(), "%s already privilized with policy %s", type
-            .getTarget().getName(), marker.value());
+        Validate.validState(privilizer.policy.name().equals(marker.value()), "%s already privilized with policy %s",
+            type.getTarget().getName(), marker.value());
         return false;
     }
 }
