@@ -63,7 +63,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
             annotated = true;
             final AnnotationVisitor privilizedVisitor =
                 super.visitAnnotation(Type.getType(Privilized.class).getDescriptor(), false);
-            privilizedVisitor.visitEnum("value", Type.getType(Policy.class).getDescriptor(), policy.name());
+            privilizedVisitor.visit("value", policy.name());
             privilizedVisitor.visitEnd();
         }
     }

@@ -50,7 +50,7 @@ public class PrivilizerCleaner implements Cleaner {
 
         LOG.log(Level.FINE, "Cleaning classes privilized with policy other than {0}", privilizer.policy);
         for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
-            final Policy privilizedPolicy = weavableClass.getAnnotation(Privilized.class).value();
+            final Policy privilizedPolicy = Policy.valueOf(weavableClass.getAnnotation(Privilized.class).value());
             if (privilizedPolicy == privilizer.policy) {
                 continue;
             }

@@ -26,5 +26,5 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 public @interface Privilized {
-    Policy value();
+    String value();
 }
