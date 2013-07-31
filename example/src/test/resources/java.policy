@@ -37,24 +37,11 @@ grant codeBase "file://${user.home}/.m2/repository/junit/-"
   permission java.security.AllPermission;
 };
 
-// if you set up eclipse to propagate this property it will work :D
-grant codeBase "file://${eclipse.home}/-"
-{
-  permission java.security.AllPermission;
-};
-
-// and our own testcases
-
-grant codeBase "file://${user.dir}/target/test-classes/-"
-{
-  permission java.security.AllPermission;
-};
-
 grant codeBase "file://${user.dir}/target/classes/-"
 {
-  permission java.util.PropertyPermission "foo", "read";
-  permission java.util.PropertyPermission "bar", "read";
-  permission java.util.PropertyPermission "baz", "read";
+  permission java.util.PropertyPermission "foo", "read,write";
+  permission java.util.PropertyPermission "bar", "read,write";
+  permission java.util.PropertyPermission "baz", "read,write";
   permission java.lang.RuntimePermission "accessDeclaredMembers";
   permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
