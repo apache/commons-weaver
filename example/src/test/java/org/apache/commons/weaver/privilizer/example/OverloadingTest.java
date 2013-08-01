@@ -17,9 +17,6 @@ package org.apache.commons.weaver.privilizer.example;
 
 import static org.junit.Assert.assertEquals;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.junit.Before;
 import org.junit.Test;
 
