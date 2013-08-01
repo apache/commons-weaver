@@ -81,10 +81,11 @@ public class Privilizer {
             final byte[] bytecode = ((ClassWriter) cv).toByteArray();
 
             if (verify) {
-                verify(target, bytecode);
+                verify(className, bytecode);
             }
 
             final File f = new File(fileArchive.getDir(), className.replace('.', File.separatorChar) + ".class");
+            env.debug("Writing class %s to %s", className, f);
             try {
                 FileUtils.writeByteArrayToFile(f, bytecode);
             } catch (IOException e) {
@@ -131,26 +132,26 @@ public class Privilizer {
 
     Type wrap(Type t) {
         switch (t.getSort()) {
-            case Type.BOOLEAN:
-                return Type.getType(Boolean.class);
-            case Type.BYTE:
-                return Type.getType(Byte.class);
-            case Type.SHORT:
-                return Type.getType(Short.class);
-            case Type.INT:
-                return Type.getType(Integer.class);
-            case Type.CHAR:
-                return Type.getType(Character.class);
-            case Type.LONG:
-                return Type.getType(Long.class);
-            case Type.FLOAT:
-                return Type.getType(Float.class);
-            case Type.DOUBLE:
-                return Type.getType(Double.class);
-            case Type.VOID:
-                return Type.getType(Void.class);
-            default:
-                return t;
+        case Type.BOOLEAN:
+            return Type.getType(Boolean.class);
+        case Type.BYTE:
+            return Type.getType(Byte.class);
+        case Type.SHORT:
+            return Type.getType(Short.class);
+        case Type.INT:
+            return Type.getType(Integer.class);
+        case Type.CHAR:
+            return Type.getType(Character.class);
+        case Type.LONG:
+            return Type.getType(Long.class);
+        case Type.FLOAT:
+            return Type.getType(Float.class);
+        case Type.DOUBLE:
+            return Type.getType(Double.class);
+        case Type.VOID:
+            return Type.getType(Void.class);
+        default:
+            return t;
         }
     }
 
@@ -186,15 +187,15 @@ public class Privilizer {
         }
     }
 
-    void verify(final Type target, final byte[] bytecode) {
+    void verify(final String className, final byte[] bytecode) {
         final ClassReader reader = new ClassReader(bytecode);
 
         // use a new classloader that is always up to date:
         final ClassLoader verifyClassLoader = new URLClassLoader(URLArray.fromPaths(classpath)) {
             @Override
             protected Class<?> findClass(String name) throws ClassNotFoundException {
-                if (target.getClassName().equals(name)) {
-                    final Class<?> result = defineClass(target.getClassName(), bytecode, 0, bytecode.length);
+                if (className.equals(name)) {
+                    final Class<?> result = defineClass(className, bytecode, 0, bytecode.length);
                     resolveClass(result);
                     return result;
                 }
@@ -202,6 +203,7 @@ public class Privilizer {
             }
         };
 
+        env.debug("Verifying bytecode for class %s", className);
         final StringWriter w = new StringWriter();
         CheckClassAdapter.verify(reader, verifyClassLoader, false, new PrintWriter(w));
         final String error = w.toString();
