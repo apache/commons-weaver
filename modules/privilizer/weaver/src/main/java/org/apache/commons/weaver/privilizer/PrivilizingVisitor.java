@@ -28,10 +28,6 @@ import java.util.Map;
 import javassist.Modifier;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.weaver.privilizer.AccessLevel;
-import org.apache.commons.weaver.privilizer.Policy;
-import org.apache.commons.weaver.privilizer.Privileged;
-import org.apache.commons.weaver.privilizer.Privilized;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -117,6 +113,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 final boolean instanceMethod = !Modifier.isStatic(access);
 
                 if (policy.isConditional()) {
+                    privilizer().env.debug("setting up conditional execution due to policy %s", policy);
                     // test, loading boolean
                     if (policy == Policy.ON_INIT) {
                         getStatic(target, privilizer().generateName("hasSecurityManager"), Type.BOOLEAN_TYPE);
@@ -124,7 +121,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                         checkSecurityManager(this);
                     }
                     final Label doPrivileged = new Label();
-                    
+
                     // if true, goto doPrivileged:
                     ifZCmp(NE, doPrivileged);
 
@@ -139,6 +136,8 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                     }
                     returnValue();
                     mark(doPrivileged);
+                } else {
+                    privilizer().env.debug("setting up unconditional privileged execution due to policy %s", policy);
                 }
 
                 // generate action:
@@ -209,9 +208,8 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
             mg.putStatic(target, fieldName, Type.BOOLEAN_TYPE);
             mg.returnValue();
             mg.endMethod();
-
-            super.visitEnd();
         }
+        super.visitEnd();
     }
 
     /**
