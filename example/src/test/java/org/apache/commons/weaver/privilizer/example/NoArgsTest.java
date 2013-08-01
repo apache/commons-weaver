@@ -20,9 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.apache.commons.weaver.privilizer.example.NoArgs.CheckedException1;
 import org.apache.commons.weaver.privilizer.example.NoArgs.CheckedException2;
 import org.junit.Before;
