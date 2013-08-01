@@ -19,15 +19,12 @@ import java.io.File;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
-import org.apache.commons.weaver.privilizer.Privilizer;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -37,8 +34,6 @@ import org.objectweb.asm.Opcodes;
  * Removes classes privilized with a different policy.
  */
 public class PrivilizerCleaner implements Cleaner {
-    private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
-    private static final Logger LOG = Logger.getLogger(PrivilizerCleaner.class.getName());
 
     @Override
     public boolean clean(WeaveEnvironment environment, Scanner scanner) {
@@ -48,15 +43,14 @@ public class PrivilizerCleaner implements Cleaner {
 
         final ScanRequest scanRequest = new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
 
-        LOG.log(Level.FINE, "Cleaning classes privilized with policy other than {0}", privilizer.policy);
+        environment.debug("Cleaning classes privilized with policy other than %s", privilizer.policy);
         for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
             final Policy privilizedPolicy = Policy.valueOf(weavableClass.getAnnotation(Privilized.class).value());
             if (privilizedPolicy == privilizer.policy) {
                 continue;
             }
             final String className = weavableClass.getTarget().getName();
-            LOG.log(Level.FINE, "Class {0} privilized with {1}; deleting.",
-                new Object[] { className, privilizedPolicy });
+            environment.debug("Class %s privilized with %s; deleting.", className, privilizedPolicy);
 
             try {
                 final ClassReader classReader = new ClassReader(privilizer.fileArchive.getBytecode(className));
@@ -73,7 +67,7 @@ public class PrivilizerCleaner implements Cleaner {
                             toDelete.add(name);
                         }
                     }
-                }, ASM_FLAGS);
+                }, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -82,8 +76,7 @@ public class PrivilizerCleaner implements Cleaner {
         for (String className : toDelete) {
             final File classfile = new File(environment.target, toResourcePath(className));
             final boolean success = classfile.delete();
-            LOG.log(Level.FINE, "Deletion of {0} was {1}.", new Object[] { classfile,
-                success ? "successful" : "unsuccessful" });
+            environment.debug("Deletion of %s was %ssuccessful.", classfile, success ? "" : "un");
             result |= success;
         }
         return result;
