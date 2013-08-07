@@ -18,14 +18,13 @@
  */
 package org.apache.commons.weaver.privilizer;
 
+import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javassist.Modifier;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.objectweb.asm.AnnotationVisitor;
