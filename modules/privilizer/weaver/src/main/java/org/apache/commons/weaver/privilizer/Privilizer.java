@@ -20,6 +20,7 @@ package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URLClassLoader;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -158,8 +160,10 @@ public class Privilizer {
     void blueprint(final Class<?> type, final Privilizing privilizing) {
         Object[] args = { type.getName(), privilizing };
         env.debug("blueprinting class %s %s", args);
+        InputStream bytecode = null;
         try {
-            final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
+            bytecode = fileArchive.getBytecode(type.getName());
+            final ClassReader classReader = new ClassReader(bytecode);
 
             ClassVisitor cv;
             cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
@@ -169,14 +173,18 @@ public class Privilizer {
             classReader.accept(cv, ClassReader.EXPAND_FRAMES);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(bytecode);
         }
     }
 
     void privilize(final Class<?> type) {
         Object[] args = { type.getName() };
         env.debug("privilizing class %s", args);
+        InputStream bytecode = null;
         try {
-            final ClassReader classReader = new ClassReader(fileArchive.getBytecode(type.getName()));
+            bytecode = fileArchive.getBytecode(type.getName());
+            final ClassReader classReader = new ClassReader(bytecode);
             ClassVisitor cv;
             cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
             cv = new PrivilizingVisitor(this, cv);
@@ -184,6 +192,8 @@ public class Privilizer {
             classReader.accept(cv, ClassReader.EXPAND_FRAMES);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(bytecode);
         }
     }
 
