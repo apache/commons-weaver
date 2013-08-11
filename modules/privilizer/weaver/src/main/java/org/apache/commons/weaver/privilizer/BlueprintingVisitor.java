@@ -297,7 +297,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         }
 
         private Class<?> load(Type t) throws ClassNotFoundException {
-            return privilizer().classLoader.loadClass(t.getClassName());
+            return privilizer().env.classLoader.loadClass(t.getClassName());
         }
     }
 
