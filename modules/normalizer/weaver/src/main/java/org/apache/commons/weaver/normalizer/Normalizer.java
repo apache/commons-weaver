@@ -16,9 +16,9 @@
  */
 package org.apache.commons.weaver.normalizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.nio.charset.Charset;
@@ -30,7 +30,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
+import javax.activation.DataSource;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -43,7 +44,6 @@ import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
-import org.apache.xbean.finder.archive.FileArchive;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -96,12 +96,16 @@ public class Normalizer {
             super.visitEnd();
             final byte[] bytecode = ((ClassWriter) cv).toByteArray();
 
-            final File f = new File(fileArchive.getDir(), className.replace('.', File.separatorChar) + ".class");
-            env.debug("Writing class %s to %s", className, f);
+            final DataSource classfile = env.getClassfile(className);
+            env.debug("Writing class %s to %s", className, classfile.getName());
+            OutputStream outputStream = null;
             try {
-                FileUtils.writeByteArrayToFile(f, bytecode);
+                outputStream = classfile.getOutputStream();
+                IOUtils.write(bytecode, outputStream);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(outputStream);
             }
         }
     }
@@ -126,14 +130,12 @@ public class Normalizer {
     private static final Charset UTF8 = Charset.forName(CharEncoding.UTF_8);
 
     private final WeaveEnvironment env;
-    private final FileArchive fileArchive;
 
     private final Set<Class<?>> normalizeTypes;
     private final String targetPackage;
 
     public Normalizer(WeaveEnvironment env) {
         this.env = env;
-        fileArchive = new FileArchive(env.classLoader, env.target);
 
         this.targetPackage =
             Utils.validatePackageName(Validate.notBlank(env.config.getProperty(CONFIG_TARGET_PACKAGE),
@@ -189,8 +191,9 @@ public class Normalizer {
             }
             final Remapper remapper = new SimpleRemapper(classMap);
 
-            final InputStream enclosingBytecode = fileArchive.getBytecode(outer);
+            InputStream enclosingBytecode = null;
             try {
+                enclosingBytecode = env.getClassfile(outer).getInputStream();
                 final ClassReader reader = new ClassReader(enclosingBytecode);
 
                 final ClassVisitor cv = new RemappingClassAdapter(new WriteClass(reader), remapper) {
@@ -229,14 +232,10 @@ public class Normalizer {
                 IOUtils.closeQuietly(enclosingBytecode);
             }
             for (String merged : e.getValue().keySet()) {
-                final File classfile = new File(env.target, merged + ".class");
-                if (!classfile.exists()) {
-                    env.error("Cannot find classfile for type %s; expected at %s", merged, classfile);
-                }
-                if (classfile.delete()) {
-                    env.debug("Deleted classfile %s", classfile);
+                if (env.deleteClassfile(merged)) {
+                    env.debug("Deleted class %s", merged);
                 } else {
-                    env.warn("Unable to delete classfile %s", classfile);
+                    env.warn("Unable to delete class %s", merged);
                 }
             }
         }
@@ -307,9 +306,10 @@ public class Normalizer {
             final MutablePair<String, String> key = new MutablePair<String, String>();
             final MutableBoolean valid = new MutableBoolean(true);
             final MutableBoolean mustRewriteConstructor = new MutableBoolean();
-            final InputStream bytecode = fileArchive.getBytecode(subtype.getName());
+            InputStream bytecode = null;
 
             try {
+                bytecode = env.getClassfile(subtype).getInputStream();
                 new ClassReader(bytecode).accept(new ClassVisitor(Opcodes.ASM4) {
                     String superName;
 
@@ -406,12 +406,12 @@ public class Normalizer {
 
         final String result = new StringBuilder(targetPackage).append("/$normalized").append(digest).toString();
 
-        final String className = classWrapper.wrapped.getName();
-        env.debug("Copying class %s to %s", className, result);
+        env.debug("Copying class %s to %s", classWrapper.wrapped.getName(), result);
 
-        final InputStream bytecode = fileArchive.getBytecode(className);
+        InputStream bytecode = null;
 
         try {
+            bytecode = env.getClassfile(classWrapper.wrapped).getInputStream();
             final ClassReader reader = new ClassReader(bytecode);
 
             final ClassVisitor w = new WriteClass();

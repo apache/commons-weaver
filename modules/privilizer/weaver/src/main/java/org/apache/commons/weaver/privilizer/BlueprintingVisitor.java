@@ -111,7 +111,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         final ClassNode result = new ClassNode(Opcodes.ASM4);
         InputStream bytecode = null;
         try {
-            bytecode = privilizer().fileArchive.getBytecode(className);
+            bytecode = privilizer().env.getClassfile(className).getInputStream();
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -204,7 +204,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                     stk.push(next.getValue());
                     InputStream bytecode = null;
                     try {
-                        bytecode = privilizer().fileArchive.getBytecode(next.getValue().getInternalName());
+                        bytecode = privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream();
                         new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
                             @Override
                             public void visit(int version, int access, String name, String signature, String superName,

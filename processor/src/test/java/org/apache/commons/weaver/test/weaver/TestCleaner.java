@@ -18,7 +18,6 @@
  */
 package org.apache.commons.weaver.test.weaver;
 
-import java.io.File;
 import java.lang.annotation.ElementType;
 
 import org.apache.commons.weaver.model.ScanRequest;
@@ -29,8 +28,6 @@ import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.apache.commons.weaver.test.beans.TestAnnotation;
 
-/**
- */
 public class TestCleaner implements Cleaner {
 
     @Override
@@ -42,11 +39,7 @@ public class TestCleaner implements Cleaner {
                 WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
 
         for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
-
-            final File classFile =
-                new File(environment.target, weavableClass.getTarget().getName().replace('.', File.separatorChar)
-                    + ".class");
-            if (classFile.delete()) {
+            if (environment.deleteClassfile(weavableClass.getTarget())) {
                 result = true;
             } else {
                 break;

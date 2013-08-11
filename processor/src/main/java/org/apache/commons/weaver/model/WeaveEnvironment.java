@@ -18,9 +18,13 @@
  */
 package org.apache.commons.weaver.model;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import javax.activation.DataSource;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.spi.Cleaner;
@@ -29,13 +33,38 @@ import org.apache.commons.weaver.spi.Weaver;
 /**
  * Encapsulates the environment in which a {@link Weaver} or {@link Cleaner} must operate.
  */
-public class WeaveEnvironment {
+public abstract class WeaveEnvironment {
+    private static final String CONTENT_TYPE = "application/octet-stream";
 
-    /**
-     * Target where weavable classes reside.
-     */
-    public final File target;
-    
+    private class Resource implements DataSource {
+        private final String name;
+
+        Resource(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getContentType() {
+            return CONTENT_TYPE;
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return classLoader.getResourceAsStream(name);
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public OutputStream getOutputStream() throws IOException {
+            return WeaveEnvironment.this.getOutputStream(name);
+        }
+
+    }
+
     /**
      * ClassLoader containing scannable and weavable classes.
      */
@@ -46,19 +75,18 @@ public class WeaveEnvironment {
      * "privilizer".
      */
     public final Properties config;
-    
+
     private final Logger log;
 
     /**
      * Create a new {@link WeaveEnvironment}.
-     * @param target
+     * 
      * @param classLoader
      * @param config
      * @param log
      */
-    public WeaveEnvironment(File target, ClassLoader classLoader, Properties config, Logger log) {
+    protected WeaveEnvironment(ClassLoader classLoader, Properties config, Logger log) {
         super();
-        this.target = Validate.notNull(target, "target");
         this.classLoader = classLoader;
         this.config = (Properties) Validate.notNull(config, "config").clone();
         this.log = log;
@@ -84,4 +112,31 @@ public class WeaveEnvironment {
         log.severe(String.format(message, args));
     }
 
+    public final DataSource getClassfile(Class<?> cls) {
+        return getClassfile(cls.getName());
+    }
+
+    public final DataSource getClassfile(String classname) {
+        return getResource(getResourceName(classname));
+    }
+
+    public final DataSource getResource(String name) {
+        return new Resource(name);
+    }
+
+    public final boolean deleteClassfile(Class<?> cls) {
+        return deleteClassfile(cls.getName());
+    }
+
+    public final boolean deleteClassfile(String classname) {
+        return deleteResource(getResourceName(classname));
+    }
+
+    public abstract boolean deleteResource(String name);
+
+    protected abstract OutputStream getOutputStream(String resourceName) throws IOException;
+
+    protected static String getResourceName(String classname) {
+        return classname.replace('.', '/') + ".class";
+    }
 }

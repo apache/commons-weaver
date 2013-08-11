@@ -75,6 +75,7 @@ public class WeaveProcessor {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
+        Validate.isTrue(target.isDirectory(), "%s is not a directory", target);
         this.configuration = Validate.notNull(configuration, "configuration");
     }
 
@@ -86,7 +87,7 @@ public class WeaveProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Weaver weaver : WEAVERS) {
             final WeaveEnvironment env =
-                new WeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass().getName()));
+                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass().getName()));
             weaver.process(env, finder);
         }
     }

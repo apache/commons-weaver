@@ -21,18 +21,19 @@ package org.apache.commons.weaver.privilizer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
+import javax.activation.DataSource;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
-import org.apache.xbean.finder.archive.FileArchive;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -80,12 +81,17 @@ public class Privilizer {
                 verify(className, bytecode);
             }
 
-            final File f = new File(fileArchive.getDir(), className.replace('.', File.separatorChar) + ".class");
-            env.debug("Writing class %s to %s", className, f);
+            final String resourceName = className.replace('.', File.separatorChar) + ".class";
+            final DataSource classfile = env.getResource(resourceName);
+            env.debug("Writing class %s to resource %s", className, resourceName);
+            OutputStream outputStream = null;
             try {
-                FileUtils.writeByteArrayToFile(f, bytecode);
+                outputStream = classfile.getOutputStream();
+                IOUtils.write(bytecode, outputStream);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(outputStream);
             }
         }
     }
@@ -104,7 +110,6 @@ public class Privilizer {
 
     final WeaveEnvironment env;
     final AccessLevel accessLevel;
-    final FileArchive fileArchive;
     final Policy policy;
     final boolean verify;
 
@@ -113,7 +118,6 @@ public class Privilizer {
         this.env = env;
         this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
         this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));
-        fileArchive = new FileArchive(env.classLoader, env.target);
         verify = BooleanUtils.toBoolean(env.config.getProperty(CONFIG_VERIFY));
     }
 
@@ -151,7 +155,7 @@ public class Privilizer {
         env.debug("blueprinting class %s %s", args);
         InputStream bytecode = null;
         try {
-            bytecode = fileArchive.getBytecode(type.getName());
+            bytecode = env.getClassfile(type).getInputStream();
             final ClassReader classReader = new ClassReader(bytecode);
 
             ClassVisitor cv;
@@ -172,7 +176,7 @@ public class Privilizer {
         env.debug("privilizing class %s", args);
         InputStream bytecode = null;
         try {
-            bytecode = fileArchive.getBytecode(type.getName());
+            bytecode = env.getClassfile(type).getInputStream();
             final ClassReader classReader = new ClassReader(bytecode);
             ClassVisitor cv;
             cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));

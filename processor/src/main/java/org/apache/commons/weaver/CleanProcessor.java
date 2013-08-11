@@ -74,6 +74,7 @@ public class CleanProcessor {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
+        Validate.isTrue(target.isDirectory(), "%s is not a directory", target);
         this.configuration = Validate.notNull(configuration, "configuration");
     }
 
@@ -85,7 +86,7 @@ public class CleanProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Cleaner cleaner : CLEANERS) {
             final WeaveEnvironment env =
-                new WeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass().getName()));
+                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass().getName()));
             cleaner.clean(env, finder);
         }
     }

@@ -18,7 +18,6 @@
  */
 package org.apache.commons.weaver.privilizer;
 
-import java.io.File;
 import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class PrivilizerCleaner implements Cleaner {
 
             InputStream bytecode = null;
             try {
-                bytecode = privilizer.fileArchive.getBytecode(className);
+                bytecode = privilizer.env.getClassfile(className).getInputStream();
                 final ClassReader classReader = new ClassReader(bytecode);
                 classReader.accept(new ClassVisitor(Opcodes.ASM4) {
                     @Override
@@ -83,9 +82,9 @@ public class PrivilizerCleaner implements Cleaner {
         }
         boolean result = false;
         for (String className : toDelete) {
-            final File classfile = new File(environment.target, toResourcePath(className));
-            final boolean success = classfile.delete();
-            environment.debug("Deletion of %s was %ssuccessful.", classfile, success ? "" : "un");
+            final String resourcePath = toResourcePath(className);
+            final boolean success = environment.deleteResource(resourcePath);
+            environment.debug("Deletion of resource %s was %ssuccessful.", resourcePath, success ? "" : "un");
             result |= success;
         }
         return result;
