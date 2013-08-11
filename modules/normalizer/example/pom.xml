@@ -21,26 +21,18 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-parent</artifactId>
+    <artifactId>commons-weaver-normalizer-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>commons-weaver-example</artifactId>
-  <name>Commons Weaver Privilizer Example</name>
+  <artifactId>commons-weaver-normalizer-example</artifactId>
+  <name>commons-weaver-normalizer-example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <privilizer.policy>ON_INIT</privilizer.policy>
-    <privilizer.verify>true</privilizer.verify>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-privilizer-api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -56,9 +48,11 @@ under the License.
         <version>${project.version}</version>
         <configuration>
           <weaverConfig>
-            <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
-            <privilizer.policy>${privilizer.policy}</privilizer.policy>
-            <privilizer.verify>${privilizer.verify}</privilizer.verify>
+            <normalizer.superTypes>
+              org.apache.commons.weaver.normalizer.example.TypeLiteral,
+              org.apache.commons.weaver.normalizer.example.ContrivedWrapper
+            </normalizer.superTypes>
+            <normalizer.targetPackage>org.apache.commons.weaver.normalizer.example.normalized</normalizer.targetPackage>
           </weaverConfig>
         </configuration>
         <executions>
@@ -72,12 +66,7 @@ under the License.
         <dependencies>
           <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-weaver-privilizer-api</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-weaver-privilizer</artifactId>
+            <artifactId>commons-weaver-normalizer</artifactId>
             <version>${project.version}</version>
             <exclusions>
               <exclusion>
@@ -92,6 +81,10 @@ under the License.
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-tree</artifactId>
               </exclusion>
+              <exclusion>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-util</artifactId>
+              </exclusion>
             </exclusions>
           </dependency>
           <dependency>
@@ -101,39 +94,6 @@ under the License.
           </dependency>
         </dependencies>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-        </configuration>
-      </plugin>
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
-  <profiles>
-    <profile>
-      <id>sec</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>-Djava.security.manager -Djava.security.policy=${basedir}/src/test/resources/java.policy</argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

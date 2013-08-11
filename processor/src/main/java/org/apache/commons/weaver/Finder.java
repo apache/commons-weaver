@@ -681,10 +681,10 @@ class Finder extends AnnotationFinder implements Scanner {
                     // should we log something?
                     break;
             }
-            for (Class<?> supertype : request.getSupertypes()) {
-                for (Annotated<Class<?>> type : this.withAnnotations().findAssignableTypes(supertype)) {
-                    result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
-                }
+        }
+        for (Class<?> supertype : request.getSupertypes()) {
+            for (Annotated<Class<?>> type : this.withAnnotations().findAssignableTypes(supertype)) {
+                result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
             }
         }
         return inflater.inflate(result);
