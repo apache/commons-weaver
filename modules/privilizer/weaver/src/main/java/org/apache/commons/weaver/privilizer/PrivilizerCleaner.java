@@ -19,10 +19,12 @@
 package org.apache.commons.weaver.privilizer;
 
 import java.io.File;
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
@@ -55,8 +57,10 @@ public class PrivilizerCleaner implements Cleaner {
             final String className = weavableClass.getTarget().getName();
             environment.debug("Class %s privilized with %s; deleting.", className, privilizedPolicy);
 
+            InputStream bytecode = null;
             try {
-                final ClassReader classReader = new ClassReader(privilizer.fileArchive.getBytecode(className));
+                bytecode = privilizer.fileArchive.getBytecode(className);
+                final ClassReader classReader = new ClassReader(bytecode);
                 classReader.accept(new ClassVisitor(Opcodes.ASM4) {
                     @Override
                     public void visit(int version, int access, String name, String signature, String superName,
@@ -73,6 +77,8 @@ public class PrivilizerCleaner implements Cleaner {
                 }, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(bytecode);
             }
         }
         boolean result = false;

@@ -18,6 +18,7 @@
  */
 package org.apache.commons.weaver.privilizer;
 
+import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -107,11 +109,14 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private ClassNode read(String className) {
         final ClassNode result = new ClassNode(Opcodes.ASM4);
+        InputStream bytecode = null;
         try {
-            new ClassReader(privilizer().fileArchive.getBytecode(className)).accept(result, ClassReader.SKIP_DEBUG
-                | ClassReader.EXPAND_FRAMES);
+            bytecode = privilizer().fileArchive.getBytecode(className);
+            new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(bytecode);
         }
         return result;
     }
@@ -197,8 +202,10 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                 final Deque<Type> stk = new ArrayDeque<Type>();
                 while (next.getValue() != null) {
                     stk.push(next.getValue());
-                    new ClassReader(privilizer().fileArchive.getBytecode(next.getValue().getInternalName())).accept(
-                        privilizer().new PrivilizerClassVisitor() {
+                    InputStream bytecode = null;
+                    try {
+                        bytecode = privilizer().fileArchive.getBytecode(next.getValue().getInternalName());
+                        new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
                             @Override
                             public void visit(int version, int access, String name, String signature, String superName,
                                 String[] interfaces) {
@@ -219,6 +226,9 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                                 return null;
                             }
                         }, ClassReader.SKIP_CODE);
+                    } finally {
+                        IOUtils.closeQuietly(bytecode);
+                    }
                     if (fieldAccessMap.containsKey(key)) {
                         break;
                     }
