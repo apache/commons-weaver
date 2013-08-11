@@ -19,8 +19,6 @@
 package org.apache.commons.weaver.model;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -32,10 +30,6 @@ import org.apache.commons.weaver.spi.Weaver;
  * Encapsulates the environment in which a {@link Weaver} or {@link Cleaner} must operate.
  */
 public class WeaveEnvironment {
-    /**
-     * Classpath.
-     */
-    public final List<String> classpath;
 
     /**
      * Target where weavable classes reside.
@@ -57,16 +51,13 @@ public class WeaveEnvironment {
 
     /**
      * Create a new {@link WeaveEnvironment}.
-     * 
-     * @param classpath
      * @param target
      * @param classLoader
      * @param config
      * @param log
      */
-    public WeaveEnvironment(List<String> classpath, File target, ClassLoader classLoader, Properties config, Logger log) {
+    public WeaveEnvironment(File target, ClassLoader classLoader, Properties config, Logger log) {
         super();
-        this.classpath = Collections.unmodifiableList(Validate.notNull(classpath, "classpath"));
         this.target = Validate.notNull(target, "target");
         this.classLoader = classLoader;
         this.config = (Properties) Validate.notNull(config, "config").clone();

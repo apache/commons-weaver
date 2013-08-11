@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URLClassLoader;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -34,10 +32,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
-import org.apache.commons.weaver.privilizer.AccessLevel;
-import org.apache.commons.weaver.privilizer.Policy;
-import org.apache.commons.weaver.privilizer.Privilizing;
-import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.archive.FileArchive;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -110,21 +104,16 @@ public class Privilizer {
 
     final WeaveEnvironment env;
     final AccessLevel accessLevel;
-    final ClassLoader classLoader;
     final FileArchive fileArchive;
     final Policy policy;
     final boolean verify;
-
-    private final List<String> classpath;
 
     public Privilizer(WeaveEnvironment env) {
         super();
         this.env = env;
         this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
         this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));
-        this.classpath = env.classpath;
-        classLoader = new URLClassLoader(URLArray.fromPaths(env.classpath));
-        fileArchive = new FileArchive(classLoader, env.target);
+        fileArchive = new FileArchive(env.classLoader, env.target);
         verify = BooleanUtils.toBoolean(env.config.getProperty(CONFIG_VERIFY));
     }
 
@@ -200,22 +189,9 @@ public class Privilizer {
     void verify(final String className, final byte[] bytecode) {
         final ClassReader reader = new ClassReader(bytecode);
 
-        // use a new classloader that is always up to date:
-        final ClassLoader verifyClassLoader = new URLClassLoader(URLArray.fromPaths(classpath)) {
-            @Override
-            protected Class<?> findClass(String name) throws ClassNotFoundException {
-                if (className.equals(name)) {
-                    final Class<?> result = defineClass(className, bytecode, 0, bytecode.length);
-                    resolveClass(result);
-                    return result;
-                }
-                return super.findClass(name);
-            }
-        };
-
         env.debug("Verifying bytecode for class %s", className);
         final StringWriter w = new StringWriter();
-        CheckClassAdapter.verify(reader, verifyClassLoader, false, new PrintWriter(w));
+        CheckClassAdapter.verify(reader, env.classLoader, false, new PrintWriter(w));
         final String error = w.toString();
         if (!error.isEmpty()) {
             env.error(error);
