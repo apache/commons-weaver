@@ -86,7 +86,8 @@ public class WeaveProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Weaver weaver : WEAVERS) {
             final WeaveEnvironment env =
-                new WeaveEnvironment(classpath, target, configuration, Logger.getLogger(weaver.getClass().getName()));
+                new WeaveEnvironment(classpath, target, classLoader, configuration, Logger.getLogger(weaver.getClass()
+                    .getName()));
             weaver.process(env, finder);
         }
     }

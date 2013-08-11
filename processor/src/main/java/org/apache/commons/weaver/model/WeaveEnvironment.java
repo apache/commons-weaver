@@ -38,9 +38,14 @@ public class WeaveEnvironment {
     public final List<String> classpath;
 
     /**
-     * Target where scannable/weavable classes reside.
+     * Target where weavable classes reside.
      */
     public final File target;
+    
+    /**
+     * ClassLoader containing scannable and weavable classes.
+     */
+    public final ClassLoader classLoader;
 
     /**
      * Configuration properties. By convention, any configuration property should start with its name, e.g.
@@ -55,13 +60,15 @@ public class WeaveEnvironment {
      * 
      * @param classpath
      * @param target
+     * @param classLoader
      * @param config
      * @param log
      */
-    public WeaveEnvironment(List<String> classpath, File target, Properties config, Logger log) {
+    public WeaveEnvironment(List<String> classpath, File target, ClassLoader classLoader, Properties config, Logger log) {
         super();
         this.classpath = Collections.unmodifiableList(Validate.notNull(classpath, "classpath"));
         this.target = Validate.notNull(target, "target");
+        this.classLoader = classLoader;
         this.config = (Properties) Validate.notNull(config, "config").clone();
         this.log = log;
     }

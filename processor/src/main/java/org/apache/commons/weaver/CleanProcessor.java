@@ -85,7 +85,8 @@ public class CleanProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Cleaner cleaner : CLEANERS) {
             final WeaveEnvironment env =
-                new WeaveEnvironment(classpath, target, configuration, Logger.getLogger(cleaner.getClass().getName()));
+                new WeaveEnvironment(classpath, target, classLoader, configuration, Logger.getLogger(cleaner.getClass()
+                    .getName()));
             cleaner.clean(env, finder);
         }
     }
