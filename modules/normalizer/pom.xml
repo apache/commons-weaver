@@ -18,27 +18,27 @@ specific language governing permissions and limitations
 under the License.
 --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <artifactId>commons-weaver-parent</artifactId>
     <groupId>org.apache.commons</groupId>
+    <artifactId>commons-weaver-modules-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-weaver-modules-parent</artifactId>
+  <artifactId>commons-weaver-normalizer-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Commons Weaver Modules aggregator project</name>
+  <name>Commons Weaver Normalizer Parent POM</name>
+
+  <description>
+    The Normalizer module merges identical anonymous class definitions into
+    a single type, thereby "normalizing" them and reducing their
+    collective footprint on your archive and more importantly on your JVM.
+  </description>
+
   <modules>
-    <module>privilizer</module>
-    <module>normalizer</module>
+    <module>weaver</module>
+    <module>example</module>
   </modules>
-  <dependencies>
-      <dependency>
-          <!-- we need this dependency for the reactor to correctly resolve the build order -->
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-weaver-maven-plugin</artifactId>
-          <version>${project.version}</version>
-          <scope>test</scope>
-      </dependency>
-  </dependencies>
 </project>
+
