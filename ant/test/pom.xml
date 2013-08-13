@@ -27,7 +27,8 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-antlib-test</artifactId>
-  <name>Commons Privilizer Antlib Test</name>
+  <name>Commons Weaver Antlib Test</name>
+  <description>Uses the privilizer example to test the antlib</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,13 +42,18 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-privilizer</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-antlib</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -60,11 +66,7 @@ under the License.
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <forkMode>once</forkMode>
-              <systemPropertyVariables>
-                <surefire.security.manager>java.lang.SecurityManager</surefire.security.manager>
-                <java.security.policy>${project.build.directory}/example-test-resources/java.policy</java.security.policy>
-              </systemPropertyVariables>
+              <argLine>-Djava.security.manager -Djava.security.policy=${project.build.directory}/example-test-resources/java.policy</argLine>
             </configuration>
           </plugin>
         </plugins>
@@ -90,7 +92,7 @@ under the License.
                 <configuration>
                   <classifier>sources</classifier>
                   <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-privilizer-example</includeArtifactIds>
+                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
                   <includes>**/*.java</includes>
                   <outputDirectory>${project.build.directory}/example-sources</outputDirectory>
                 </configuration>
@@ -114,7 +116,7 @@ under the License.
                 <configuration>
                   <classifier>test-sources</classifier>
                   <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-privilizer-example</includeArtifactIds>
+                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
                   <includes>**/*.java</includes>
                   <outputDirectory>${project.build.directory}/example-test-sources</outputDirectory>
                 </configuration>
@@ -128,7 +130,7 @@ under the License.
                 <configuration>
                   <classifier>test-sources</classifier>
                   <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-privilizer-example</includeArtifactIds>
+                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
                   <includes>java.policy</includes>
                   <outputDirectory>${project.build.directory}/example-test-resources</outputDirectory>
                 </configuration>
