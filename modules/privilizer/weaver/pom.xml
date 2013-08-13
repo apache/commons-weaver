@@ -26,9 +26,9 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-privilizer</artifactId>
-  <name>Commons Privilizer Weaver</name>
+  <name>Commons Weaver Privilizer Weaver</name>
   <description>
-    Privilizer provides machinery to automate the handling of Java Security access controls in code.
+    Implements the Commons Weaver SPI for the Privilizer module.
   </description>
 
   <dependencies>
