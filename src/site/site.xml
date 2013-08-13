@@ -15,14 +15,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project name="Commons Privilizer">
+<project name="Commons Weaver">
   <bannerRight>
-    <name>Commons Privilizer</name>
-    <src>/images/privilizer-logo-white.png</src>
+    <name>Commons Weaver</name>
+    <src>/images/weaver-logo-white.png</src>
     <href>/index.html</href>
   </bannerRight>
   <body>
-    <menu name="Commons Privilizer">
+    <menu name="Commons Weaver">
       <item name="Overview" href="/index.html"/>
       <item name="Javadoc" href="apidocs/index.html"/>
       <item name="Mailing lists" href="/mail-lists.html"/>
