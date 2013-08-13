@@ -27,8 +27,8 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-antlib</artifactId>
-  <name>Commons Privilizer Antlib</name>
-  <description>Privilizing Ant tasks.</description>
+  <name>Commons Weaver Antlib</name>
+  <description>Commons Weaver Ant task library</description>
 
     <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,7 +49,7 @@ under the License.
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.8.4</version>
+      <version>${ant.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -96,10 +96,6 @@ under the License.
                   <pattern>org.apache.xbean.</pattern>
                   <shadedPattern>org.apache.commons.weaver.ant._xbean.</shadedPattern>
                 </relocation>
-                <relocation>
-                  <pattern>javassist.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.ant._javassist.</shadedPattern>
-                </relocation>
               </relocations>
               <filters>
                 <filter>
@@ -116,12 +112,6 @@ under the License.
                 </filter>
                 <filter>
                   <artifact>org.apache.xbean:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/**</exclude>
-                  </excludes>
-                </filter>
-                <filter>
-                  <artifact>org.javassist:javassist</artifact>
                   <excludes>
                     <exclude>META-INF/**</exclude>
                   </excludes>
