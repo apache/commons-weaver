@@ -26,6 +26,6 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-privilizer-api</artifactId>
-  <name>Commons Weaver Privilizer API</name>
+  <name>Apache Commons Weaver Privilizer API</name>
 
 </project>

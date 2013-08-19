@@ -26,9 +26,9 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-privilizer</artifactId>
-  <name>Commons Weaver Privilizer Weaver</name>
+  <name>Apache Commons Weaver Privilizer Weaver</name>
   <description>
-    Implements the Commons Weaver SPI for the Privilizer module.
+    Implements the Apache Commons Weaver SPI for the Privilizer module.
   </description>
 
   <dependencies>

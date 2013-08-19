@@ -28,7 +28,7 @@ under the License.
   <artifactId>commons-weaver-normalizer-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Commons Weaver Normalizer Parent POM</name>
+  <name>Apache Commons Weaver Normalizer Parent POM</name>
 
   <description>
     The Normalizer module merges identical anonymous class definitions into

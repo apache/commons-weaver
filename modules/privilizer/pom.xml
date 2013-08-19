@@ -29,7 +29,7 @@ under the License.
   <artifactId>commons-weaver-privilizer-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Commons Weaver Privilizer Parent POM</name>
+  <name>Apache Commons Weaver Privilizer Parent POM</name>
 
   <description>
     Privilizer provides machinery to automate the handling of Java Security access controls in code.

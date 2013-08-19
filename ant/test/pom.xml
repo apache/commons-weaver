@@ -27,7 +27,7 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-antlib-test</artifactId>
-  <name>Commons Weaver Antlib Test</name>
+  <name>Apache Commons Weaver Antlib Test</name>
   <description>Uses the privilizer example to test the antlib</description>
 
   <properties>

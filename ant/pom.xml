@@ -26,7 +26,7 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-antlib-parent</artifactId>
-  <name>Commons Weaver Antlib Parent</name>
+  <name>Apache Commons Weaver Antlib Parent</name>
   <packaging>pom</packaging>
 
   <modules>

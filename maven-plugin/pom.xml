@@ -28,7 +28,7 @@ under the License.
   <artifactId>commons-weaver-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
 
-  <name>Commons Weaver Maven Plugin</name>
+  <name>Apache Commons Weaver Maven Plugin</name>
   <description>Weaving Maven goals</description>
 
   <properties>
