@@ -26,9 +26,9 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver</artifactId>
-  <name>Commons Weaver Processor</name>
+  <name>Apache Commons Weaver Processor</name>
   <description>
-    Defines the Commons Weaver SPI as well as the basic build-time
+    Defines the Apache Commons Weaver SPI as well as the basic build-time
     (filesystem-based) processors that detect, configure, and invoke
     available modules.
   </description>

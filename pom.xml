@@ -30,11 +30,11 @@ under the License.
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Commons Weaver Parent POM</name>
+  <name>Apache Commons Weaver Parent POM</name>
 
   <description>
-    Commons Weaver provides an easy way to 'enhance' compiled classes with
-    new functionality by generating ('weaving') bytecode into those classes.
+    Apache Commons Weaver provides an easy way to enhance compiled classes with
+    new functionality by generating ("weaving") bytecode into those classes.
   </description>
 
   <properties>

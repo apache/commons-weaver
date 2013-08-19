@@ -27,7 +27,7 @@ under the License.
   <artifactId>commons-weaver-modules-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Commons Weaver Modules aggregator project</name>
+  <name>Apache Commons Weaver Modules aggregator project</name>
   <modules>
     <module>privilizer</module>
     <module>normalizer</module>

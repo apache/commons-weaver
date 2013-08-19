@@ -27,8 +27,8 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-antlib</artifactId>
-  <name>Commons Weaver Antlib</name>
-  <description>Commons Weaver Ant task library</description>
+  <name>Apache Commons Weaver Antlib</name>
+  <description>Apache Commons Weaver Ant task library</description>
 
     <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
