@@ -70,7 +70,9 @@ public class UtilsClient {
 ```
 
 The static methods of the `Utils` class will be called as though they had been
-locally declared and annotated with `@Privileged`.
+locally declared and annotated with `@Privileged`. See the documentation of the
+[@Privilizing][privilizing] annotation for more information on how to specify
+multiple classes, restrict to only certain methods, etc.
 
 *Q:* What if my utility methods access static variables of their declaring class?
 
@@ -92,5 +94,6 @@ The `PrivilizerWeaver` supports the following options:
 
 [privileged]: ../../apidocs/org/apache/commons/weaver/privilizer/Privileged.html
 [privilizerWeaver]: ../../apidocs/org/apache/commons/weaver/privilizer/PrivilizerWeaver.html
+[privilizing]: ../../apidocs/org/apache/commons/weaver/privilizer/Privilizing.html
 [policy]: ../../apidocs/org/apache/commons/weaver/privilizer/Policy.html
 [accessLevel]: ../../apidocs/org/apache/commons/weaver/privilizer/AccessLevel.html
