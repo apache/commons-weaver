@@ -28,6 +28,7 @@ under the License.
   <packaging>pom</packaging>
 
   <name>Apache Commons Weaver Modules aggregator project</name>
+  <description>Hosts weaver modules.</description>
   <modules>
     <module>privilizer</module>
     <module>normalizer</module>
