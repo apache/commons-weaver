@@ -24,7 +24,7 @@ to compiled Java bytecode. Commons Weaver provides:
 
 * [Core Framework](commons-weaver/index.html)
 * [Weaver Modules](commons-weaver-modules-parent/index.html)
-* [Maven Plugin] (commons-weaver-maven-plugin/index.html)
+* [Maven Plugin] (commons-weaver-maven-plugin/plugin-info.html)
 * [Antlib] (commons-weaver-antlib-parent/commons-weaver-antlib/index.html)
 
 ##FAQ
