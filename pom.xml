@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
-    <version>10-SNAPSHOT</version>
+    <version>10</version>
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
@@ -47,6 +47,7 @@ under the License.
     <!--commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>666</commons.jira.pid-->
     <asm.version>4.1</asm.version>
+    <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/sandbox/${commons.componentid}</commons.scmPubUrl>
   </properties>
 
   <developers>
