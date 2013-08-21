@@ -24,7 +24,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.DynamicElement;
 
 /**
- * Structure to allow the inline specification of weaver properties.
+ * Structure to allow inline specification of properties.
+ * 
+ * Example:
+ * {pre}<foo>foo-value</foo>
+ * <bar>bar-value</bar>
+ * <baz>baz
+ * -nextline-value</baz>
+ * {/pre}
  */
 public class InlineProperties implements DynamicElement {
     /**

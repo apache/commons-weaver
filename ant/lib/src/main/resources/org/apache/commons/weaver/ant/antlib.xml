@@ -18,6 +18,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <antlib>
+  <typedef name="settings" classname="org.apache.commons.weaver.ant.WeaverSettings" />
   <taskdef name="clean" classname="org.apache.commons.weaver.ant.CleanTask" />
   <taskdef name="weave" classname="org.apache.commons.weaver.ant.WeaveTask" />
 </antlib>
