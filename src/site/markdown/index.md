@@ -29,8 +29,12 @@ to compiled Java bytecode. Commons Weaver provides:
 
 ##FAQ
 
-* *Q*: Why not just use AspectJ?
+* *Q*: Why not just use [AspectJ](http://eclipse.org/aspectj/)?
 
     *A*: The original motivation to develop the codebase that evolved into
          Commons Weaver instead of simply using AspectJ was to avoid the
          runtime dependency, however small, introduced by the use of AspectJ.
+         Additionally, later versions of AspectJ are licensed under the
+         [EPL](http://eclipse.org/legal/epl-v10.html) which can be
+         considered less permissive than the Apache license. Choice is
+         A Good Thing.
