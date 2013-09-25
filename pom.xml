@@ -52,8 +52,9 @@ under the License.
     <commons.rc.version>RC1</commons.rc.version>
     <!--commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>666</commons.jira.pid-->
+    <commons.site.path>commons-weaver</commons.site.path>
     <asm.version>4.1</asm.version>
-    <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-weaver</commons.scmPubUrl>
+    <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
     <commons.project-info.version>2.6</commons.project-info.version>
   </properties>
 
@@ -199,7 +200,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-publish-plugin</artifactId>
         <configuration>
-          <content>${project.build.directory}/staging/${commons.componentid}</content>
+          <content>${project.build.directory}/staging/${commons.site.path}</content>
         </configuration>
       </plugin>
     </plugins>
