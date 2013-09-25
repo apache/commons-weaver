@@ -200,7 +200,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-publish-plugin</artifactId>
         <configuration>
-          <content>${project.build.directory}/staging/${commons.site.path}</content>
+          <content>${project.build.directory}/staging</content>
         </configuration>
       </plugin>
     </plugins>
