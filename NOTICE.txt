@@ -1,4 +1,4 @@
-Apache Commons Privilizer
+Apache Commons Weaver
 Copyright 2012-2013 The Apache Software Foundation
 
 This product includes software developed at
