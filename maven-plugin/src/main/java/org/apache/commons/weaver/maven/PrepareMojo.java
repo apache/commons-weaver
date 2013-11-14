@@ -27,7 +27,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Prepare for weaving by deleting classes previously woven with a different policy.
+ * Goal to clean woven classes.
  */
 @Mojo(name = "prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.COMPILE)
 public class PrepareMojo extends AbstractPrepareMojo {

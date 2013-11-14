@@ -27,7 +27,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Prepare for weaving by deleting test classes previously woven with a different policy.
+ * Goal to clean woven test classes.
  */
 @Mojo(name = "test-prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.TEST)
 public class TestPrepareMojo extends AbstractPrepareMojo {
