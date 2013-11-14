@@ -17,9 +17,10 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Commons Privilizer is built using Maven 3 in typical fashion.  Things to know:
+Commons Weaver is built using Maven 3 in typical fashion.  Things to know:
 
 ### Testing with security enabled
+The Privilizer is the fundamental "guinea pig" weaver module.
 Since the whole point of the Privilizer relates to Java security, it is only
 natural that its tests be executable with Java security enabled. It is also
 reasonable to test without security enabled, to show that your code works as
