@@ -311,6 +311,7 @@ public class Normalizer {
             new LinkedHashMap<Pair<String, String>, Set<ClassWrapper>>();
         for (Class<?> subtype : subtypes) {
             final MutablePair<String, String> key = new MutablePair<String, String>();
+            final MutableBoolean ignore = new MutableBoolean(false);
             final MutableBoolean valid = new MutableBoolean(true);
             final MutableBoolean mustRewriteConstructor = new MutableBoolean();
             InputStream bytecode = null;
@@ -339,7 +340,7 @@ public class Normalizer {
                     @Override
                     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
                         if (Type.getType(Marker.class).getDescriptor().equals(desc)) {
-                            valid.setValue(false);
+                            ignore.setValue(true);
                         }
                         return null;
                     }
@@ -371,6 +372,9 @@ public class Normalizer {
                 }, 0);
             } finally {
                 IOUtils.closeQuietly(bytecode);
+            }
+            if (ignore.booleanValue()) {
+                continue;
             }
             if (valid.booleanValue()) {
                 Set<ClassWrapper> set = classMap.get(key);
