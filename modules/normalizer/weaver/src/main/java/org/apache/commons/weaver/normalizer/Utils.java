@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -67,43 +68,4 @@ class Utils {
         }
         return result;
     }
-
-    /**
-     * From Commons lang 3.2; use when available.
-     * <p>
-     * Converts an array of byte into a long using the default (little endian, Lsb0) byte and
-     * bit ordering.
-     * </p>
-     * 
-     * @param src the byte array to convert
-     * @param srcPos the position in {@code src}, in byte unit, from where to start the
-     *            conversion
-     * @param dstInit initial value of the destination long
-     * @param dstPos the position of the lsb, in bits, in the result long
-     * @param nBytes the number of bytes to convert
-     * @return a long containing the selected bits
-     * @throws NullPointerException if {@code src} is {@code null}
-     * @throws IllegalArgumentException if {@code (nBytes-1)*8+dstPos >= 64}
-     * @throws ArrayIndexOutOfBoundsException if {@code srcPos + nBytes > src.length}
-     */
-    public static long byteArrayToLong(final byte[] src, final int srcPos, final long dstInit, final int dstPos,
-        final int nBytes) {
-        if ((src.length == 0 && srcPos == 0) || 0 == nBytes) {
-            return dstInit;
-        }
-        if ((nBytes - 1) * 8 + dstPos >= 64) {
-            throw new IllegalArgumentException(
-                "(nBytes-1)*8+dstPos is greather or equal to than 64");
-        }
-        long out = dstInit;
-        int shift = 0;
-        for (int i = 0; i < nBytes; i++ ) {
-            shift = i * 8 + dstPos;
-            final long bits = (0xffL & src[i + srcPos]) << shift;
-            final long mask = 0xffL << shift;
-            out = (out & ~mask) | bits;
-        }
-        return out;
-    }
-
 }
