@@ -499,7 +499,7 @@ public class Normalizer {
         return result;
     }
 
-    private Type[] toObjectTypes(String[] types) {
+    private static Type[] toObjectTypes(String[] types) {
         if (types == null) {
             return null;
         }
