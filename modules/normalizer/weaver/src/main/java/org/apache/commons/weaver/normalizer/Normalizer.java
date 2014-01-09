@@ -35,6 +35,7 @@ import javax.activation.DataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -57,9 +58,15 @@ import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.commons.RemappingClassAdapter;
 import org.objectweb.asm.commons.SimpleRemapper;
 
+/**
+ * Handles the work of "normalizing" anonymous class definitions.
+ */
 public class Normalizer {
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
+    /**
+     * Marker annotation.
+     */
     @Target(ElementType.TYPE)
     private @interface Marker {
     }
@@ -381,8 +388,8 @@ public class Normalizer {
     }
 
     /**
-     * Create the normalized version of a given class in the configured target package. The Normalizer will gladly
-     * create this in a package from which the normalized class will not actually be able to reference any types upon
+     * Create the normalized version of a given class in the configured target package. The {@link Normalizer} will
+     * gladly do so in a package from which the normalized class will not actually be able to reference any types upon
      * which it relies; in such a situation you must specify the target package as the package of the supertype.
      * 
      * @param key used to generate the normalized classname.
@@ -402,7 +409,7 @@ public class Normalizer {
         md5.update(key.getLeft().getBytes(UTF8));
         md5.update(key.getRight().getBytes(UTF8));
 
-        final long digest = Utils.byteArrayToLong(md5.digest(), 0, 0L, 0, Long.SIZE / Byte.SIZE);
+        final long digest = Conversion.byteArrayToLong(md5.digest(), 0, 0L, 0, Long.SIZE / Byte.SIZE);
 
         final String result = new StringBuilder(targetPackage).append("/$normalized").append(digest).toString();
 
