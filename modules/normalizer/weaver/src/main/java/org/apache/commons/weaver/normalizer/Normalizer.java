@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -45,6 +46,7 @@ import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
+import org.apache.commons.weaver.spi.Weaver;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -121,6 +123,9 @@ public class Normalizer {
         NOT_ANONYMOUS, TOO_MANY_CONSTRUCTORS, IMPLEMENTS_METHODS, TOO_BUSY_CONSTRUCTOR;
     }
 
+    /**
+     * Configuration prefix for this {@link Weaver}.
+     */
     public static final String CONFIG_WEAVER = "normalizer.";
 
     /**
@@ -141,6 +146,10 @@ public class Normalizer {
     private final Set<Class<?>> normalizeTypes;
     private final String targetPackage;
 
+    /**
+     * Create a new {@link Normalizer} instance.
+     * @param env {@link WeaveEnvironment}
+     */
     public Normalizer(WeaveEnvironment env) {
         this.env = env;
 
@@ -153,21 +162,36 @@ public class Normalizer {
                 env.classLoader);
     }
 
+    /**
+     * Normalize the classes found using the specified {@link Scanner}.
+     * @param scanner to scan with
+     * @return whether any work was done
+     */
     public boolean normalize(Scanner scanner) {
+        boolean result = false;
         for (Class<?> supertype : normalizeTypes) {
             final Set<Class<?>> subtypes = getBroadlyEligibleSubclasses(supertype, scanner);
             try {
                 final Map<Pair<String, String>, Set<ClassWrapper>> segregatedSubtypes = segregate(subtypes);
                 for (Map.Entry<Pair<String, String>, Set<ClassWrapper>> e : segregatedSubtypes.entrySet()) {
-                    rewrite(e.getKey(), e.getValue());
+                    final Set<ClassWrapper> likeTypes = e.getValue();
+                    if (likeTypes.size() > 1) {
+                        result = true;
+                        rewrite(e.getKey(), likeTypes);
+                    }
                 }
             } catch (Exception e) {
                 throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
             }
         }
-        return true;
+        return result;
     }
 
+    /**
+     * Map a set of classes by their enclosing class.
+     * @param sort values
+     * @return {@link Map} of enclosing classname to {@link Map} of internal name to {@link ClassWrapper}
+     */
     private Map<String, Map<String, ClassWrapper>> byEnclosingClass(Set<ClassWrapper> sort) {
         final Map<String, Map<String, ClassWrapper>> result = new HashMap<String, Map<String, ClassWrapper>>();
         for (ClassWrapper w : sort) {
@@ -182,6 +206,13 @@ public class Normalizer {
         return result;
     }
 
+    /**
+     * Rewrite classes as indicated by one entry of {@link #segregate(Iterable)}.
+     * @param key {@link String} {@link Pair} indicating supertype and constructor signature
+     * @param toMerge matching classes
+     * @throws IOException on I/O error
+     * @throws ClassNotFoundException if class not found
+     */
     private void rewrite(Pair<String, String> key, Set<ClassWrapper> toMerge) throws IOException,
         ClassNotFoundException {
         final String target = copy(key, toMerge.iterator().next());
@@ -260,9 +291,9 @@ public class Normalizer {
      * Considered "broadly" eligible because the instructions in the implemented constructor may remove the class from
      * consideration later on.
      * 
-     * @param supertype
-     * @param scanner
-     * @return Set of Class
+     * @param supertype whose subtypes are sought
+     * @param scanner to use
+     * @return {@link Set} of {@link Class}
      * @see #segregate(Iterable)
      */
     private Set<Class<?>> getBroadlyEligibleSubclasses(Class<?> supertype, Scanner scanner) {
@@ -303,7 +334,7 @@ public class Normalizer {
      * Further, we will here avail ourselves of the opportunity to discard any types we have already normalized.
      * 
      * @param subtypes
-     * @return Map of ClassKey to Set of Classes
+     * @return Map of Pair<String, String> to Set of Classes
      * @throws Exception
      */
     private Map<Pair<String, String>, Set<ClassWrapper>> segregate(Iterable<Class<?>> subtypes) throws Exception {
@@ -415,7 +446,7 @@ public class Normalizer {
 
         final long digest = Conversion.byteArrayToLong(md5.digest(), 0, 0L, 0, Long.SIZE / Byte.SIZE);
 
-        final String result = new StringBuilder(targetPackage).append("/$normalized").append(digest).toString();
+        final String result = MessageFormat.format("{0}/$normalized{1,number,0;_0}", targetPackage, digest);
 
         env.debug("Copying class %s to %s", classWrapper.wrapped.getName(), result);
 
@@ -499,6 +530,12 @@ public class Normalizer {
         return result;
     }
 
+    /**
+     * Translate internal names to Java type names.
+     * @param types to translate
+     * @return {@link Type}[]
+     * @see Type#getObjectType(String)
+     */
     private static Type[] toObjectTypes(String[] types) {
         if (types == null) {
             return null;
