@@ -38,7 +38,9 @@ import org.apache.xbean.finder.archive.FileArchive;
  */
 public class WeaveProcessor {
 
-    /** List of picked up weaver plugins */
+    /**
+     * List of picked up weaver plugins.
+     */
     private static final List<Weaver> WEAVERS;
 
     static {
@@ -66,7 +68,7 @@ public class WeaveProcessor {
 
     /**
      * Create a new {@link WeaveProcessor} instance.
-     * 
+     *
      * @param classpath not {@code null}
      * @param target not {@code null}
      * @param configuration not {@code null}
@@ -87,7 +89,8 @@ public class WeaveProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Weaver weaver : WEAVERS) {
             final WeaveEnvironment env =
-                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass().getName()));
+                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass()
+                    .getName()));
             weaver.process(env, finder);
         }
     }

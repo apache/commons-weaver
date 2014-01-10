@@ -22,16 +22,15 @@ import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 
 /**
- * A {@link Weaver} implementation performs the byte code enhancement in the classes.
+ * A {@link Weaver} implementation performs the byte code enhancement in the
+ * classes.
  */
 public interface Weaver {
     /**
      * Using the supplied {@link Scanner}, process a {@link WeaveEnvironment}.
-     * 
-     * @param environment
-     * @param scanner
+     * @param environment to use
+     * @param scanner to use
      * @return whether any work was done.
      */
     boolean process(WeaveEnvironment environment, Scanner scanner);
-
 }

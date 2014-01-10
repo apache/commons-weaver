@@ -18,7 +18,6 @@
  */
 package org.apache.commons.weaver.privilizer;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,7 +41,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 
+/**
+ * Coordinates privilization activities.
+ */
 public class Privilizer {
+    /**
+     * An ASM {@link ClassVisitor} for privilization.
+     */
     abstract class PrivilizerClassVisitor extends ClassVisitor {
         String className;
         Type target;
@@ -60,13 +65,17 @@ public class Privilizer {
         }
 
         @Override
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        public void visit(int version, int access, String name, String signature, String superName,
+            String[] interfaces) {
             super.visit(version, access, name, signature, superName, interfaces);
             className = name;
             target = Type.getObjectType(name);
         }
     }
 
+    /**
+     * Convenient {@link ClassVisitor} layer to write classfiles into the {@link WeaveEnvironment}.
+     */
     class WriteClass extends PrivilizerClassVisitor {
         WriteClass(ClassWriter cw) {
             super(cw);
@@ -81,9 +90,8 @@ public class Privilizer {
                 verify(className, bytecode);
             }
 
-            final String resourceName = className.replace('.', File.separatorChar) + ".class";
-            final DataSource classfile = env.getResource(resourceName);
-            env.debug("Writing class %s to resource %s", className, resourceName);
+            final DataSource classfile = env.getClassfile(className);
+            env.debug("Writing class %s to resource %s", className, classfile.getName());
             OutputStream outputStream = null;
             try {
                 outputStream = classfile.getOutputStream();
@@ -96,12 +104,27 @@ public class Privilizer {
         }
     }
 
+    /**
+     * Privilizer weaver configuration prefix.
+     */
     public static final String CONFIG_WEAVER = "privilizer.";
 
+    /**
+     * {@link AccessLevel} configuration key.
+     * @see AccessLevel#parse(String)
+     */
     public static final String CONFIG_ACCESS_LEVEL = CONFIG_WEAVER + "accessLevel";
 
+    /**
+     * Weave {@link Policy} configuration key.
+     * @see Policy#parse(String)
+     */
     public static final String CONFIG_POLICY = CONFIG_WEAVER + "policy";
 
+    /**
+     * Verification configuration key.
+     * @see BooleanUtils#toBoolean(String)
+     */
     public static final String CONFIG_VERIFY = CONFIG_WEAVER + "verify";
 
     private static final String GENERATE_NAME = "__privileged_%s";
@@ -113,6 +136,10 @@ public class Privilizer {
     final Policy policy;
     final boolean verify;
 
+    /**
+     * Create a new {@link Privilizer}.
+     * @param env to use
+     */
     public Privilizer(WeaveEnvironment env) {
         super();
         this.env = env;

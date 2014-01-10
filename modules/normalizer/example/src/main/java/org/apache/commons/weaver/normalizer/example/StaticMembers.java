@@ -18,14 +18,19 @@
  */
 package org.apache.commons.weaver.normalizer.example;
 
-public class StaticMembers {
-    public static final TypeLiteral<String> STRING_TYPE = new TypeLiteral<String>() {};
-    public static final TypeLiteral<String> STRING_TYPE2 = new TypeLiteral<String>() {};
-    public static final TypeLiteral<Iterable<Integer>> INTEGER_ITERABLE_TYPE = new TypeLiteral<Iterable<Integer>>() {};
-    
-    public static final ContrivedWrapper WRAPPED_OBJECT = new ContrivedWrapper(new Object()) {};
-    public static final ContrivedWrapper WRAPPED_STRING = new ContrivedWrapper("foo") {};
-    public static final ContrivedWrapper WRAPPED_STRING2 = new ContrivedWrapper("foo") {};
-    public static final ContrivedWrapper WRAPPED_INTEGER = new ContrivedWrapper(Integer.valueOf(1)) {};
-    public static final ContrivedWrapper WRAPPED_INT = new ContrivedWrapper(1) {};
+import org.apache.commons.lang3.reflect.TypeLiteral;
+
+public final class StaticMembers {
+    private StaticMembers() {
+    }
+
+    public static final TypeLiteral<String> STRING_TYPE = new TypeLiteral<String>() { };
+    public static final TypeLiteral<String> STRING_TYPE2 = new TypeLiteral<String>() { };
+    public static final TypeLiteral<Iterable<Integer>> INTEGER_ITERABLE_TYPE = new TypeLiteral<Iterable<Integer>>() { };
+
+    public static final ContrivedWrapper WRAPPED_OBJECT = new ContrivedWrapper(new Object()) { };
+    public static final ContrivedWrapper WRAPPED_STRING = new ContrivedWrapper("foo") { };
+    public static final ContrivedWrapper WRAPPED_STRING2 = new ContrivedWrapper("foo") { };
+    public static final ContrivedWrapper WRAPPED_INTEGER = new ContrivedWrapper(Integer.valueOf(1)) { };
+    public static final ContrivedWrapper WRAPPED_INT = new ContrivedWrapper(1) { };
 }

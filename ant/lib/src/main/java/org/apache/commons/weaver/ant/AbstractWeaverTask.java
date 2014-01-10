@@ -29,11 +29,19 @@ import org.apache.tools.ant.types.Reference;
 public abstract class AbstractWeaverTask extends Task {
     private WeaverSettings settings;
 
+    /**
+     * Create a new {@link AbstractWeaverTask} instance.
+     * @param project owner
+     */
     protected AbstractWeaverTask(Project project) {
         super();
         setProject(project);
     }
 
+    /**
+     * Add a nested {@link WeaverSettings}.
+     * @param settings to add
+     */
     public void add(WeaverSettings settings) {
         if (this.settings != null) {
             throw new BuildException("settings already specified");
@@ -41,10 +49,18 @@ public abstract class AbstractWeaverTask extends Task {
         this.settings = settings;
     }
 
+    /**
+     * Get the {@link WeaverSettings} in use.
+     * @return {@link WeaverSettings}
+     */
     public WeaverSettings getSettings() {
         return settings;
     }
 
+    /**
+     * Set a project reference to a {@link WeaverSettings} object.
+     * @param refid key
+     */
     public void setSettingsRef(String refid) {
         final WeaverSettings settings = new WeaverSettings(getProject());
         settings.setRefid(new Reference(getProject(), refid));

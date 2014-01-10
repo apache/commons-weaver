@@ -37,12 +37,12 @@ public class NormalizerTest {
         final Class<?> stringLiteral = StaticMembers.STRING_TYPE.getClass();
         assertTrue(stringLiteral.isInstance(StaticMembers.STRING_TYPE2));
         assertFalse(stringLiteral.isInstance(StaticMembers.INTEGER_ITERABLE_TYPE));
-        assertTrue(stringLiteral.isInstance(instanceMembers.STRING_TYPE));
-        assertTrue(stringLiteral.isInstance(instanceMembers.STRING_TYPE2));
-        assertFalse(stringLiteral.isInstance(instanceMembers.INTEGER_ITERABLE_TYPE));
+        assertTrue(stringLiteral.isInstance(instanceMembers.stringType));
+        assertTrue(stringLiteral.isInstance(instanceMembers.stringType2));
+        assertFalse(stringLiteral.isInstance(instanceMembers.integerIterableType));
 
         final Class<?> integerIterable = StaticMembers.INTEGER_ITERABLE_TYPE.getClass();
-        assertTrue(integerIterable.isInstance(instanceMembers.INTEGER_ITERABLE_TYPE));
+        assertTrue(integerIterable.isInstance(instanceMembers.integerIterableType));
     }
 
     @Test
@@ -52,12 +52,12 @@ public class NormalizerTest {
         assertTrue(objectWrapper.isInstance(StaticMembers.WRAPPED_STRING2));
         assertTrue(objectWrapper.isInstance(StaticMembers.WRAPPED_INTEGER));
         assertFalse(objectWrapper.isInstance(StaticMembers.WRAPPED_INT));
-        assertTrue(objectWrapper.isInstance(instanceMembers.WRAPPED_OBJECT));
-        assertTrue(objectWrapper.isInstance(instanceMembers.WRAPPED_STRING));
-        assertTrue(objectWrapper.isInstance(instanceMembers.WRAPPED_STRING2));
-        assertTrue(objectWrapper.isInstance(instanceMembers.WRAPPED_INTEGER));
-        assertFalse(objectWrapper.isInstance(instanceMembers.WRAPPED_INT));
+        assertTrue(objectWrapper.isInstance(instanceMembers.wrappedObject));
+        assertTrue(objectWrapper.isInstance(instanceMembers.wrappedString));
+        assertTrue(objectWrapper.isInstance(instanceMembers.wrappedString2));
+        assertTrue(objectWrapper.isInstance(instanceMembers.wrappedInteger));
+        assertFalse(objectWrapper.isInstance(instanceMembers.wrappedInt));
         final Class<?> intWrapper = StaticMembers.WRAPPED_INT.getClass();
-        assertTrue(intWrapper.isInstance(instanceMembers.WRAPPED_INT));
+        assertTrue(intWrapper.isInstance(instanceMembers.wrappedInt));
     }
 }

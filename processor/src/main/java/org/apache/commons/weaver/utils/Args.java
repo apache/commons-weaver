@@ -21,13 +21,17 @@ package org.apache.commons.weaver.utils;
 /**
  * Argument/Parameter-related utilities.
  */
-public class Args {
+public final class Args {
+
+    private Args() {
+    }
 
     /**
      * Compare two parameter type arrays.
-     * @param paramTypes1
-     * @param paramTypes2
-     * @return int
+     * @param paramTypes1 lhs
+     * @param paramTypes2 rhs
+     * @return {@code int} as specified by
+     *         {@link java.util.Comparator#compare(Object, Object)}
      */
     public static int compare(Class<?>[] paramTypes1, Class<?>[] paramTypes2) {
         int i = 0;

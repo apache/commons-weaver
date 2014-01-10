@@ -72,30 +72,31 @@ class Finder extends AnnotationFinder implements Scanner {
 
         @Override
         protected void storeValue(String name, Object value) {
-            Validate.notNull(value, "null annotation element");
-            if (value.getClass().isArray()) {
+            Object toStore = value;
+            Validate.notNull(toStore, "null annotation element");
+            if (toStore.getClass().isArray()) {
                 final Class<?> requiredType;
                 try {
                     requiredType = annotationType.getDeclaredMethod(name).getReturnType();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                if (!requiredType.isInstance(value)) {
-                    final int len = Array.getLength(value);
+                if (!requiredType.isInstance(toStore)) {
+                    final int len = Array.getLength(toStore);
                     final Object typedArray = Array.newInstance(requiredType.getComponentType(), len);
                     for (int i = 0; i < len; i++) {
-                        Object o = Array.get(value, i);
+                        Object o = Array.get(toStore, i);
                         if (o instanceof Type) {
                             o = toClass((Type) o);
                         }
                         Array.set(typedArray, i, o);
                     }
-                    value = typedArray;
+                    toStore = typedArray;
                 }
-            } else if (value instanceof Type) {
-                value = toClass((Type) value);
+            } else if (toStore instanceof Type) {
+                toStore = toClass((Type) toStore);
             }
-            elements.put(name, value);
+            elements.put(name, toStore);
         }
     }
 
@@ -104,6 +105,11 @@ class Finder extends AnnotationFinder implements Scanner {
             super(Opcodes.ASM4, wrapped);
         }
 
+        /**
+         * Template method for storing an annotation value.
+         * @param name
+         * @param value
+         */
         protected abstract void storeValue(String name, Object value);
 
         @Override
@@ -185,6 +191,10 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
+    /**
+     * Specialized {@link ClassVisitor} to inflate annotations for the info
+     * objects built by a wrapped {@link InfoBuildingVisitor}.
+     */
     public class Visitor extends ClassVisitor {
         private final InfoBuildingVisitor wrapped;
 
@@ -243,6 +253,7 @@ class Finder extends AnnotationFinder implements Scanner {
                     }
                 }
             } catch (ClassNotFoundException e) {
+                //ignore
             }
             if (testMethodInfo == null) {
                 return toWrap;
@@ -272,7 +283,7 @@ class Finder extends AnnotationFinder implements Scanner {
                                 break;
                             }
                         } catch (ClassNotFoundException e) {
-
+                            //ignore
                         }
                     }
                     return parameterInfo == null ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, parameterInfo);
@@ -362,7 +373,7 @@ class Finder extends AnnotationFinder implements Scanner {
     /**
      * Helper class for finding elements with annotations (including those with classfile-level retention).
      */
-    public class WithAnnotations {
+    public final class WithAnnotations {
         private WithAnnotations() {
         }
 
@@ -379,6 +390,7 @@ class Finder extends AnnotationFinder implements Scanner {
                             result.add(annotated);
                         }
                     } catch (ClassNotFoundException e) {
+                        //ignore
                     }
                 }
             }
@@ -455,10 +467,11 @@ class Finder extends AnnotationFinder implements Scanner {
 
         }
 
-        public List<Annotated<Parameter<Method>>> findAnnotatedMethodParameters(Class<? extends Annotation> annotation) {
-            Finder.this.findAnnotatedMethodParameters(annotation);
+        public List<Annotated<Parameter<Method>>> findAnnotatedMethodParameters(
+            Class<? extends Annotation> annotationType) {
+            Finder.this.findAnnotatedMethodParameters(annotationType);
             final List<Annotated<Parameter<Method>>> result = new ArrayList<Annotated<Parameter<Method>>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (Info info : getAnnotationInfos(annotationType.getName())) {
                 if (info instanceof ParameterInfo) {
                     ParameterInfo parameterInfo = (ParameterInfo) info;
                     if ("<init>".equals(parameterInfo.getDeclaringMethod().getName())) {
@@ -474,7 +487,7 @@ class Finder extends AnnotationFinder implements Scanner {
                     }
                     IncludesClassfile<Parameter<Method>> annotated =
                         new IncludesClassfile<Parameter<Method>>(parameter, classfileAnnotationsFor(parameterInfo));
-                    if (annotated.isAnnotationPresent(annotation)) {
+                    if (annotated.isAnnotationPresent(annotationType)) {
                         result.add(annotated);
                     }
                 }
@@ -590,7 +603,6 @@ class Finder extends AnnotationFinder implements Scanner {
 
     /**
      * Create a new {@link Finder} instance.
-     * 
      * @param archive
      */
     public Finder(Archive archive) {
@@ -602,10 +614,17 @@ class Finder extends AnnotationFinder implements Scanner {
         enableFindSubclasses();
     }
 
+    /**
+     * Fluent "finder with annotations".
+     * @return {@link WithAnnotations}
+     */
     public WithAnnotations withAnnotations() {
         return withAnnotations;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected void readClassDef(InputStream in) throws IOException {
         try {
             ClassReader classReader = new ClassReader(in);
@@ -615,71 +634,79 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnnotationFinder select(Class<?>... arg0) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnnotationFinder select(Iterable<String> clazz) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnnotationFinder select(String... clazz) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ScanResult scan(ScanRequest request) {
         final ScanResult result = new ScanResult();
 
         for (WeaveInterest interest : request.getInterests()) {
             switch (interest.target) {
-                case PACKAGE:
-                    for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
-                        result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotations());
-                    }
-                case TYPE:
-                    for (Annotated<Class<?>> type : this.withAnnotations()
-                        .findAnnotatedClasses(interest.annotationType)) {
-                        result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
-                    }
-                    break;
-                case METHOD:
-                    for (Annotated<Method> method : this.withAnnotations()
-                        .findAnnotatedMethods(interest.annotationType)) {
-                        result.getWeavable(method.get()).addAnnotations(method.getAnnotations());
-                    }
-                    break;
-                case CONSTRUCTOR:
-                    for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
-                        interest.annotationType)) {
-                        result.getWeavable(cs.get()).addAnnotations(cs.getAnnotations());
-                    }
-                    break;
-                case FIELD:
-                    for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
-                        result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
-                    }
-                    break;
-                case PARAMETER:
-                    for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
-                        interest.annotationType)) {
-                        result.getWeavable(parameter.get().getDeclaringExecutable())
-                            .getWeavableParameter(parameter.get().getIndex())
-                            .addAnnotations(parameter.getAnnotations());
-                    }
-                    for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
-                        .findAnnotatedConstructorParameters(interest.annotationType)) {
-                        result.getWeavable(parameter.get().getDeclaringExecutable())
-                            .getWeavableParameter(parameter.get().getIndex())
-                            .addAnnotations(parameter.getAnnotations());
-                    }
-                    break;
-                default:
-                    // should we log something?
-                    break;
+            case PACKAGE:
+                for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
+                    result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotations());
+                }
+            case TYPE:
+                for (Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(interest.annotationType)) {
+                    result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
+                }
+                break;
+            case METHOD:
+                for (Annotated<Method> method : this.withAnnotations().findAnnotatedMethods(interest.annotationType)) {
+                    result.getWeavable(method.get()).addAnnotations(method.getAnnotations());
+                }
+                break;
+            case CONSTRUCTOR:
+                for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
+                    interest.annotationType)) {
+                    result.getWeavable(cs.get()).addAnnotations(cs.getAnnotations());
+                }
+                break;
+            case FIELD:
+                for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
+                    result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
+                }
+                break;
+            case PARAMETER:
+                for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
+                    interest.annotationType)) {
+                    result.getWeavable(parameter.get().getDeclaringExecutable())
+                        .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
+                }
+                for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
+                    .findAnnotatedConstructorParameters(interest.annotationType)) {
+                    result.getWeavable(parameter.get().getDeclaringExecutable())
+                        .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
+                }
+                break;
+            default:
+                // should we log something?
+                break;
             }
         }
         for (Class<?> supertype : request.getSupertypes()) {

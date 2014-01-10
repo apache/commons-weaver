@@ -28,6 +28,9 @@ import org.apache.commons.weaver.spi.Weaver;
  */
 public class NormalizerWeaver implements Weaver {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean process(WeaveEnvironment environment, Scanner scanner) {
         return new Normalizer(environment).normalize(scanner);

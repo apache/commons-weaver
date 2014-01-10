@@ -34,7 +34,7 @@ public abstract class ContrivedWrapper {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof ContrivedWrapper == false) {
+        if (!(obj instanceof ContrivedWrapper)) {
             return false;
         }
         final ContrivedWrapper other = (ContrivedWrapper) obj;

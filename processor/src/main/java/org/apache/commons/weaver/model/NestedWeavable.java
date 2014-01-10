@@ -18,25 +18,55 @@
  */
 package org.apache.commons.weaver.model;
 
-public abstract class NestedWeavable<SELF extends NestedWeavable<SELF, TARGET, PARENT, PARENT_TARGET>, TARGET, PARENT extends Weavable<PARENT, PARENT_TARGET>, PARENT_TARGET>
+/**
+ * Describes a {@link Weavable} that lives inside some other {@link Weavable}.
+ * @param <SELF> own type
+ * @param <TARGET> weavable target type
+ * @param <PARENT> enclosing weavable type
+ * @param <PARENT_TARGET> parent target type
+ */
+public abstract class NestedWeavable
+    <SELF extends NestedWeavable<SELF, TARGET, PARENT, PARENT_TARGET>,
+    TARGET,
+    PARENT extends Weavable<PARENT, PARENT_TARGET>,
+    PARENT_TARGET>
     extends Weavable<SELF, TARGET> {
 
     private final PARENT parent;
 
+    /**
+     * Create a new {@link NestedWeavable} instance.
+     * @param target element
+     * @param parent enclosing
+     */
     protected NestedWeavable(TARGET target, PARENT parent) {
         super(target);
         this.parent = parent;
     }
 
+    /**
+     * Get the parent.
+     * @return {@code PARENT}
+     */
     public PARENT getParent() {
         return parent;
     }
 
+    /**
+     * Implement {@link Comparable}.
+     * @param o {@code SELF}
+     * @return int per {@link Comparable#compareTo(Object)} contract
+     */
     @Override
     public final int compareTo(SELF o) {
         int result = getParent().compareTo(o.getParent());
         return result == 0 ? localCompareTo(o) : result;
     }
 
+    /**
+     * Compare against {@code o} without respect to {@link #getParent()}.
+     * @param o SELF{@code SELF}
+     * @return int per {@link Comparable#compareTo(Object)} contract
+     */
     protected abstract int localCompareTo(SELF o);
 }

@@ -43,26 +43,40 @@ public abstract class WeaveEnvironment {
             this.name = name;
         }
 
+        /**
+         * Get the content type, always "application/octet-stream".
+         * @return {@link String}
+         */
         @Override
         public String getContentType() {
             return CONTENT_TYPE;
         }
 
+        /**
+         * Get an {@link InputStream} for reading this {@link Resource}.
+         */
         @Override
         public InputStream getInputStream() throws IOException {
             return classLoader.getResourceAsStream(name);
         }
 
+        /**
+         * Get the name of this {@link Resource}.
+         * @return {@link String}
+         */
         @Override
         public String getName() {
             return name;
         }
 
+        /**
+         * Get an {@link OutputStream} for writing to this {@link Resource}.
+         * @return {@link OutputStream}
+         */
         @Override
         public OutputStream getOutputStream() throws IOException {
             return WeaveEnvironment.this.getOutputStream(name);
         }
-
     }
 
     /**
@@ -80,10 +94,9 @@ public abstract class WeaveEnvironment {
 
     /**
      * Create a new {@link WeaveEnvironment}.
-     * 
-     * @param classLoader
-     * @param config
-     * @param log
+     * @param classLoader property
+     * @param config property
+     * @param log property
      */
     protected WeaveEnvironment(ClassLoader classLoader, Properties config, Logger log) {
         super();
@@ -92,50 +105,121 @@ public abstract class WeaveEnvironment {
         this.log = log;
     }
 
+    /**
+     * Handle a debug message.
+     * @param message text
+     * @param args format
+     * @see String#format(String, Object...)
+     */
     public void debug(String message, Object... args) {
         log.fine(String.format(message, args));
     }
 
+    /**
+     * Handle a verbose message.
+     * @param message text
+     * @param args format
+     * @see String#format(String, Object...)
+     */
     public void verbose(String message, Object... args) {
         log.fine(String.format(message, args));
     }
 
+    /**
+     * Handle a warning message.
+     * @param message text
+     * @param args format
+     * @see String#format(String, Object...)
+     */
     public void warn(String message, Object... args) {
         log.warning(String.format(message, args));
     }
 
+    /**
+     * Handle an info message.
+     * @param message text
+     * @param args format
+     * @see String#format(String, Object...)
+     */
     public void info(String message, Object... args) {
         log.info(String.format(message, args));
     }
 
+    /**
+     * Handle an error message.
+     * @param message text
+     * @param args format
+     * @see String#format(String, Object...)
+     */
     public void error(String message, Object... args) {
         log.severe(String.format(message, args));
     }
 
+    /**
+     * Get a {@link DataSource} representing {@code cls}.
+     * @param cls type
+     * @return {@link DataSource}
+     */
     public final DataSource getClassfile(Class<?> cls) {
         return getClassfile(cls.getName());
     }
 
+    /**
+     * Get a {@link DataSource} for the specified class.
+     * @param classname of type
+     * @return {@link DataSource}
+     */
     public final DataSource getClassfile(String classname) {
         return getResource(getResourceName(classname));
     }
 
+    /**
+     * Get a {@link DataSource} for the specified resource.
+     * @param name of resource
+     * @return {@link DataSource}
+     */
     public final DataSource getResource(String name) {
         return new Resource(name);
     }
 
+    /**
+     * Delete the classfile for {@code cls}.
+     * @param cls type
+     * @return whether successful
+     */
     public final boolean deleteClassfile(Class<?> cls) {
         return deleteClassfile(cls.getName());
     }
 
+    /**
+     * Delete the classfile for the specified class.
+     * @param classname of type
+     * @return whether successful
+     */
     public final boolean deleteClassfile(String classname) {
         return deleteResource(getResourceName(classname));
     }
 
+    /**
+     * Delete the specified resource.
+     * @param name to delete
+     * @return whether successful
+     */
     public abstract boolean deleteResource(String name);
 
+    /**
+     * Open an {@link OutputStream} for the specified resource.
+     * @param resourceName to open
+     * @return {@link OutputStream}
+     * @throws IOException on error
+     */
     protected abstract OutputStream getOutputStream(String resourceName) throws IOException;
 
+    /**
+     * Convert a classname into a resource name.
+     * @param classname to convert
+     * @return String
+     */
     protected static String getResourceName(String classname) {
         return classname.replace('.', '/') + ".class";
     }

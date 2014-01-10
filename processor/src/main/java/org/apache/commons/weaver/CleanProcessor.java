@@ -38,8 +38,11 @@ import org.apache.xbean.finder.archive.FileArchive;
  */
 public class CleanProcessor {
 
-    /** List of picked up cleaner plugins */
+    /**
+     * List of picked up cleaner plugins.
+     */
     private static final List<Cleaner> CLEANERS;
+
     static {
         List<Cleaner> cleaners = new ArrayList<Cleaner>();
         for (Cleaner c : ServiceLoader.load(Cleaner.class)) {
@@ -65,7 +68,7 @@ public class CleanProcessor {
 
     /**
      * Create a new {@link CleanProcessor} instance.
-     * 
+     *
      * @param classpath not {@code null}
      * @param target not {@code null}
      * @param configuration not {@code null}
@@ -86,7 +89,8 @@ public class CleanProcessor {
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Cleaner cleaner : CLEANERS) {
             final WeaveEnvironment env =
-                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass().getName()));
+                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass()
+                    .getName()));
             cleaner.clean(env, finder);
         }
     }

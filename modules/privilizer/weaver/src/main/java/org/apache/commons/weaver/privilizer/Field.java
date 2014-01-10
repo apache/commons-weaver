@@ -27,10 +27,27 @@ import org.objectweb.asm.Type;
  * Represents a Java field.
  */
 public class Field {
+    /**
+     * Access modifier.
+     */
     public final int access;
+
+    /**
+     * Field name.
+     */
     public final String name;
+
+    /**
+     * Field type.
+     */
     public final Type type;
 
+    /**
+     * Create a new {@link Field}.
+     * @param access modifier
+     * @param name of field
+     * @param type of field
+     */
     public Field(int access, String name, Type type) {
         super();
         this.access = access;
@@ -40,8 +57,7 @@ public class Field {
 
     /**
      * Considers name and type.
-     * 
-     * @param obj
+     * @param obj to check for equality
      * @return whether equal
      */
     @Override
@@ -49,7 +65,7 @@ public class Field {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Field == false) {
+        if (!(obj instanceof Field)) {
             return false;
         }
         final Field other = (Field) obj;
@@ -58,7 +74,6 @@ public class Field {
 
     /**
      * Considers name and type.
-     * 
      * @return hashCode
      */
     @Override

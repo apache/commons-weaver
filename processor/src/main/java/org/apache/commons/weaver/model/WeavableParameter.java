@@ -20,13 +20,33 @@ package org.apache.commons.weaver.model;
 
 import java.lang.reflect.Member;
 
-public abstract class WeavableParameter<SELF extends WeavableParameter<SELF, PARENT, PARENT_TARGET, T>, PARENT extends WeavableExecutable<PARENT, PARENT_TARGET, T, SELF>, PARENT_TARGET extends Member, T>
+/**
+ * Represents the parameter of an executable.
+ *
+ * @param <SELF> own type
+ * @param <PARENT> {@link WeavableExecutable} type
+ * @param <PARENT_TARGET> target executable of parent
+ * @param <T> executable's owning type
+ */
+public abstract class WeavableParameter
+    <SELF extends WeavableParameter<SELF, PARENT, PARENT_TARGET, T>,
+    PARENT extends WeavableExecutable<PARENT, PARENT_TARGET, T, SELF>,
+    PARENT_TARGET extends Member,
+    T>
     extends NestedWeavable<SELF, Integer, PARENT, PARENT_TARGET> {
 
+    /**
+     * Create a new {@link WeavableParameter} instance.
+     * @param target index
+     * @param parent executable
+     */
     protected WeavableParameter(Integer target, PARENT parent) {
         super(target, parent);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int localCompareTo(SELF o) {
         return getTarget().compareTo(getTarget());

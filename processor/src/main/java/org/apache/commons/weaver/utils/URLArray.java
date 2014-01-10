@@ -27,14 +27,13 @@ import java.util.Iterator;
 /**
  * {@link URL} Array utilities.
  */
-public abstract class URLArray {
+public final class URLArray {
     private URLArray() {
     }
 
     /**
      * Convert an {@link Iterable} of filesystem paths.
-     * 
-     * @param files
+     * @param files to convert
      * @return URL[]
      */
     public static URL[] fromPaths(final Iterable<String> files) {
@@ -63,8 +62,7 @@ public abstract class URLArray {
 
     /**
      * Convert an {@link Iterable} of {@link File}s.
-     * 
-     * @param files
+     * @param files to convert
      * @return URL[]
      */
     public static URL[] fromFiles(Iterable<File> files) {

@@ -28,11 +28,23 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 public @interface Privilizing {
+    /**
+     * Models calls to blueprint methods defined on a specific class.
+     */
     public @interface CallTo {
+        /**
+         * The class owning one or more blueprint method.
+         */
         Class<?> value();
 
-        String[] methods() default {};
+        /**
+         * The names of the blueprint methods.
+         */
+        String[] methods() default { };
     }
 
+    /**
+     * List of blueprint calls.
+     */
     CallTo[] value();
 }

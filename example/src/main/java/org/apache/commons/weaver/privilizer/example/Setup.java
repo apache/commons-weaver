@@ -18,7 +18,10 @@ package org.apache.commons.weaver.privilizer.example;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-class Setup {
+final class Setup {
+    private Setup() {
+    }
+
     /**
      * This simply allows us to to set up test classes by doing
      * privileged things without granting privileges to the test

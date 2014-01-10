@@ -24,7 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as needing to execute in a privileged fashion in secured environments.
+ * Marks a method as needing to execute in a privileged fashion in secured
+ * environments.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)

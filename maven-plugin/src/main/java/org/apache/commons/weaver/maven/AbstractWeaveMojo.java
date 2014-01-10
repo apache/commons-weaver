@@ -32,16 +32,34 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 public abstract class AbstractWeaveMojo extends AbstractMojo {
 
+    /**
+     * {@code verbose} parameter.
+     */
     @Parameter(defaultValue = "false")
     protected boolean verbose;
 
+    /**
+     * {@code weaver.config} parameter.
+     */
     @Parameter(property = "weaver.config", required = false)
     protected Properties weaverConfig;
 
+    /**
+     * Get the classpath for this weave mojo.
+     * @return {@link List} of {@link String}
+     */
     protected abstract List<String> getClasspath();
 
+    /**
+     * Get the target directory for this weave mojo.
+     * @return {@link File}
+     */
     protected abstract File getTarget();
 
+    /**
+     * Execute this mojo.
+     * @throws MojoExecutionException in the event of failure
+     */
     @Override
     public void execute() throws MojoExecutionException {
         final JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(getLog());

@@ -26,8 +26,29 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+/**
+ * Enumerates the Java access levels.
+ */
 public enum AccessLevel {
-    PUBLIC(Modifier.PUBLIC), PROTECTED(Modifier.PROTECTED), PACKAGE(0), PRIVATE(Modifier.PRIVATE);
+    /**
+     * {@code public}.
+     */
+    PUBLIC(Modifier.PUBLIC),
+
+    /**
+     * {@code protected}.
+     */
+    PROTECTED(Modifier.PROTECTED),
+
+    /**
+     * {@code ""}.
+     */
+    PACKAGE(0),
+
+    /**
+     * {@code private}.
+     */
+    PRIVATE(Modifier.PRIVATE);
 
     private final int flag;
 
@@ -35,6 +56,12 @@ public enum AccessLevel {
         this.flag = flag;
     }
 
+    /**
+     * Get the {@link AccessLevel} specified by a Java modifier.
+     * @param mod from which to extract
+     * @return {@link AccessLevel}
+     * @throws IllegalArgumentException if multiple access modifiers specified
+     */
     public static AccessLevel of(int mod) {
         final Set<AccessLevel> matched = EnumSet.noneOf(AccessLevel.class);
         if (Modifier.isPublic(mod)) {
@@ -53,6 +80,11 @@ public enum AccessLevel {
         return matched.iterator().next();
     }
 
+    /**
+     * Overlay this {@link AccessLevel} onto a Java modifier value.
+     * @param mod input
+     * @return {@code mod}, with this {@link AccessLevel}
+     */
     public int merge(int mod) {
         int remove = 0;
         for (AccessLevel accessLevel : EnumSet.complementOf(EnumSet.of(this))) {
@@ -61,6 +93,10 @@ public enum AccessLevel {
         return mod & ~remove | flag;
     }
 
+    /**
+     * Render this {@link AccessLevel} as a {@link String}.
+     * @return {@link String}
+     */
     @Override
     public String toString() {
         return name().toLowerCase(Locale.US);
@@ -68,7 +104,8 @@ public enum AccessLevel {
 
     /**
      * Get the {@link AccessLevel} value that should be used as a default.
-     * 
+     * This is <em>not</em> "default"/{@code package} access, but rather the default
+     * value that should be used for privilizer weaving.
      * @return {@link AccessLevel#PRIVATE}
      */
     public static AccessLevel defaultValue() {
@@ -77,8 +114,7 @@ public enum AccessLevel {
 
     /**
      * Parse from a {@link String} returning {@link #defaultValue()} for blank/null input.
-     * 
-     * @param s
+     * @param s to parse
      * @return {@link AccessLevel}
      */
     public static AccessLevel parse(String s) {

@@ -20,12 +20,25 @@ package org.apache.commons.weaver.model;
 
 import java.lang.reflect.Field;
 
+/**
+ * Represents a {@link Weavable} {@link Field}.
+ *
+ * @param <T> enclosing type
+ */
 public class WeavableField<T> extends NestedWeavable<WeavableField<T>, Field, WeavableClass<T>, Class<T>> {
 
+    /**
+     * Create a new {@link WeavableField} instance.
+     * @param target field
+     * @param parent enclosing {@link WeavableClass}
+     */
     public WeavableField(Field target, WeavableClass<T> parent) {
         super(target, parent);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int localCompareTo(WeavableField<T> o) {
         return getTarget().getName().compareTo(o.getTarget().getName());

@@ -95,8 +95,8 @@ public class Normalizer {
         }
 
         @Override
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            super.visit(version, access, name, signature, superName, interfaces);
+        public void visit(int version, int access, String name, String signature, String superName, String[] intrfces) {
+            super.visit(version, access, name, signature, superName, intrfces);
             className = name;
         }
 
@@ -250,16 +250,17 @@ public class Normalizer {
                         return new MethodVisitor(Opcodes.ASM4, mv) {
                             @Override
                             public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                                String useDescriptor = desc;
                                 if ("<init>".equals(name)) {
                                     final ClassWrapper w = e.getValue().get(owner);
                                     if (w != null && w.mustRewriteConstructor) {
                                         // simply replace first argument type with OBJECT_TYPE:
                                         final Type[] args = Type.getArgumentTypes(desc);
                                         args[0] = OBJECT_TYPE;
-                                        desc = new Method("<init>", Type.VOID_TYPE, args).getDescriptor();
+                                        useDescriptor = new Method("<init>", Type.VOID_TYPE, args).getDescriptor();
                                     }
                                 }
-                                super.visitMethodInsn(opcode, owner, name, desc);
+                                super.visitMethodInsn(opcode, owner, name, useDescriptor);
                             }
                         };
                     }
@@ -281,16 +282,16 @@ public class Normalizer {
     }
 
     /**
-     * Find subclasses/implementors of {code supertype} that:
+     * <p>Find subclasses/implementors of {code supertype} that:
      * <ul>
      * <li>are anonymous</li>
      * <li>declare a single constructor (probably redundant in the case of an anonymous class)</li>
      * <li>do not implement any methods</li>
      * </ul>
-     * 
+     * </p><p>
      * Considered "broadly" eligible because the instructions in the implemented constructor may remove the class from
      * consideration later on.
-     * 
+     * </p>
      * @param supertype whose subtypes are sought
      * @param scanner to use
      * @return {@link Set} of {@link Class}
@@ -319,20 +320,22 @@ public class Normalizer {
     }
 
     /**
-     * Segregate a number of classes (presumed subclasses/implementors of a common supertype/interface). The keys of the
-     * map consist of the important parts for identifying similar anonymous types: the "signature" and the invoked
-     * superclass constructor. For our purposes, the signature consists of the first applicable item of:
+     * <p>Segregate a number of classes (presumed subclasses/implementors of a
+     * common supertype/interface). The keys of the map consist of the important
+     * parts for identifying similar anonymous types: the "signature" and the
+     * invoked superclass constructor. For our purposes, the signature consists
+     * of the first applicable item of:
      * <ol>
      * <li>The generic signature of the class</li>
      * <li>The sole implemented interface</li>
      * <li>The superclass</li>
      * </ol>
-     * 
+     * </p><p>
      * The class will be considered ineligible if its constructor is too "busy" as its side effects cannot be
      * anticipated; the normalizer will err on the side of caution.
-     * 
+     * </p><p>
      * Further, we will here avail ourselves of the opportunity to discard any types we have already normalized.
-     * 
+     * </p>
      * @param subtypes
      * @return Map of Pair<String, String> to Set of Classes
      * @throws Exception
@@ -426,7 +429,6 @@ public class Normalizer {
      * Create the normalized version of a given class in the configured target package. The {@link Normalizer} will
      * gladly do so in a package from which the normalized class will not actually be able to reference any types upon
      * which it relies; in such a situation you must specify the target package as the package of the supertype.
-     * 
      * @param key used to generate the normalized classname.
      * @param classWrapper
      * @return the generated classname.

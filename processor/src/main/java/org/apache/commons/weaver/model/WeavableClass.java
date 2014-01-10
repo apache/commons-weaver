@@ -28,9 +28,15 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.commons.weaver.utils.Args;
 
+/**
+ * {@link Weavable} {@link Class}.
+ *
+ * @param <T> type
+ */
 public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>, WeavablePackage, Package> {
     private final ConcurrentNavigableMap<String, WeavableField<T>> fields =
         new ConcurrentSkipListMap<String, WeavableField<T>>();
+
     private final ConcurrentNavigableMap<Constructor<T>, WeavableConstructor<T>> ctors =
         new ConcurrentSkipListMap<Constructor<T>, WeavableConstructor<T>>(new Comparator<Constructor<?>>() {
 
@@ -39,6 +45,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
                 return Args.compare(o1.getParameterTypes(), o2.getParameterTypes());
             }
         });
+
     private final ConcurrentNavigableMap<Method, WeavableMethod<T>> methods =
         new ConcurrentSkipListMap<Method, WeavableMethod<T>>(new Comparator<Method>() {
 
@@ -49,10 +56,20 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
             }
         });
 
+    /**
+     * Create a new {@link WeavableClass} instance.
+     * @param target {@link Class}
+     * @param parent {@link WeavablePackage} enclosing
+     */
     public WeavableClass(Class<T> target, WeavablePackage parent) {
         super(target, parent);
     }
 
+    /**
+     * Get a {@link WeavableField} representing {@code fld}.
+     * @param fld to wrap
+     * @return {@link WeavableField}
+     */
     public WeavableField<T> getWeavable(Field fld) {
         final String key = fld.getName();
         if (fields.containsKey(key)) {
@@ -64,6 +81,11 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
         return faster == null ? result : faster;
     }
 
+    /**
+     * Get a {@link WeavableMethod} representing {@code mt}.
+     * @param mt to wrap
+     * @return {@link WeavableMethod}
+     */
     public WeavableMethod<T> getWeavable(Method mt) {
         if (methods.containsKey(mt)) {
             final WeavableMethod<T> result = (WeavableMethod<T>) methods.get(mt);
@@ -74,6 +96,11 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
         return faster == null ? result : faster;
     }
 
+    /**
+     * Get a {@link WeavableConstructor} representing {@code ctor}.
+     * @param ctor to wrap
+     * @return {@link WeavableConstructor}
+     */
     public WeavableConstructor<T> getWeavable(Constructor<T> ctor) {
         if (ctors.containsKey(ctor)) {
             final WeavableConstructor<T> result = (WeavableConstructor<T>) ctors.get(ctor);
@@ -84,18 +111,33 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
         return faster == null ? result : faster;
     }
 
+    /**
+     * Get {@link WeavableField}s of this {@link WeavableClass}.
+     * @return {@link Iterable}
+     */
     public Iterable<WeavableField<T>> getFields() {
         return Collections.unmodifiableCollection(fields.values());
     }
 
+    /**
+     * Get {@link WeavableConstructor}s of this {@link WeavableClass}.
+     * @return {@link Iterable}
+     */
     public Iterable<WeavableConstructor<T>> getConstructors() {
         return Collections.unmodifiableCollection(ctors.values());
     }
 
+    /**
+     * Get {@link WeavableMethod}s of this {@link WeavableClass}.
+     * @return {@link Iterable}
+     */
     public Iterable<WeavableMethod<T>> getMethods() {
         return Collections.unmodifiableCollection(methods.values());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int localCompareTo(WeavableClass<T> o) {
         return getTarget().getName().compareTo(o.getTarget().getName());

@@ -18,14 +18,16 @@
  */
 package org.apache.commons.weaver.normalizer.example;
 
+import org.apache.commons.lang3.reflect.TypeLiteral;
+
 public class InstanceMembers {
-    public final TypeLiteral<String> STRING_TYPE = new TypeLiteral<String>() {};
-    public final TypeLiteral<String> STRING_TYPE2 = new TypeLiteral<String>() {};
-    public final TypeLiteral<Iterable<Integer>> INTEGER_ITERABLE_TYPE = new TypeLiteral<Iterable<Integer>>() {};
-    
-    public final ContrivedWrapper WRAPPED_OBJECT = new ContrivedWrapper(new Object()) {};
-    public final ContrivedWrapper WRAPPED_STRING = new ContrivedWrapper("foo") {};
-    public final ContrivedWrapper WRAPPED_STRING2 = new ContrivedWrapper("foo") {};
-    public final ContrivedWrapper WRAPPED_INTEGER = new ContrivedWrapper(Integer.valueOf(1)) {};
-    public final ContrivedWrapper WRAPPED_INT = new ContrivedWrapper(1) {};
+    public final TypeLiteral<String> stringType = new TypeLiteral<String>() { };
+    public final TypeLiteral<String> stringType2 = new TypeLiteral<String>() { };
+    public final TypeLiteral<Iterable<Integer>> integerIterableType = new TypeLiteral<Iterable<Integer>>() { };
+
+    public final ContrivedWrapper wrappedObject = new ContrivedWrapper(new Object()) { };
+    public final ContrivedWrapper wrappedString = new ContrivedWrapper("foo") { };
+    public final ContrivedWrapper wrappedString2 = new ContrivedWrapper("foo") { };
+    public final ContrivedWrapper wrappedInteger = new ContrivedWrapper(Integer.valueOf(1)) { };
+    public final ContrivedWrapper wrappedInt = new ContrivedWrapper(1) { };
 }

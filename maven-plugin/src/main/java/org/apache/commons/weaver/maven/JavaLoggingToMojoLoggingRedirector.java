@@ -53,6 +53,7 @@ public class JavaLoggingToMojoLoggingRedirector {
 
     /**
      * Activates this feature.
+     * @throws MojoExecutionException in the event of failure
      */
     public void activate() throws MojoExecutionException {
         try {
@@ -62,7 +63,7 @@ public class JavaLoggingToMojoLoggingRedirector {
                 rootLogger.removeHandler(handler);
                 removedHandlers.add(handler);
             }
-            if (removedHandlers.size() == 0) {
+            if (removedHandlers.isEmpty()) {
                 throw new MojoExecutionException("could not remove any handler. aborting.");
             }
 
@@ -78,7 +79,7 @@ public class JavaLoggingToMojoLoggingRedirector {
     }
 
     /**
-     * deactivate the redirection and put the original Handlers back in place
+     * Deactivate the redirection and put the original Handlers back in place
      * again.
      */
     public void deactivate() {
@@ -131,7 +132,7 @@ public class JavaLoggingToMojoLoggingRedirector {
         private String getMessage(LogRecord record) {
             String message = record.getMessage();
             ResourceBundle bundle = record.getResourceBundle();
-            Object params[] = record.getParameters();
+            Object[] params = record.getParameters();
             if (bundle != null && bundle.containsKey(message)) {
                 // todo: cannot enforce Locale.ENGLISH here
                 message = bundle.getString(message);

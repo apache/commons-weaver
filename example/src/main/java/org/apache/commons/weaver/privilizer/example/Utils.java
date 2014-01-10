@@ -18,8 +18,8 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
-public class Utils {
-    public static class More {
+public final class Utils {
+    public static final class More {
         private More() {
         }
 
@@ -49,7 +49,8 @@ public class Utils {
         if (i <= 0) {
             return getProperty(key);
         }
-        return getProperty(--i, key);
+        int counter = i;
+        return getProperty(--counter, key);
     }
 
     public static String getProperty(String key) {

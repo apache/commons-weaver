@@ -20,23 +20,42 @@ package org.apache.commons.weaver.model;
 
 import java.lang.reflect.Method;
 
+/**
+ * Represents a {@link Weavable} {@link Method}.
+ *
+ * @param <T> enclosing type
+ */
 public class WeavableMethod<T> extends WeavableExecutable<WeavableMethod<T>, Method, T, WeavableMethodParameter<T>> {
 
+    /**
+     * Create a new {@link WeavableMethod} instance.
+     * @param target method
+     * @param parent enclosing {@link WeavableClass}
+     */
     public WeavableMethod(Method target, WeavableClass<T> parent) {
         super(target, parent);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Class<?>[] getParameterTypes() {
         return getTarget().getParameterTypes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int localCompareTo(WeavableMethod<T> o) {
         int result = getTarget().getName().compareTo(o.getTarget().getName());
         return result == 0 ? super.localCompareTo(o) : result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected WeavableMethodParameter<T> createParameter(int index) {
         return new WeavableMethodParameter<T>(Integer.valueOf(index), this);

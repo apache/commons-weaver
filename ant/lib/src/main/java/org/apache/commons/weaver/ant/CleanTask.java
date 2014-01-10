@@ -27,12 +27,19 @@ import org.apache.tools.ant.Project;
  * Clean Ant task.
  */
 public class CleanTask extends AbstractWeaverTask {
+    /**
+     * Create a new {@link CleanTask} instance.
+     * @param project owner
+     */
     public CleanTask(Project project) {
         super(project);
     }
 
+    /**
+     * Execute the clean task.
+     */
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
             final CleanProcessor cp =

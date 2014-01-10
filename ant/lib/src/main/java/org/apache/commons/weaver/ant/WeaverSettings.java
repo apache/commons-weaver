@@ -52,11 +52,19 @@ public class WeaverSettings extends DataType {
     private PropertySet propertySet;
     private InlineProperties inlineProperties;
 
+    /**
+     * Create a new {@link WeaverSettings} object.
+     * @param project owner
+     */
     public WeaverSettings(Project project) {
         super();
         setProject(project);
     }
 
+    /**
+     * Get the {@code target} directory.
+     * @return {@link File}
+     */
     public File getTarget() {
         if (isReference()) {
             return getRef().getTarget();
@@ -64,6 +72,10 @@ public class WeaverSettings extends DataType {
         return target;
     }
 
+    /**
+     * Set the {@code target} directory.
+     * @param target {@link File}
+     */
     public void setTarget(File target) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -71,6 +83,10 @@ public class WeaverSettings extends DataType {
         this.target = target;
     }
 
+    /**
+     * Get the {@code classpathref}.
+     * @return {@link String}
+     */
     public String getClasspathref() {
         if (isReference()) {
             return getRef().getClasspathref();
@@ -78,6 +94,10 @@ public class WeaverSettings extends DataType {
         return classpathref;
     }
 
+    /**
+     * Set the {@code classpathref}.
+     * @param classpathref {@link String}
+     */
     public void setClasspathRef(String classpathref) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -88,7 +108,6 @@ public class WeaverSettings extends DataType {
     /**
      * Return the effective classpath (system classpath + configured classpath) as a {@link List} of {@link String}
      * filesystem paths.
-     * 
      * @return List<String>
      */
     public List<String> getClasspathEntries() {
@@ -102,6 +121,10 @@ public class WeaverSettings extends DataType {
         return Arrays.asList(p.list());
     }
 
+    /**
+     * Get the {@code classpath}.
+     * @return {@link Path}
+     */
     public Path getClasspath() {
         if (isReference()) {
             return getRef().getClasspath();
@@ -118,6 +141,10 @@ public class WeaverSettings extends DataType {
         return classpath;
     }
 
+    /**
+     * Set the {@code classpath}.
+     * @param classpath {@link Path}
+     */
     public void setClasspath(Path classpath) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -128,6 +155,10 @@ public class WeaverSettings extends DataType {
         this.classpath = classpath;
     }
 
+    /**
+     * Create the nested {@code properties}.
+     * @return {@link InlineProperties}
+     */
     public InlineProperties createProperties() {
         if (isReference()) {
             throw noChildrenAllowed();
@@ -139,6 +170,10 @@ public class WeaverSettings extends DataType {
         return inlineProperties;
     }
 
+    /**
+     * Create a nested {@code propertyset}.
+     * @return {@link PropertySet}
+     */
     public PropertySet createPropertySet() {
         if (isReference()) {
             throw noChildrenAllowed();
@@ -153,7 +188,6 @@ public class WeaverSettings extends DataType {
 
     /**
      * Merge nested {@code propertyset} and {@code properties}; latter takes precedence.
-     * 
      * @return Properties
      */
     public Properties getProperties() {

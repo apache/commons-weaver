@@ -25,8 +25,16 @@ import java.lang.annotation.ElementType;
 /**
  * Weave interest composed of annotation type and target element type.
  */
-public class WeaveInterest {
+public final class WeaveInterest {
+
+    /**
+     * Observed annotation type.
+     */
     public final Class<? extends Annotation> annotationType;
+
+    /**
+     * Attached element type.
+     */
     public final ElementType target;
 
     private WeaveInterest(Class<? extends Annotation> annotationType, ElementType target) {
@@ -35,6 +43,12 @@ public class WeaveInterest {
         this.target = target;
     }
 
+    /**
+     * Get a {@link WeaveInterest}.
+     * @param annotationType observed annotation type
+     * @param target attached element type
+     * @return {@link WeaveInterest}
+     */
     public static WeaveInterest of(Class<? extends Annotation> annotationType, ElementType target) {
         return new WeaveInterest(annotationType, target);
     }

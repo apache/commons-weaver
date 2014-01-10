@@ -20,43 +20,62 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-class Utils {
+/**
+ * Normalization utilities.
+ */
+final class Utils {
+    private Utils() {
+    }
 
+    /**
+     * Validate a package name.
+     * @param pkg to validate
+     * @return {@code pkg}, ({@code ""} if {@code null}), having replaced
+     *         {@code '.'} with {@code '/'} and removed any terminating separator
+     * @throws IllegalArgumentException if invalid
+     */
     static String validatePackageName(String pkg) {
         if (StringUtils.isBlank(pkg)) {
             return "";
         }
-        pkg = pkg.trim();
+        String result = pkg.trim();
 
         final String unexpected = "Unexpected character %s at pos %s of package name \"%s\"";
 
         boolean next = true;
-        for (int pos = 0; pos < pkg.length(); pos++) {
-            final char c = pkg.charAt(pos);
+        for (int pos = 0; pos < result.length(); pos++) {
+            final char c = result.charAt(pos);
             if (next) {
                 next = false;
-                Validate.isTrue(Character.isJavaIdentifierStart(c), unexpected, c, pos, pkg);
+                Validate.isTrue(Character.isJavaIdentifierStart(c), unexpected, c, pos, result);
                 continue;
             }
             if (c == '/' || c == '.') {
                 next = true;
                 continue;
             }
-            Validate.isTrue(Character.isJavaIdentifierPart(c), unexpected, c, pos, pkg);
+            Validate.isTrue(Character.isJavaIdentifierPart(c), unexpected, c, pos, result);
         }
 
-        pkg = pkg.replace('.', '/');
-        final int last = pkg.length() - 1;
-        if (pkg.charAt(last) == '/') {
-            pkg = pkg.substring(0, last);
+        result = result.replace('.', '/');
+        final int last = result.length() - 1;
+        if (result.charAt(last) == '/') {
+            result = result.substring(0, last);
         }
-        return pkg;
+        return result;
     }
 
+    /**
+     * Parse a number of Java types speciified as a comma-delimited
+     * {@link String} of fully-qualified or internal names (i.e., slashes are
+     * legal).
+     * @param types to parse
+     * @param cl {@link ClassLoader} to search
+     * @return {@link Set} of {@link Class}
+     */
     static Set<Class<?>> parseTypes(String types, ClassLoader cl) {
         final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
         for (String s : StringUtils.splitByWholeSeparatorPreserveAllTokens(types, ",")) {

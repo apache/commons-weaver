@@ -50,7 +50,6 @@ public enum Policy {
 
     /**
      * Get the {@link Policy} value that should be used as a default.
-     * 
      * @return {@link Policy#DYNAMIC}
      */
     public static Policy defaultValue() {
@@ -59,8 +58,7 @@ public enum Policy {
 
     /**
      * Parse from a {@link String} returning {@link #defaultValue()} for blank/null input.
-     * 
-     * @param s
+     * @param s to parse
      * @return {@link Policy}
      */
     public static Policy parse(String s) {
@@ -70,6 +68,10 @@ public enum Policy {
         return valueOf(s.trim().toUpperCase(Locale.US));
     }
 
+    /**
+     * Learn whether this is a conditional {@link Policy}.
+     * @return {@code this == ON_INIT || this == DYNAMIC}
+     */
     public boolean isConditional() {
         return this == ON_INIT || this == DYNAMIC;
     }
