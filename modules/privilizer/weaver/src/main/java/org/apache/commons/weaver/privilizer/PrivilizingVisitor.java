@@ -38,12 +38,20 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.commons.StaticInitMerger;
 
+/**
+ * ASM {@link ClassVisitor} to privilize {@link Privileged} methods.
+ */
 class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
     final Map<Method, String> privilegedMethods = new LinkedHashMap<Method, String>();
     boolean annotated;
     final Policy policy;
     final AccessLevel accessLevel;
 
+    /**
+     * Create a new {@link PrivilizingVisitor}.
+     * @param privilizer owner
+     * @param cv next
+     */
     PrivilizingVisitor(Privilizer privilizer, ClassVisitor cv) {
         privilizer.super();
         this.policy = privilizer.policy;
@@ -212,9 +220,9 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     /**
-     * Generates the instructions to push onto the stack whether there is a security manager available
-     * 
-     * @param mg
+     * Generates the instructions to push onto the stack whether there is a
+     * security manager available.
+     * @param mg to control
      */
     private static void checkSecurityManager(GeneratorAdapter mg) {
         final Label setFalse = new Label();

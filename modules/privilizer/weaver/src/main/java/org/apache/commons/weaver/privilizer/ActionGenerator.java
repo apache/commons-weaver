@@ -54,6 +54,13 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
     final Field[] fields;
     private final Type actionInterface;
 
+    /**
+     * Create a new {@link ActionGenerator}.
+     * @param access modifier
+     * @param m {@link Method} to implement
+     * @param exceptions thrown
+     * @param owner of the action class
+     */
     ActionGenerator(final int access, final Method m, final String[] exceptions, PrivilizingVisitor owner) {
         owner.privilizer().super(new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES));
         this.m = m;
@@ -155,13 +162,12 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final String signature = type.toString();
 
         visit(Opcodes.V1_5, Opcodes.ACC_SUPER | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_FINAL, action.getInternalName(),
-            signature, Type.getType(Object.class).getInternalName(), new String[] { actionInterface.getInternalName() });
+            signature, Type.getType(Object.class).getInternalName(),
+            new String[] { actionInterface.getInternalName() });
     }
 
     /**
      * Add fields and generate constructor.
-     * 
-     * @param cv
      */
     private void init() {
         for (Field field : fields) {
@@ -201,8 +207,6 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
 
     /**
      * Generate impl method.
-     * 
-     * @param cv
      */
     private void impl() {
         final Method run = Method.getMethod("Object run()");

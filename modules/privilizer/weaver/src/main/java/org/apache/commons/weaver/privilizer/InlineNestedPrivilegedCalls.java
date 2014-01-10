@@ -38,10 +38,16 @@ class InlineNestedPrivilegedCalls extends ClassNode {
     private final ClassVisitor next;
 
     /**
-     * Map of original method to name of internal implementation method
+     * Map of original method to name of internal implementation method.
      */
     private final Map<Method, String> privilegedMethods;
 
+    /**
+     * Create a new {@link InlineNestedPrivilegedCalls} object.
+     * @param privilizer owner
+     * @param privilegedMethods map of original method to name of internal implementation method
+     * @param next visitor
+     */
     InlineNestedPrivilegedCalls(Privilizer privilizer, Map<Method, String> privilegedMethods, ClassVisitor next) {
         super(Opcodes.ASM4);
         this.privilizer = privilizer;
@@ -62,15 +68,16 @@ class InlineNestedPrivilegedCalls extends ClassNode {
                 if (privilegedMethods.containsValue(name)) {
                     return new MethodVisitor(Opcodes.ASM4, orig) {
                         public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                            String useName = name;
                             if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
                                 final Method m = new Method(name, desc);
                                 if (privilegedMethods.containsKey(m)) {
-                                    name = privilegedMethods.get(m);
+                                    useName = privilegedMethods.get(m);
                                     privilizer.env.debug("Inlining call from %s to %s as %s", outer, m,
-                                        name);
+                                        useName);
                                 }
                             }
-                            super.visitMethodInsn(opcode, owner, name, desc);
+                            super.visitMethodInsn(opcode, owner, useName, desc);
                         }
                     };
                 }

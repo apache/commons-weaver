@@ -22,16 +22,15 @@ import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 
 /**
- * SPI to provide a means for a weaver module to remove woven classes during incremental builds, if necessary.
+ * SPI to provide a means for a weaver module to remove woven classes during
+ * incremental builds, if necessary.
  */
 public interface Cleaner {
     /**
      * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
-     * 
-     * @param environment
-     * @param scanner
+     * @param environment to use
+     * @param scanner to use
      * @return whether any work was done.
      */
     boolean clean(WeaveEnvironment environment, Scanner scanner);
-
 }

@@ -31,10 +31,17 @@ import org.apache.commons.lang3.Validate;
 /**
  * Provide annotation-related utility methods.
  */
-public class Annotations {
+public final class Annotations {
     private Annotations() {
     }
 
+    /**
+     * Create an annotation instance.
+     * @param annotationType type
+     * @param elements values
+     * @param <A> generic annotation type
+     * @return {@code A}
+     */
     public static <A extends Annotation> A instanceOf(final Class<A> annotationType, final Map<String, ?> elements) {
         final ClassLoader proxyClassLoader = Validate.notNull(annotationType, "annotationType").getClassLoader();
         final InvocationHandler invocationHandler = new InvocationHandler() {

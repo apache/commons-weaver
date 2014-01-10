@@ -38,6 +38,11 @@ public class ScanRequest {
     private final List<WeaveInterest> interests = new ArrayList<WeaveInterest>();
     private final Set<Class<?>> supertypes = new LinkedHashSet<Class<?>>();
 
+    /**
+     * Register a {@link WeaveInterest}.
+     * @param interest {@link WeaveInterest} to add
+     * @return {@code this}, fluently
+     */
     public ScanRequest add(WeaveInterest interest) {
         if (interest == null) {
             throw new NullPointerException();
@@ -46,15 +51,28 @@ public class ScanRequest {
         return this;
     }
 
+    /**
+     * Register one or more types whose subtypes you are looking for.
+     * @param types {@link Class}es to add
+     * @return {@code this}, fluently
+     */
     public ScanRequest addSupertypes(Class<?>... types) {
         Collections.addAll(supertypes, Validate.noNullElements(types, "null element at [%s]"));
         return this;
     }
 
+    /**
+     * Get registered {@link WeaveInterest}s.
+     * @return {@link Iterable}
+     */
     public Iterable<WeaveInterest> getInterests() {
         return Collections.unmodifiableList(interests);
     }
 
+    /**
+     * Get registered {@link Class}es whose subtypes will be returned.
+     * @return {@link Set}
+     */
     public Set<Class<?>> getSupertypes() {
         return Collections.unmodifiableSet(supertypes);
     }

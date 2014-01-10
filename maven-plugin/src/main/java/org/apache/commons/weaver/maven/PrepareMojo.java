@@ -21,27 +21,45 @@ package org.apache.commons.weaver.maven;
 import java.io.File;
 import java.util.List;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Goal to clean woven classes.
  */
-@Mojo(name = "prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.COMPILE)
+@Mojo(
+    name = "prepare",
+    defaultPhase = LifecyclePhase.INITIALIZE,
+    requiresDependencyCollection = ResolutionScope.COMPILE
+)
 public class PrepareMojo extends AbstractPrepareMojo {
+    /**
+     * {@link MavenProject#getCompileClasspathElements()}.
+     */
     @Parameter(readonly = true, required = true, defaultValue = "${project.compileClasspathElements}")
     protected List<String> classpath;
 
+    /**
+     * {@link Build#getOutputDirectory()}.
+     */
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.outputDirectory}")
     protected File target;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<String> getClasspath() {
         return classpath;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected File getTarget() {
         return target;

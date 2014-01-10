@@ -34,6 +34,9 @@ are provided by the Commons Weaver project.
 Typically a weaver module may respect a set of configuration
 properties which should be documented along with that module.
 
+### What can these do for me?
+The canonical example is the [privilizer module](commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
+
 ## Integration
 The weaver module(s) applicable to your codebase should be available
 on the classpath of whatever Java-based processing mechanism you select.

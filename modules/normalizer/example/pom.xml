@@ -28,6 +28,7 @@ under the License.
   <name>Apache Commons Weaver Normalizer Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -49,7 +50,7 @@ under the License.
         <configuration>
           <weaverConfig>
             <normalizer.superTypes>
-              org.apache.commons.weaver.normalizer.example.TypeLiteral,
+              org.apache.commons.lang3.reflect.TypeLiteral,
               org.apache.commons.weaver.normalizer.example.ContrivedWrapper
             </normalizer.superTypes>
             <normalizer.targetPackage>org.apache.commons.weaver.normalizer.example.normalized</normalizer.targetPackage>

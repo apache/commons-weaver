@@ -26,5 +26,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 public @interface Privilized {
+    /**
+     * Name of {@link Policy} with which privilized weaving was performed.
+     */
     String value();
 }

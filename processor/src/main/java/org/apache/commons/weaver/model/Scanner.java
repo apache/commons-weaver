@@ -25,9 +25,9 @@ public interface Scanner {
 
     /**
      * Perform the requested scan.
-     * 
-     * @param request
-     * @return ScanResult
+     *
+     * @param request to process
+     * @return {@link ScanResult}
      */
     ScanResult scan(ScanRequest request);
 }

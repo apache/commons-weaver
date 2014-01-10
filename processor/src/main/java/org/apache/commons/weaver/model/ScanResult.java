@@ -34,9 +34,9 @@ import org.apache.commons.weaver.WeaveProcessor;
 import org.apache.commons.weaver.spi.Weaver;
 
 /**
- * Encapsulates the result of scanning based on a {@link ScanRequest}. The scan results are available in a structure
- * corresponding to the Java class hierarchy; i.e.:
- * 
+ * <p>Encapsulates the result of scanning based on a {@link ScanRequest}. The
+ * scan results are available in a structure corresponding to the Java class
+ * hierarchy; i.e.:
  * <pre>
  *   package
  *   |_class
@@ -46,13 +46,16 @@ import org.apache.commons.weaver.spi.Weaver;
  *     |_constructor
  *       |_constructor parameter
  * </pre>
- * 
- * The tree of results can be iterated in this manner using {@link #getPackages()}. However, if a given {@link Weaver}
- * is known not to handle packages but some other element, convenience methods are provided here giving direct access to
- * the various elements that may have been discovered.
+ * </p><p>
+ * The tree of results can be iterated in this manner using
+ * {@link #getPackages()}. However, if a given {@link Weaver} is known not to
+ * handle packages but some other element, convenience methods are provided
+ * here giving direct access to the various elements that may have been
+ * discovered.
+ * </p>
  */
 public class ScanResult {
-    private static abstract class Projection<PARENT, CHILD extends AnnotatedElement> implements
+    private abstract static class Projection<PARENT, CHILD extends AnnotatedElement> implements
         AnnotatedElements<CHILD> {
         private final Iterable<PARENT> parents;
 
@@ -173,8 +176,7 @@ public class ScanResult {
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * 
-     * @param pkg
+     * @param pkg to wrap
      * @return {@link WeavablePackage}
      */
     public WeavablePackage getWeavable(Package pkg) {
@@ -189,8 +191,8 @@ public class ScanResult {
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * 
-     * @param cls
+     * @param cls to wrap
+     * @param <T> type
      * @return {@link WeavableClass}
      */
     public <T> WeavableClass<T> getWeavable(Class<T> cls) {
@@ -199,8 +201,7 @@ public class ScanResult {
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * 
-     * @param fld
+     * @param fld to wrap
      * @return {@link WeavableField}
      */
     public WeavableField<?> getWeavable(Field fld) {
@@ -209,8 +210,7 @@ public class ScanResult {
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * 
-     * @param mt
+     * @param mt to wrap
      * @return {@link WeavableMethod}
      */
     public WeavableMethod<?> getWeavable(Method mt) {
@@ -219,14 +219,18 @@ public class ScanResult {
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * 
-     * @param ctor
+     * @param ctor to wrap
+     * @param <T> type
      * @return {@link WeavableConstructor}
      */
     public <T> WeavableConstructor<T> getWeavable(Constructor<T> ctor) {
         return getWeavable(ctor.getDeclaringClass()).getWeavable(ctor);
     }
 
+    /**
+     * Iterate or filter {@link WeavablePackage}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavablePackage> getPackages() {
         return new AnnotatedElements<WeavablePackage>() {
 
@@ -242,6 +246,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableClass}es.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableClass<?>> getClasses() {
         return new Projection<WeavablePackage, WeavableClass<?>>(getPackages()) {
 
@@ -252,6 +260,11 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableClass}es assignable to {@code supertype}.
+     * @param supertype {@link Class} whose subtypes are sought
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableClass<?>> getClassesAssignableTo(final Class<?> supertype) {
         Validate.notNull(supertype, "supertype");
 
@@ -306,6 +319,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableField}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableField<?>> getFields() {
         return new Projection<WeavableClass<?>, WeavableField<?>>(getClasses()) {
 
@@ -318,6 +335,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableConstructor}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableConstructor<?>> getConstructors() {
         return new Projection<WeavableClass<?>, WeavableConstructor<?>>(getClasses()) {
 
@@ -330,6 +351,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableMethod}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableMethod<?>> getMethods() {
         return new Projection<WeavableClass<?>, WeavableMethod<?>>(getClasses()) {
 
@@ -342,6 +367,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableMethodParameter}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableMethodParameter<?>> getMethodParameters() {
         return new Projection<WeavableMethod<?>, WeavableMethodParameter<?>>(getMethods()) {
 
@@ -354,6 +383,10 @@ public class ScanResult {
         };
     }
 
+    /**
+     * Iterate or filter {@link WeavableConstructorParameter}s.
+     * @return {@link AnnotatedElements}
+     */
     public AnnotatedElements<WeavableConstructorParameter<?>> getConstructorParameters() {
 
         return new Projection<WeavableConstructor<?>, WeavableConstructorParameter<?>>(getConstructors()) {

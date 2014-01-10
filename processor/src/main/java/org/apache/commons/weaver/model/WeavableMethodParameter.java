@@ -20,9 +20,19 @@ package org.apache.commons.weaver.model;
 
 import java.lang.reflect.Method;
 
+/**
+ * {@link Weavable} {@link Method} parameter.
+ *
+ * @param <T> type of enclosing class
+ */
 public class WeavableMethodParameter<T> extends
     WeavableParameter<WeavableMethodParameter<T>, WeavableMethod<T>, Method, T> {
 
+    /**
+     * Create a new {@link WeavableMethodParameter} instance.
+     * @param target index
+     * @param parent declaring {@link WeavableMethod}
+     */
     public WeavableMethodParameter(Integer target, WeavableMethod<T> parent) {
         super(target, parent);
     }

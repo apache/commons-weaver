@@ -88,9 +88,9 @@ class Inflater {
     final Map<PackageInfo, List<Annotation>> packageAnnotations;
     final Map<ClassInfo, List<Annotation>> classAnnotations;
     final Map<FieldInfo, List<Annotation>> fieldAnnotations;
-    final Map<MethodInfo, List<Annotation>> constructorAnnotations;
+    final Map<MethodInfo, List<Annotation>> ctorAnnotations;
     final Map<MethodInfo, List<Annotation>> methodAnnotations;
-    final Map<ParameterInfo, List<Annotation>> constructorParameterAnnotations;
+    final Map<ParameterInfo, List<Annotation>> ctorParameterAnnotations;
     final Map<ParameterInfo, List<Annotation>> methodParameterAnnotations;
 
     Inflater(Map<Info, List<Annotation>> m) {
@@ -99,9 +99,9 @@ class Inflater {
         this.packageAnnotations = subMap(m, new InfoMatcher(PackageInfo.class));
         this.classAnnotations = subMap(m, new InfoMatcher(ClassInfo.class));
         this.fieldAnnotations = subMap(m, new InfoMatcher(FieldInfo.class));
-        this.constructorAnnotations = subMap(m, new MethodMatcher(true));
+        this.ctorAnnotations = subMap(m, new MethodMatcher(true));
         this.methodAnnotations = subMap(m, new MethodMatcher(false));
-        this.constructorParameterAnnotations = subMap(m, new ParameterMatcher(true));
+        this.ctorParameterAnnotations = subMap(m, new ParameterMatcher(true));
         this.methodParameterAnnotations = subMap(m, new ParameterMatcher(false));
     }
 
@@ -142,7 +142,7 @@ class Inflater {
                     }
                 }
                 for (WeavableConstructor<?> cs : cls.getConstructors()) {
-                    for (Map.Entry<MethodInfo, List<Annotation>> e : constructorAnnotations.entrySet()) {
+                    for (Map.Entry<MethodInfo, List<Annotation>> e : ctorAnnotations.entrySet()) {
                         try {
                             if (e.getKey().get().equals(cs.getTarget())) {
                                 cs.addAnnotations(e.getValue());
@@ -152,7 +152,7 @@ class Inflater {
                         }
                     }
                     for (WeavableConstructorParameter<?> p : cs.getParameters()) {
-                        for (Map.Entry<ParameterInfo, List<Annotation>> e : constructorParameterAnnotations.entrySet()) {
+                        for (Map.Entry<ParameterInfo, List<Annotation>> e : ctorParameterAnnotations.entrySet()) {
                             try {
                                 final Parameter<?> parameter = e.getKey().get();
                                 if (parameter.getDeclaringExecutable().equals(cs.getTarget())

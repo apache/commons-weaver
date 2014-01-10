@@ -22,15 +22,28 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+/**
+ * {@link Weavable} {@link Package}.
+ */
 public class WeavablePackage extends Weavable<WeavablePackage, Package> {
 
     private final ConcurrentNavigableMap<String, WeavableClass<?>> clazzes =
         new ConcurrentSkipListMap<String, WeavableClass<?>>();
 
+    /**
+     * Create a new {@link WeavablePackage} instance.
+     * @param target package
+     */
     public WeavablePackage(Package target) {
         super(target);
     }
 
+    /**
+     * Get a {@link WeavableClass} representing {@code cls}.
+     * @param cls to wrap
+     * @param <T> generic type of {@code cls}
+     * @return {@link WeavableClass}
+     */
     public synchronized <T> WeavableClass<T> getWeavable(Class<T> cls) {
         final String key = cls.getName();
         if (clazzes.containsKey(key)) {
@@ -44,10 +57,19 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
         return faster == null ? result : faster;
     }
 
+    /**
+     * Get enclosed {@link WeavableClass}es.
+     * @return {@link Iterable}
+     */
     public Iterable<WeavableClass<?>> getClasses() {
         return Collections.unmodifiableCollection(clazzes.values());
     }
 
+    /**
+     * Implement {@link Comparable}.
+     * @param arg0 {@link WeavablePackage} to compare against
+     * @return int per {@link Comparable#compareTo(Object)} contract
+     */
     @Override
     public int compareTo(WeavablePackage arg0) {
         return getTarget().getName().compareTo(arg0.getTarget().getName());

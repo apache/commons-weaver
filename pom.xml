@@ -56,6 +56,8 @@ under the License.
     <asm.version>4.1</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
     <commons.project-info.version>2.6</commons.project-info.version>
+
+    <checkstyle.skip>false</checkstyle.skip>
   </properties>
 
   <developers>
@@ -203,6 +205,18 @@ under the License.
           <content>${project.build.directory}/staging</content>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.11</version>
+        <dependencies>
+          <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>commons-weaver-build-tools</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
 
@@ -219,10 +233,21 @@ under the License.
           <aggregate>true</aggregate>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.11</version>
+        <configuration>
+          <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
+          <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
+          <skip>${checkstyle.skip}</skip>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 
   <modules>
+    <module>build-tools</module>
     <module>processor</module>
     <module>modules</module>
     <module>maven-plugin</module>

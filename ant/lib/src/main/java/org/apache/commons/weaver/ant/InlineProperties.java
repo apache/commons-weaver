@@ -24,36 +24,51 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.DynamicElement;
 
 /**
- * Structure to allow inline specification of properties.
- * 
- * Example:
- * {pre}<foo>foo-value</foo>
- * <bar>bar-value</bar>
- * <baz>baz
- * -nextline-value</baz>
+ * <p>Structure to allow inline specification of properties.</p>
+ * <p>Example:
+ * {pre}&lt;foo&gt;foo-value&lt;/foo&gt;
+ * &lt;bar&gt;bar-value&lt;/bar&gt;
+ * &lt;baz&gt;baz
+ * -nextline-value&lt;/baz&gt;
  * {/pre}
+ * </p>
  */
 public class InlineProperties implements DynamicElement {
     /**
      * Represents a single inline property.
      */
-    public class InlineProperty {
+    public final class InlineProperty {
         private final String name;
 
         private InlineProperty(String name) {
             this.name = name;
         }
 
+        /**
+         * Add text to this property.
+         * @param text to add
+         */
         public void addText(String text) {
+            final String value;
             if (properties.containsKey(name)) {
-                text = StringUtils.join(properties.getProperty(name), text);
+                value = StringUtils.join(properties.getProperty(name), text);
+            } else {
+                value = text;
             }
-            properties.setProperty(name, text);
+            properties.setProperty(name, value);
         }
     }
 
+    /**
+     * {@link Properties} object maintained by the {@link InlineProperties}.
+     */
     final Properties properties = new Properties();
 
+    /**
+     * Handle the specified nested element.
+     * @param name property name
+     * @return {@link InlineProperty}
+     */
     public InlineProperty createDynamicElement(String name) {
         return new InlineProperty(name);
     }

@@ -20,9 +20,19 @@ package org.apache.commons.weaver.model;
 
 import java.lang.reflect.Constructor;
 
+/**
+ * {@link Weavable} {@link Constructor} parameter.
+ *
+ * @param <T> constructed type
+ */
 public class WeavableConstructorParameter<T> extends
     WeavableParameter<WeavableConstructorParameter<T>, WeavableConstructor<T>, Constructor<T>, T> {
 
+    /**
+     * Create a new {@link WeavableConstructorParameter} instance.
+     * @param target parameter index
+     * @param parent declaring {@link WeavableConstructor}
+     */
     public WeavableConstructorParameter(Integer target, WeavableConstructor<T> parent) {
         super(target, parent);
     }

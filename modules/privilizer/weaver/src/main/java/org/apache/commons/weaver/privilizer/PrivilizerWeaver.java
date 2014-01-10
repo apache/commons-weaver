@@ -28,12 +28,11 @@ import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.model.WeaveInterest;
-import org.apache.commons.weaver.privilizer.Policy;
-import org.apache.commons.weaver.privilizer.Privileged;
-import org.apache.commons.weaver.privilizer.Privilized;
-import org.apache.commons.weaver.privilizer.Privilizing;
 import org.apache.commons.weaver.spi.Weaver;
 
+/**
+ * Privilizer {@link Weaver} implementation.
+ */
 public class PrivilizerWeaver implements Weaver {
     @Override
     public boolean process(WeaveEnvironment weaveEnvironment, Scanner scanner) {
@@ -65,10 +64,8 @@ public class PrivilizerWeaver implements Weaver {
 
     /**
      * Validate a weaving request for a given target type.
-     * 
-     * @param privilizer
-     * @param type
-     * 
+     * @param privilizer whose configuration to consult
+     * @param type target
      * @return whether weaving should proceed
      * @throws IllegalStateException if class has already been woven with some other policy
      */

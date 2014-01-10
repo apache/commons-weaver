@@ -20,25 +20,48 @@ package org.apache.commons.weaver.privilizer;
 
 import org.objectweb.asm.Type;
 
+/**
+ * Models the action of accessing a field by extending {@link Field} with an
+ * accessing type.
+ */
 public class FieldAccess extends Field {
+    /**
+     * {@link Type} from which field is accessed.
+     */
     public final Type owner;
 
+    /**
+     * Create a new {@link FieldAccess}.
+     * @param access operation
+     * @param owner {@link Type} from which field is accessed.
+     * @param name of field
+     * @param type of field
+     */
     public FieldAccess(int access, Type owner, String name, Type type) {
         super(access, name, type);
         this.owner = owner;
     }
 
+    /**
+     * Compare against {@code obj} for equality.
+     * @param obj to compare
+     * @return whether Objects are equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof FieldAccess == false) {
+        if (!(obj instanceof FieldAccess)) {
             return false;
         }
         return super.equals(obj) && ((FieldAccess) obj).owner.equals(owner);
     }
 
+    /**
+     * Generate a hashCode.
+     * @return int
+     */
     @Override
     public int hashCode() {
         final int result = super.hashCode() << 4;

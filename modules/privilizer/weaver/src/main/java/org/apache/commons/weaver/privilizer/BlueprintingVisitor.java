@@ -49,6 +49,9 @@ import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+/**
+ * {@link ClassVisitor} to import so-called "blueprint methods".
+ */
 class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private final Set<Type> blueprintTypes = new HashSet<Type>();
@@ -61,6 +64,12 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private final ClassVisitor next;
 
+    /**
+     * Create a new {@link BlueprintingVisitor}.
+     * @param privilizer owner
+     * @param cv wrapped
+     * @param config annotation
+     */
     BlueprintingVisitor(Privilizer privilizer, ClassVisitor cv, Privilizing config) {
         privilizer.super(new ClassNode(Opcodes.ASM4));
         this.next = cv;
@@ -220,7 +229,8 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                                     final Pair<Type, String> k = Pair.of(type, name);
                                     // skip shadowed fields:
                                     if (!fieldAccessMap.containsKey(k)) {
-                                        fieldAccessMap.put(k, new FieldAccess(access, target, name, Type.getType(desc)));
+                                        fieldAccessMap.put(k,
+                                            new FieldAccess(access, target, name, Type.getType(desc)));
                                     }
                                 }
                                 return null;
@@ -235,8 +245,6 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
-            } finally {
-
             }
             Validate.isTrue(fieldAccessMap.containsKey(key), "Could not locate %s.%s", owner.getClassName(), name);
         }

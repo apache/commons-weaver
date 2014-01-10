@@ -21,28 +21,46 @@ package org.apache.commons.weaver.maven;
 import java.io.File;
 import java.util.List;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Goal to clean woven test classes.
  */
-@Mojo(name = "test-prepare", defaultPhase = LifecyclePhase.INITIALIZE, requiresDependencyCollection = ResolutionScope.TEST)
+@Mojo(
+    name = "test-prepare",
+    defaultPhase = LifecyclePhase.INITIALIZE,
+    requiresDependencyCollection = ResolutionScope.TEST
+)
 public class TestPrepareMojo extends AbstractPrepareMojo {
 
+    /**
+     * {@link MavenProject#getTestClasspathElements()}.
+     */
     @Parameter(readonly = true, required = true, defaultValue = "${project.testClasspathElements}")
     protected List<String> classpath;
 
+    /**
+     * {@link Build#getTestOutputDirectory()}.
+     */
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
     protected File target;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected List<String> getClasspath() {
         return classpath;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected File getTarget() {
         return target;

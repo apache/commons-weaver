@@ -27,12 +27,19 @@ import org.apache.tools.ant.Project;
  * Weave Ant task.
  */
 public class WeaveTask extends AbstractWeaverTask {
+    /**
+     * Create a new {@link WeaveTask} instance.
+     * @param project owner
+     */
     public WeaveTask(Project project) {
         super(project);
     }
 
+    /**
+     * Execute the weave task.
+     */
     @Override
-    public void execute() throws BuildException {
+    public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
             final WeaveProcessor wp =
