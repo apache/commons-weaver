@@ -43,10 +43,6 @@ under the License.
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
 
-    <!-- drop after parent upgrade: -->
-    <maven.compile.source>${maven.compiler.source}</maven.compile.source>
-    <maven.compile.target>${maven.compiler.target}</maven.compile.target>
-
     <commons.componentid>weaver</commons.componentid>
     <commons.release.version>1.0</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
