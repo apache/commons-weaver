@@ -46,8 +46,8 @@ under the License.
     <commons.componentid>weaver</commons.componentid>
     <commons.release.version>1.0</commons.release.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <!--commons.jira.id>WEAVER</commons.jira.id>
-    <commons.jira.pid>666</commons.jira.pid-->
+    <commons.jira.id>WEAVER</commons.jira.id>
+    <commons.jira.pid>12315320</commons.jira.pid>
     <commons.site.path>commons-weaver</commons.site.path>
     <asm.version>4.1</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
