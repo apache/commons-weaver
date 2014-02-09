@@ -99,6 +99,12 @@ under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver</artifactId>
+        <classifier>javadoc</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-privilizer-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -106,6 +112,12 @@ under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-privilizer-api</artifactId>
         <classifier>sources</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-privilizer-api</artifactId>
+        <classifier>javadoc</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -121,6 +133,12 @@ under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-privilizer</artifactId>
+        <classifier>javadoc</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-normalizer</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -128,6 +146,12 @@ under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-normalizer</artifactId>
         <classifier>sources</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-normalizer</artifactId>
+        <classifier>javadoc</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -143,6 +167,12 @@ under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-maven-plugin</artifactId>
+        <classifier>javadoc</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-antlib</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -150,6 +180,12 @@ under the License.
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-weaver-antlib</artifactId>
         <classifier>sources</classifier>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-antlib</artifactId>
+        <classifier>javadoc</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -297,6 +333,22 @@ under the License.
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-javadoc-jar</id>
+            <goals>
+              <goal>javadoc</goal>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+        </configuration>
       </plugin>
     </plugins>
   </build>
