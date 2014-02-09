@@ -44,12 +44,22 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver</artifactId>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-privilizer-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-privilizer-api</artifactId>
       <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-privilizer-api</artifactId>
+      <classifier>javadoc</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -62,12 +72,22 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-privilizer</artifactId>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-normalizer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-normalizer</artifactId>
       <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-normalizer</artifactId>
+      <classifier>javadoc</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -80,12 +100,22 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-maven-plugin</artifactId>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-antlib</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-antlib</artifactId>
       <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-antlib</artifactId>
+      <classifier>javadoc</classifier>
     </dependency>
   </dependencies>
 
