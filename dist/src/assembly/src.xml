@@ -15,21 +15,22 @@
  limitations under the License.
 -->
 <assembly>
-    <id>src</id>
-    <formats>
-        <format>tar.gz</format>
-        <format>zip</format>
-    </formats>
-    <baseDirectory>${project.artifactId}-${commons.release.version}-src</baseDirectory>
-    <fileSets>
-        <fileSet>
-          <excludes>
-            <exclude>${project.build.directory}/**</exclude>
-            <exclude>.*/**</exclude>
-            <exclude>**/${project.build.directory}/**</exclude>
-            <exclude>**/.*/**</exclude>
-            <exclude>**/dependency-reduced-pom.xml</exclude>
-          </excludes>
-        </fileSet>
-    </fileSets>
+  <id>src</id>
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>${project.artifactId}-${commons.release.version}-src</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/..</directory>
+      <excludes>
+        <exclude>${project.build.directory}/**</exclude>
+        <exclude>.*/**</exclude>
+        <exclude>**/${project.build.directory}/**</exclude>
+        <exclude>**/.*/**</exclude>
+        <exclude>**/dependency-reduced-pom.xml</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
 </assembly>
