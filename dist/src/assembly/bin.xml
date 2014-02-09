@@ -24,7 +24,6 @@
   <includeSiteDirectory>false</includeSiteDirectory>
   <dependencySets>
     <dependencySet>
-      <scope>compile</scope>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
     </dependencySet>
