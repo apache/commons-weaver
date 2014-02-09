@@ -24,9 +24,6 @@
   <includeSiteDirectory>false</includeSiteDirectory>
   <dependencySets>
     <dependencySet>
-      <includes>
-        <include>org.apache.commons:commons-weaver*</include>
-      </includes>
       <scope>compile</scope>
       <useProjectArtifact>false</useProjectArtifact>
       <useTransitiveDependencies>false</useTransitiveDependencies>
