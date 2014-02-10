@@ -35,12 +35,12 @@ under the License.
     <module>normalizer</module>
   </modules>
   <dependencies>
-      <dependency>
+    <dependency>
           <!-- we need this dependency for the reactor to correctly resolve the build order -->
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-weaver-maven-plugin</artifactId>
-          <version>${project.version}</version>
-          <scope>test</scope>
-      </dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-maven-plugin</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

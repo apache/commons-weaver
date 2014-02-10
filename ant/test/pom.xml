@@ -157,15 +157,15 @@ under the License.
                                classpathref="cp" />
 
                       <cw:weave>
-                          <cw:settings target="${project.build.outputDirectory}"
-                                       classpathref="cp">
-                              <propertyset>
-                                  <propertyref name="privilizer.policy" />
-                              </propertyset>
-                              <properties>
-                                  <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
-                              </properties>
-                          </cw:settings>
+                        <cw:settings target="${project.build.outputDirectory}"
+                                     classpathref="cp">
+                          <propertyset>
+                            <propertyref name="privilizer.policy" />
+                          </propertyset>
+                          <properties>
+                            <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
+                          </properties>
+                        </cw:settings>
                       </cw:weave>
                     </sequential>
                   </target>
