@@ -18,13 +18,13 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>commons-weaver-build-tools</artifactId>
-    <name>Apache Commons Weaver Build Tools</name>
-    <description>Provide common setup, from http://maven.apache.org/plugins/maven-checkstyle-plugin/examples/multi-module-config.html</description>
+  <parent>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-weaver-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>commons-weaver-build-tools</artifactId>
+  <name>Apache Commons Weaver Build Tools</name>
+  <description>Provide common setup, from http://maven.apache.org/plugins/maven-checkstyle-plugin/examples/multi-module-config.html</description>
 </project>

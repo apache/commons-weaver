@@ -29,7 +29,7 @@ under the License.
   <name>Apache Commons Weaver Antlib</name>
   <description>Apache Commons Weaver Ant task library</description>
 
-    <properties>
+  <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <ant.version>1.8.4</ant.version>
     <commons.osgi.import />
