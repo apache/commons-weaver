@@ -352,13 +352,6 @@ under the License.
           <source>${maven.compiler.source}</source>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagNameFormat>@{commons.release.version}_@{commons.rc.version}</tagNameFormat>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
