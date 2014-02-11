@@ -22,7 +22,7 @@ under the License.
   <parent>
     <artifactId>commons-weaver-parent</artifactId>
     <groupId>org.apache.commons</groupId>
-    <version>1.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>commons-weaver-modules-parent</artifactId>
