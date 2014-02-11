@@ -418,7 +418,18 @@ under the License.
                 <!-- disable assembly:single from commons-parent
                      release profile; multimodule assembly handled
                      by dist module -->
-                <phase>never-ever</phase>
+                <phase />
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-source-jar</id>
+                <!-- suppress execution specified by parent profile -->
+                <phase />
               </execution>
             </executions>
           </plugin>
