@@ -89,7 +89,8 @@ of configuring the `privilizer` module:
 ### Antlib
 The [Commons Weaver Antlib][antlib] provides tasks and types to
 facilitate the integration of Commons Weaver into your Apache Ant-based
-build process. Here the user will make the `commons-weaver` `jar`,
+build process. Here the user will make the `commons-weaver-antlib` `jar`
+(which includes the Apache Commons Weaver processor and its dependencies),
 along with the `jar` files of the desired modules, available to
 the Ant build using one of the various mechanisms supported. More
 information on this is available [here][antxt]. Having done this the
