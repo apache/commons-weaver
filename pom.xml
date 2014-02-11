@@ -356,7 +356,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagNameFormat>@{commons.release.version}_@{commons.rc.version}</tagNameFormat>
+          <tag>${commons.release.version}_${commons.rc.version}</tag>
         </configuration>
       </plugin>
     </plugins>
