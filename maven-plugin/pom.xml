@@ -105,10 +105,16 @@ under the License.
         <executions>
           <execution>
             <id>attach-test-sources</id>
-            <phase>never-ever</phase>
-            <goals>
-              <goal>test-jar-no-fork</goal>
-            </goals>
+            <phase />
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase />
           </execution>
         </executions>
       </plugin>
