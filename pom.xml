@@ -350,7 +350,6 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
-          <aggregate>true</aggregate>
         </configuration>
       </plugin>
     </plugins>
@@ -381,6 +380,23 @@ under the License.
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>site</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <aggregate>true</aggregate>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <modules>
     <module>build-tools</module>
