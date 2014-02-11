@@ -152,13 +152,10 @@ under the License.
                       <path id="cp">
                         <fileset dir="${project.build.directory}/compile-classpath" />
                       </path>
-                      <typedef uri="antlib:org.apache.commons.weaver.ant"
-                               resource="org/apache/commons/weaver/ant/antlib.xml"
-                               classpathref="cp" />
+                      <typedef uri="antlib:org.apache.commons.weaver.ant" resource="org/apache/commons/weaver/ant/antlib.xml" classpathref="cp" />
 
                       <cw:weave>
-                        <cw:settings target="${project.build.outputDirectory}"
-                                     classpathref="cp">
+                        <cw:settings target="${project.build.outputDirectory}" classpathref="cp">
                           <propertyset>
                             <propertyref name="privilizer.policy" />
                           </propertyset>
