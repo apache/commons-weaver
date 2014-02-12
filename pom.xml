@@ -272,14 +272,12 @@ under the License.
         <executions>
           <execution>
             <id>attach-sources</id>
-            <phase>verify</phase>
             <goals>
               <goal>jar-no-fork</goal>
             </goals>
           </execution>
           <execution>
             <id>attach-test-sources</id>
-            <phase>verify</phase>
             <goals>
               <goal>test-jar-no-fork</goal>
             </goals>
