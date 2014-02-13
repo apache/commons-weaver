@@ -22,9 +22,11 @@ import java.io.File;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
@@ -85,7 +87,10 @@ public class WeaveProcessor {
      * Weave classes in target directory.
      */
     public void weave() {
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
+        final Set<String> finderClasspath = new LinkedHashSet<String>();
+        finderClasspath.add(target.getAbsolutePath());
+        finderClasspath.addAll(classpath);
+        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Weaver weaver : WEAVERS) {
             final WeaveEnvironment env =
