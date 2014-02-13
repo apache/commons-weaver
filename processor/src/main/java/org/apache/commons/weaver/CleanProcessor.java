@@ -22,9 +22,11 @@ import java.io.File;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
@@ -37,6 +39,7 @@ import org.apache.xbean.finder.archive.FileArchive;
  * This class discovers and invokes available {@link Cleaner} plugins.
  */
 public class CleanProcessor {
+    private static final Logger LOG = Logger.getLogger(CleanProcessor.class.getName());
 
     /**
      * List of picked up cleaner plugins.
@@ -77,7 +80,7 @@ public class CleanProcessor {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
-        Validate.isTrue(target.isDirectory(), "%s is not a directory", target);
+        Validate.isTrue(!target.exists() || target.isDirectory(), "%s is not a directory", target);
         this.configuration = Validate.notNull(configuration, "configuration");
     }
 
@@ -85,7 +88,13 @@ public class CleanProcessor {
      * Clean specified targets.
      */
     public void clean() {
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(classpath));
+        if (!target.exists()) {
+            LOG.warning("Target directory " + target + " does not exist; nothing to do!");
+        }
+        final Set<String> finderClasspath = new LinkedHashSet<String>();
+        finderClasspath.add(target.getAbsolutePath());
+        finderClasspath.addAll(classpath);
+        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (Cleaner cleaner : CLEANERS) {
             final WeaveEnvironment env =

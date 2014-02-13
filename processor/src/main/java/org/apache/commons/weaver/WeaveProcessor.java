@@ -40,6 +40,8 @@ import org.apache.xbean.finder.archive.FileArchive;
  */
 public class WeaveProcessor {
 
+    private static final Logger LOG = Logger.getLogger(WeaveProcessor.class.getName());
+
     /**
      * List of picked up weaver plugins.
      */
@@ -79,7 +81,7 @@ public class WeaveProcessor {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
-        Validate.isTrue(target.isDirectory(), "%s is not a directory", target);
+        Validate.isTrue(!target.exists() || target.isDirectory(), "%s is not a directory", target);
         this.configuration = Validate.notNull(configuration, "configuration");
     }
 
@@ -87,6 +89,9 @@ public class WeaveProcessor {
      * Weave classes in target directory.
      */
     public void weave() {
+        if (!target.exists()) {
+            LOG.warning("Target directory " + target + " does not exist; nothing to do!");
+        }
         final Set<String> finderClasspath = new LinkedHashSet<String>();
         finderClasspath.add(target.getAbsolutePath());
         finderClasspath.addAll(classpath);
