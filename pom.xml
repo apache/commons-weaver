@@ -54,6 +54,7 @@ under the License.
     <commons.project-info.version>2.6</commons.project-info.version>
 
     <checkstyle.skip>false</checkstyle.skip>
+    <ant.version>1.9.3</ant.version>
   </properties>
 
   <developers>
