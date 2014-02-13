@@ -21,8 +21,7 @@
 grant
 {
   // let everyone read target dir
-  permission java.io.FilePermission "${user.dir}${/}target${/}-", "read";
-  permission java.security.AllPermission;
+  permission java.io.FilePermission "${preserve.project.build.directory}${/}-", "read";
 };
 
 // we don't care about the permissions of the testing infrastructure,
@@ -38,7 +37,14 @@ grant codeBase "file://${user.home}/.m2/repository/junit/-"
   permission java.security.AllPermission;
 };
 
-grant codeBase "file://${user.dir}/target/classes/-"
+// surefire booter;
+grant codeBase "file://${project.build.directory}/surefire/-"
+{
+  permission java.security.AllPermission;
+};
+
+// classes under test
+grant codeBase "file://${project.build.outputDirectory}/-"
 {
   permission java.util.PropertyPermission "foo", "read,write";
   permission java.util.PropertyPermission "bar", "read,write";
