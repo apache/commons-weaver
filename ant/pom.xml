@@ -29,10 +29,6 @@ under the License.
   <name>Apache Commons Weaver Antlib Parent</name>
   <packaging>pom</packaging>
 
-  <properties>
-    <ant.version>1.8.4</ant.version>
-  </properties>
-
   <modules>
     <module>lib</module>
     <module>test</module>
