@@ -36,11 +36,6 @@ under the License.
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-example</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-privilizer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -58,23 +53,11 @@ under the License.
   </dependencies>
   <profiles>
     <profile>
-      <id>sec</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>-Djava.security.manager -Djava.security.policy=${project.build.directory}/example-test-resources/java.policy</argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>antlib-test</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!antlib-test-skip</name>
+        </property>
       </activation>
       <build>
         <plugins>
@@ -86,14 +69,19 @@ under the License.
                 <id>unpack-example-sources</id>
                 <phase>generate-sources</phase>
                 <goals>
-                  <goal>unpack-dependencies</goal>
+                  <goal>unpack</goal>
                 </goals>
                 <configuration>
-                  <classifier>sources</classifier>
-                  <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
-                  <includes>**/*.java</includes>
-                  <outputDirectory>${project.build.directory}/example-sources</outputDirectory>
+                  <artifactItems>
+                    <artifactItems>
+                      <groupId>org.apache.commons</groupId>
+                      <artifactId>commons-weaver-example</artifactId>
+                      <version>${project.version}</version>
+                      <classifier>sources</classifier>
+                      <includes>**/*.java</includes>
+                      <outputDirectory>${project.build.directory}/example-sources</outputDirectory>
+                    </artifactItems>
+                  </artifactItems>
                 </configuration>
               </execution>
               <execution>
@@ -104,34 +92,45 @@ under the License.
                 </goals>
                 <configuration>
                   <outputDirectory>${project.build.directory}/compile-classpath</outputDirectory>
+                  <includeArtifactIds>commons-weaver-antlib,commons-weaver-privilizer,commons-weaver-privilizer-api,commons-io,asm,asm-commons,asm-tree,asm-util</includeArtifactIds>
                 </configuration>
               </execution>
               <execution>
                 <id>unpack-example-test-sources</id>
                 <phase>generate-test-sources</phase>
                 <goals>
-                  <goal>unpack-dependencies</goal>
+                  <goal>unpack</goal>
                 </goals>
                 <configuration>
-                  <classifier>test-sources</classifier>
-                  <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
-                  <includes>**/*.java</includes>
-                  <outputDirectory>${project.build.directory}/example-test-sources</outputDirectory>
+                  <artifactItems>
+                    <artifactItems>
+                      <groupId>org.apache.commons</groupId>
+                      <artifactId>commons-weaver-example</artifactId>
+                      <version>${project.version}</version>
+                      <classifier>test-sources</classifier>
+                      <includes>**/*.java</includes>
+                      <outputDirectory>${project.build.directory}/example-test-sources</outputDirectory>
+                    </artifactItems>
+                  </artifactItems>
                 </configuration>
               </execution>
               <execution>
                 <id>unpack-example-test-resources</id>
                 <phase>generate-test-resources</phase>
                 <goals>
-                  <goal>unpack-dependencies</goal>
+                  <goal>unpack</goal>
                 </goals>
                 <configuration>
-                  <classifier>test-sources</classifier>
-                  <includeGroupIds>org.apache.commons</includeGroupIds>
-                  <includeArtifactIds>commons-weaver-example</includeArtifactIds>
-                  <includes>java.policy</includes>
-                  <outputDirectory>${project.build.directory}/example-test-resources</outputDirectory>
+                  <artifactItems>
+                    <artifactItems>
+                      <groupId>org.apache.commons</groupId>
+                      <artifactId>commons-weaver-example</artifactId>
+                      <version>${project.version}</version>
+                      <classifier>test-sources</classifier>
+                      <includes>java.policy</includes>
+                      <outputDirectory>${project.build.directory}/example-test-resources</outputDirectory>
+                    </artifactItems>
+                  </artifactItems>
                 </configuration>
               </execution>
             </executions>
@@ -156,11 +155,9 @@ under the License.
 
                       <cw:weave>
                         <cw:settings target="${project.build.outputDirectory}" classpathref="cp">
-                          <propertyset>
-                            <propertyref name="privilizer.policy" />
-                          </propertyset>
                           <properties>
-                            <privilizer.accessLevel>PRIVATE</privilizer.accessLevel>
+                            <privilizer.policy>${privilizer.policy}</privilizer.policy>
+                            <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
                           </properties>
                         </cw:settings>
                       </cw:weave>
@@ -169,6 +166,18 @@ under the License.
                 </configuration>
               </execution>
             </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-weaver-privilizer</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+              </dependency>
+            </dependencies>
           </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
@@ -198,21 +207,60 @@ under the License.
                   </sources>
                 </configuration>
               </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>sec</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
               <execution>
-                <id>add-test-resources</id>
-                <phase>generate-test-resources</phase>
+                <id>filter-testResources</id>
+                <phase>process-test-resources</phase>
                 <goals>
-                  <goal>add-test-resource</goal>
+                  <goal>run</goal>
                 </goals>
                 <configuration>
-                  <resources>
-                    <resource>
-                      <directory>${project.build.directory}/example-test-resources</directory>
-                    </resource>
-                  </resources>
+                  <target>
+                    <mkdir dir="${project.build.testOutputDirectory}" />
+                    <condition property="slash" value="/" else="">
+                      <os family="windows" />
+                    </condition>
+                    <copy todir="${project.build.testOutputDirectory}" overwrite="true">
+                      <fileset dir="${project.build.directory}/example-test-resources" erroronmissingdir="false" />
+                      <filterchain>
+                        <expandproperties />
+                        <!-- append extra slash on windows only -->
+                        <replacestring from="file://" to="file://${slash}" />
+                        <replacestring from="${file.separator}" to="/" />
+                        <!-- preserve system-specific file separator -->
+                        <replacestring from="$${preserve.project.build.directory}" to="${project.build.directory}" />
+                      </filterchain>
+                    </copy>
+                  </target>
                 </configuration>
               </execution>
             </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Djava.security.manager -Djava.security.policy=${project.build.testOutputDirectory}/java.policy</argLine>
+            </configuration>
           </plugin>
         </plugins>
       </build>
