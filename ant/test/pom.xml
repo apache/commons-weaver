@@ -86,7 +86,7 @@ under the License.
               </execution>
               <execution>
                 <id>copy-dependencies</id>
-                <phase>process-sources</phase>
+                <phase>generate-sources</phase>
                 <goals>
                   <goal>copy-dependencies</goal>
                 </goals>
@@ -139,6 +139,32 @@ under the License.
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
+              <execution>
+                <id>clean</id>
+                <phase>process-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <sequential xmlns:cw="antlib:org.apache.commons.weaver.ant">
+                      <path id="cp">
+                        <fileset dir="${project.build.directory}/compile-classpath" erroronmissingdir="false" />
+                      </path>
+                      <typedef uri="antlib:org.apache.commons.weaver.ant" resource="org/apache/commons/weaver/ant/antlib.xml" classpathref="cp" />
+
+                      <cw:clean>
+                        <cw:settings target="${project.build.outputDirectory}" classpathref="cp">
+                          <properties>
+                            <privilizer.policy>${privilizer.policy}</privilizer.policy>
+                            <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
+                          </properties>
+                        </cw:settings>
+                      </cw:clean>
+                    </sequential>
+                  </target>
+                </configuration>
+              </execution>
               <execution>
                 <id>weave</id>
                 <phase>process-classes</phase>
