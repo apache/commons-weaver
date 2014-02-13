@@ -31,7 +31,6 @@ under the License.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <ant.version>1.8.4</ant.version>
     <commons.osgi.import />
   </properties>
   <dependencies>
