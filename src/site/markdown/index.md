@@ -19,11 +19,19 @@ under the License.
 
 # Apache Commons Weaver
 
-Provides a general framework for the application of
-transformations to compiled Java bytecode. It consists of:
+## What is this thing?
+Occasionally, as Java developers, we encounter a problem whose solution
+simply cannot be expressed in the Java language. Often, the Java annotation
+processing tools can be used to great effect, and they should not be
+dismissed as your first line of defense when you need to generate additional
+classes. Occasionally, however, our only recourse is to manipulate existing
+class files. It is these situations which Apache Commons Weaver was designed
+to address.
+
+Apache Commons Weaver consists of:
 
 ## Core Framework
-The [Commons Weaver Core](commons-weaver/index.html)
+The [Commons Weaver Processor](commons-weaver-processor/index.html)
 defines a "weaver module" service provider interface (SPI) as well as
 the facilities that use the Java `ServiceLoader` to discover and invoke
 defined weaver modules for simple filesystem-based bytecode weaving.
@@ -115,6 +123,21 @@ seen here:
 
 Multiple weaving targets (e.g. `main` vs. `test`) are of course woven
 using different `settings`.
+
+## Custom Weaver Modules
+As discussed, some modules are provided for common cases, and the
+developers welcome suggestions for useful modules, but there is no reason
+not to get started writing your own weaver module (assuming you are sure
+this is the right solution, or just want to do this for fun)! When the 
+processor framework invokes your custom `Weaver`, it should request the
+classes it is interested in using the provided `Scanner`, then obtain the
+compiled bytecode from the `WeaveEnvironment`. At this point you will
+probably avoid a lot of frustration by using one of the popular open source
+Java bytecode manipulation libraries available. Then save your changes back
+to the `WeaveEnvironment`. Rinse, repeat. Hint: if your `Weaver` uses
+configuration parameters that affect the final result, you might consider
+implementing `Cleaner` to look for and delete whatever classes are no
+longer valid.
 
 ##FAQ
 
