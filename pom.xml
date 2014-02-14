@@ -254,8 +254,8 @@ under the License.
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
-          <artifactId>buildhelper-maven-plugin</artifactId>
-          <version>1.7</version>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.8</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -263,6 +263,15 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-test-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <skipIfEmpty>true</skipIfEmpty>
         </configuration>
@@ -317,22 +326,136 @@ under the License.
         </dependencies>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>process-remote-resources</id>
+            <id>add-source-notices</id>
+            <phase>generate-resources</phase>
             <goals>
-              <goal>process</goal>
+              <goal>add-resource</goal>
             </goals>
             <configuration>
-              <resourceBundles>
-                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-              </resourceBundles>
-              <skip>false</skip>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/generated-resources/notices</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-test-notices</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/generated-test-resources/notices</directory>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-notices</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target xmlns:if="ant:if" xmlns:unless="ant:unless">
+                <presetdef name="truth">
+                  <condition value="true" else="false" />
+                </presetdef>
+
+                <macrodef name="seek">
+                  <attribute name="name" />
+                  <attribute name="addto" />
+                  <sequential>
+                    <union id="@{name}-ws" />
+                    <step dir="${user.dir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
+                  </sequential>
+                </macrodef>
+
+                <macrodef name="step">
+                  <attribute name="name" />
+                  <attribute name="dir" />
+                  <attribute name="addto" />
+                  <attribute name="ws" />
+                  <sequential>
+                    <local name="seenDir" />
+                    <truth property="seenDir">
+                      <resourcecount when="gt" count="0">
+                        <intersect id="intersection">
+                          <resources refid="@{ws}" />
+                          <file name="@{dir}" />
+                        </intersect>
+                      </resourcecount>
+                    </truth>
+                    <sequential unless:true="${seenDir}">
+                      <augment id="@{ws}">
+                        <file file="@{dir}" />
+                      </augment>
+                      <local name="exists" />
+                      <truth property="exists">
+                        <available file="@{dir}/@{name}" />
+                      </truth>
+
+                      <sequential if:true="${exists}">
+                        <augment id="@{addto}">
+                          <file file="@{dir}/@{name}" />
+                        </augment>
+                      </sequential>
+                      <sequential unless:true="${exists}">
+                        <local name="parent" />
+                        <dirname property="parent" file="@{dir}" />
+                        <step dir="${parent}" name="@{name}" addto="@{addto}" ws="@{ws}" />
+                      </sequential>
+                    </sequential>
+                  </sequential>
+                </macrodef>
+
+                <truth property="jar-project">
+                  <equals arg1="${project.packaging}" arg2="jar" />
+                </truth>
+                <sequential if:true="${jar-project}">
+                  <union id="notices" />
+                  <seek name="LICENSE.txt" addto="notices" />
+                  <seek name="NOTICE.txt" addto="notices" />
+
+                  <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
+                  <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
+                    <resources refid="notices" />
+                  </copy>
+
+                  <mkdir dir="${project.build.directory}/generated-test-resources/notices/META-INF" />
+                  <copy verbose="true" todir="${project.build.directory}/generated-test-resources/notices/META-INF">
+                    <resources refid="notices" />
+                  </copy>
+
+                  <mkdir dir="${project.build.directory}/apidocs/META-INF" />
+                  <copy verbose="true" todir="${project.build.directory}/apidocs/META-INF">
+                    <resources refid="notices" />
+                  </copy>
+                </sequential>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
