@@ -33,6 +33,13 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons.osgi.import />
   </properties>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant/lib</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant/lib</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/ant/lib</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
