@@ -28,6 +28,12 @@ under the License.
   <artifactId>commons-weaver-privilizer-api</artifactId>
   <name>Apache Commons Weaver Privilizer API</name>
 
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer/api</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer/api</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/privilizer/api</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>

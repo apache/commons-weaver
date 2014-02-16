@@ -37,6 +37,12 @@ under the License.
     collective footprint on your archive and more importantly on your JVM.
   </description>
 
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/normalizer</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/normalizer</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/normalizer</url>
+  </scm>
+
   <modules>
     <module>weaver</module>
     <module>example</module>

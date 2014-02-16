@@ -34,6 +34,13 @@ under the License.
     <module>privilizer</module>
     <module>normalizer</module>
   </modules>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules</url>
+  </scm>
+
   <dependencies>
     <dependency>
           <!-- we need this dependency for the reactor to correctly resolve the build order -->

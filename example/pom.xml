@@ -32,6 +32,13 @@ under the License.
     <privilizer.verify>true</privilizer.verify>
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/example</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/example</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/example</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

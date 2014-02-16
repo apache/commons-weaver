@@ -27,6 +27,13 @@ under the License.
   <artifactId>commons-weaver-build-tools</artifactId>
   <name>Apache Commons Weaver Build Tools</name>
   <description>Provide common setup, from http://maven.apache.org/plugins/maven-checkstyle-plugin/examples/multi-module-config.html</description>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/build-tools</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/build-tools</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/build-tools</url>
+  </scm>
+
   <build>
     <plugins>
       <plugin>

@@ -30,6 +30,13 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <checkstyle.skip>true</checkstyle.skip>
   </properties>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/normalizer/example</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/normalizer/example</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/normalizer/example</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

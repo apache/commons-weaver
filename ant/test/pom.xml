@@ -33,6 +33,13 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <privilizer.policy>DYNAMIC</privilizer.policy>
   </properties>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant/test</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant/test</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/ant/test</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
