@@ -21,7 +21,6 @@ package org.apache.commons.weaver.ant;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DynamicElementNS;
 
 /**
@@ -70,9 +69,10 @@ public class InlineProperties implements DynamicElementNS {
      * @param uri String URI
      * @param localName local element name
      * @param qName qualified name
+     * @return InlineProperty
      */
     @Override
-    public Object createDynamicElement(String uri, String localName, String qName) throws BuildException {
+    public InlineProperty createDynamicElement(String uri, String localName, String qName) {
         return new InlineProperty(localName);
     }
 }
