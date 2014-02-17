@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>32</version>
+    <version>33</version>
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
@@ -36,6 +36,8 @@ under the License.
     Apache Commons Weaver provides an easy way to enhance compiled classes with
     new functionality by generating ("weaving") bytecode into those classes.
   </description>
+
+  <url>http://commons.apache.org/proper/commons-weaver</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
