@@ -481,6 +481,7 @@ under the License.
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
           <tag>${commons.release.version}_${commons.rc.version}</tag>
+          <preparationGoals>changes:check</preparationGoals>
         </configuration>
       </plugin>
     </plugins>
