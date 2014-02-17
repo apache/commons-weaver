@@ -480,8 +480,9 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
           <tag>${commons.release.version}_${commons.rc.version}</tag>
-          <preparationGoals>changes:check</preparationGoals>
+          <preparationGoals>changes:changes-check</preparationGoals>
         </configuration>
       </plugin>
     </plugins>
