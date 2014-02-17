@@ -125,19 +125,19 @@ Multiple weaving targets (e.g. `main` vs. `test`) are of course woven
 using different `settings`.
 
 ## Custom Weaver Modules
-As discussed, some modules are provided for common cases, and the
-developers welcome suggestions for useful modules, but there is no reason
-not to get started writing your own weaver module (assuming you are sure
-this is the right solution, or just want to do this for fun)! When the 
-processor framework invokes your custom `Weaver`, it should request the
-classes it is interested in using the provided `Scanner`, then obtain the
-compiled bytecode from the `WeaveEnvironment`. At this point you will
-probably avoid a lot of frustration by using one of the popular open source
-Java bytecode manipulation libraries available. Then save your changes back
-to the `WeaveEnvironment`. Rinse, repeat. Hint: if your `Weaver` uses
-configuration parameters that affect the final result, you might consider
-implementing `Cleaner` to look for and delete whatever classes are no
-longer valid.
+As discussed, some modules are provided for common cases, and the developers
+welcome suggestions for useful modules, but there is no reason not to get
+started writing your own weaver module (assuming you are sure this is the right
+solution, or just want to do this for fun) now! When the processor framework
+invokes your custom `Weaver`, it will pass in a `Scanner` that can be used to
+find the classes you are interested in. Request the original bytecode from the
+`WeaveEnvironment` and make your changes (for this task you will save time and
+frustration using one of the available open source Java bytecode manipulation
+libraries). Save your changes back to the `WeaveEnvironment`. Rinse, repeat.
+Hint: if your `Weaver` uses configuration parameters to dictate its
+behavior, it can leave a scannable "footprint" in your woven classes. Then
+implement the `Cleaner` SPI to find and delete these in the case that the
+current configuration is incompatible with the results of an earlier "weaving."
 
 ##FAQ
 
