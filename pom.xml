@@ -55,7 +55,6 @@ under the License.
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
     <commons.project-info.version>2.6</commons.project-info.version>
 
-    <checkstyle.skip>false</checkstyle.skip>
     <ant.version>1.9.3</ant.version>
   </properties>
 
@@ -326,6 +325,10 @@ under the License.
             <version>${project.version}</version>
           </dependency>
         </dependencies>
+        <configuration>
+          <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
+          <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -499,16 +502,6 @@ under the License.
         <artifactId>maven-surefire-report-plugin</artifactId>
         <configuration>
           <aggregate>true</aggregate>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.11</version>
-        <configuration>
-          <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
-          <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
-          <skip>${checkstyle.skip}</skip>
         </configuration>
       </plugin>
     </plugins>
