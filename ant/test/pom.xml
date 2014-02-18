@@ -43,14 +43,9 @@ under the License.
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-privilizer</artifactId>
+      <artifactId>commons-weaver-privilizer-api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-antlib</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -79,32 +79,8 @@ under the License.
         <dependencies>
           <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-weaver-privilizer-api</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.commons</groupId>
             <artifactId>commons-weaver-privilizer</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-              <exclusion>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm-commons</artifactId>
-              </exclusion>
-              <exclusion>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm-tree</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>${asm.version}</version>
           </dependency>
         </dependencies>
       </plugin>
