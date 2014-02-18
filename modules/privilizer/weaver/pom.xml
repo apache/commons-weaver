@@ -46,6 +46,7 @@ under the License.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-weaver-processor</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -79,6 +80,10 @@ under the License.
           <groupId>org.ow2.asm</groupId>
           <artifactId>asm-util</artifactId>
         </dependency>
+        <dependency>
+          <groupId>org.ow2.asm</groupId>
+          <artifactId>asm-analysis</artifactId>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -110,6 +115,79 @@ under the License.
         <executions>
           <execution>
             <phase />
+          </execution>
+        </executions>
+      </plugin>
+      <!-- shade plugin creates but does not clean ${basedir}/dependency-reduced-pom.xml -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}</directory>
+              <includes>
+                <include>dependency-reduced-pom.xml</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <id>shade</id>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <artifactSet>
+                <includes>
+                  <include>org.apache.commons:commons-lang3</include>
+                  <include>commons-io:commons-io</include>
+                  <include>org.ow2.asm:*</include>
+                </includes>
+              </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.commons.lang3.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons.io.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.privilizer._io.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.objectweb.asm.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
+                </relocation>
+              </relocations>
+              <filters>
+                <filter>
+                  <artifact>org.apache.commons:commons-lang3</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>commons-io:commons-io</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.ow2.asm:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
           </execution>
         </executions>
       </plugin>
