@@ -51,7 +51,7 @@ under the License.
     <commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>12315320</commons.jira.pid>
     <commons.site.path>commons-weaver</commons.site.path>
-    <asm.version>4.1</asm.version>
+    <asm.version>4.2</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
     <commons.project-info.version>2.6</commons.project-info.version>
 
@@ -229,6 +229,11 @@ under the License.
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm-util</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-analysis</artifactId>
         <version>${asm.version}</version>
       </dependency>
       <dependency>
