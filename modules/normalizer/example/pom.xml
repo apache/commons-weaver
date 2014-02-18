@@ -28,7 +28,6 @@ under the License.
   <name>Apache Commons Weaver Normalizer Example</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <scm>
