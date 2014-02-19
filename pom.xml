@@ -429,18 +429,18 @@ under the License.
                         </augment>
                       </sequential>
                       <sequential unless:true="${exists}">
-                        <local name="parent" />
-                        <dirname property="parent" file="@{dir}" />
-                        <step dir="${project.parent}" name="@{name}" addto="@{addto}" ws="@{ws}" />
+                        <local name="parent.dir" />
+                        <dirname property="parent.dir" file="@{dir}" />
+                        <step dir="${parent.dir}" name="@{name}" addto="@{addto}" ws="@{ws}" />
                       </sequential>
                     </sequential>
                   </sequential>
                 </macrodef>
 
-                <truth property="jar-project">
-                  <equals arg1="${project.packaging}" arg2="jar" />
+                <truth property="pom-only">
+                  <equals arg1="${project.packaging}" arg2="pom" />
                 </truth>
-                <sequential if:true="${jar-project}">
+                <sequential unless:true="${pom-only}">
                   <union id="notices" />
                   <seek name="LICENSE.txt" addto="notices" />
                   <seek name="NOTICE.txt" addto="notices" />
