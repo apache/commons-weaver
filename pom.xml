@@ -73,6 +73,10 @@ under the License.
     </developer>
   </developers>
 
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</developerConnection>
