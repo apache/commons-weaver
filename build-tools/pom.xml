@@ -47,9 +47,6 @@ under the License.
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <phase />
-          </execution>
-          <execution>
             <id>attach-test-jar</id>
             <phase />
           </execution>
