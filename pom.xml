@@ -430,7 +430,7 @@ under the License.
                       <sequential unless:true="${exists}">
                         <local name="parent" />
                         <dirname property="parent" file="@{dir}" />
-                        <step dir="${parent}" name="@{name}" addto="@{addto}" ws="@{ws}" />
+                        <step dir="${project.parent}" name="@{name}" addto="@{addto}" ws="@{ws}" />
                       </sequential>
                     </sequential>
                   </sequential>
