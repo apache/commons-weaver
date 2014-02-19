@@ -49,6 +49,10 @@ under the License.
           <execution>
             <phase />
           </execution>
+          <execution>
+            <id>attach-test-jar</id>
+            <phase />
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -57,16 +61,6 @@ under the License.
         <executions>
           <execution>
             <id>create-javadoc-jar</id>
-            <phase />
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-test-jar</id>
             <phase />
           </execution>
         </executions>
