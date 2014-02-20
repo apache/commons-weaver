@@ -17,24 +17,36 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Commons Weaver is built using Maven 3 in typical fashion.  Things to know:
+Apache Maven 3 is required to build Apache Commons Weaver. Things to know:
+
+### Self-referential multimodule build
+Commons Weaver provides a Maven plugin as one of its submodules; the plugin
+is itself required by the modules which demonstrate the provided "weaver
+modules." This means that Commons Weaver requires, at minimum, the
+`package` phase to be specified when building the project. This makes the
+various modules visible to one another using the Maven reactor, detailed
+[here](http://maven.apache.org/guides/mini/guide-multiple-modules.html).
+Without installing to your local Maven repository, however, certain items
+will always fail; e.g. `mvn clean` without `package`, `mvn dependency:list`,
+`mvn dependency:tree`, and probably others. In general, `mvn install` will
+avoid further surprises down the line.
 
 ### Testing with security enabled
 The Privilizer is the fundamental "guinea pig" weaver module.
 Since the whole point of the Privilizer relates to Java security, it is only
 natural that its tests be executable with Java security enabled. It is also
 reasonable to test without security enabled, to show that your code works as
-always.  The `example` and `ant/test` modules each have a `sec` profile defined;
+always. The `example` and `ant/test` modules each have a `sec` profile defined;
 You can run their tests with this profile enabled to turn on Java security.
 
 ### Antlib Test module
 Located at `ant/test`, this module\'s tests are implemented by unpacking the
-source of the `example` module and reusing it.  For this reason, the
+source of the `example` module and reusing it. For this reason, the
 `example` module must have been packaged previously to executing the `ant/test`
 tests, so in a multimodule build you should at least specify the `package`
-phase of the default lifecycle.  Alternatively, you can disable this module\'s
+phase of the default lifecycle. Alternatively, you can disable this module\'s
 tests by deactivating the profile in which they are set up: `antlib-test`.
 
 Similarly, when building the project site you should deactivate the
-`antlib-test` profile, to stop this module's tests from requiring the
+`antlib-test` profile, to stop this module\'s tests from requiring the
 `example` module to have been previously packaged. 
