@@ -267,11 +267,15 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
-    <plugin>
-      <inherited>true</inherited>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-enforcer-plugin</artifactId>
-      <version>1.3.1</version>
+      <!-- Unfortunately the much simpler
+           <prerequisites><maven>3.0</maven></prerequisites>  
+           is not inherited so we have to use the enforcer plugin
+      -->
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.3.1</version>
         <executions>
           <execution>
             <id>enforce-maven-3</id>
@@ -287,8 +291,8 @@ under the License.
               <fail>true</fail>
             </configuration>
           </execution>
-       </executions>
-     </plugin>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
