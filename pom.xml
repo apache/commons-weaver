@@ -82,9 +82,9 @@ under the License.
 
   <distributionManagement>
     <site>
-      <id>website</id>
-      <name>Apache Website</name>
-      <url>scp://people.apache.org/www/commons.apache.org/proper/${commons.componentid}/</url>
+      <id>commons.site</id>
+      <name>Apache Commons Site SVN</name>
+      <url />
     </site>
   </distributionManagement>
 
