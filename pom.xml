@@ -84,7 +84,7 @@ under the License.
     <site>
       <id>commons.site</id>
       <name>Apache Commons Site SVN</name>
-      <url />
+      <url>scm:svn:${commons.scmPubUrl}</url>
     </site>
   </distributionManagement>
 
