@@ -52,7 +52,7 @@ public enum AccessLevel {
 
     private final int flag;
 
-    private AccessLevel(int flag) {
+    private AccessLevel(final int flag) {
         this.flag = flag;
     }
 
@@ -62,7 +62,7 @@ public enum AccessLevel {
      * @return {@link AccessLevel}
      * @throws IllegalArgumentException if multiple access modifiers specified
      */
-    public static AccessLevel of(int mod) {
+    public static AccessLevel of(final int mod) {
         final Set<AccessLevel> matched = EnumSet.noneOf(AccessLevel.class);
         if (Modifier.isPublic(mod)) {
             matched.add(PUBLIC);
@@ -85,9 +85,9 @@ public enum AccessLevel {
      * @param mod input
      * @return {@code mod}, with this {@link AccessLevel}
      */
-    public int merge(int mod) {
+    public int merge(final int mod) {
         int remove = 0;
-        for (AccessLevel accessLevel : EnumSet.complementOf(EnumSet.of(this))) {
+        for (final AccessLevel accessLevel : EnumSet.complementOf(EnumSet.of(this))) {
             remove |= accessLevel.flag;
         }
         return mod & ~remove | flag;
@@ -114,13 +114,13 @@ public enum AccessLevel {
 
     /**
      * Parse from a {@link String} returning {@link #defaultValue()} for blank/null input.
-     * @param s to parse
+     * @param str to parse
      * @return {@link AccessLevel}
      */
-    public static AccessLevel parse(String s) {
-        if (StringUtils.isBlank(s)) {
+    public static AccessLevel parse(final String str) {
+        if (StringUtils.isBlank(str)) {
             return defaultValue();
         }
-        return valueOf(s.trim().toUpperCase(Locale.US));
+        return valueOf(str.trim().toUpperCase(Locale.US));
     }
 }

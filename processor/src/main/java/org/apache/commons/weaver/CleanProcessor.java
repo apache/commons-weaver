@@ -47,9 +47,9 @@ public class CleanProcessor {
     private static final List<Cleaner> CLEANERS;
 
     static {
-        List<Cleaner> cleaners = new ArrayList<Cleaner>();
-        for (Cleaner c : ServiceLoader.load(Cleaner.class)) {
-            cleaners.add(c);
+        final List<Cleaner> cleaners = new ArrayList<Cleaner>();
+        for (final Cleaner cleaner : ServiceLoader.load(Cleaner.class)) {
+            cleaners.add(cleaner);
         }
         CLEANERS = Collections.unmodifiableList(cleaners);
     }
@@ -76,7 +76,7 @@ public class CleanProcessor {
      * @param target not {@code null}
      * @param configuration not {@code null}
      */
-    public CleanProcessor(List<String> classpath, File target, Properties configuration) {
+    public CleanProcessor(final List<String> classpath, final File target, final Properties configuration) {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
@@ -96,7 +96,7 @@ public class CleanProcessor {
         finderClasspath.addAll(classpath);
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        for (Cleaner cleaner : CLEANERS) {
+        for (final Cleaner cleaner : CLEANERS) {
             final WeaveEnvironment env =
                 new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass()
                     .getName()));

@@ -31,7 +31,7 @@ public class CleanTask extends AbstractWeaverTask {
      * Create a new {@link CleanTask} instance.
      * @param project owner
      */
-    public CleanTask(Project project) {
+    public CleanTask(final Project project) {
         super(project);
     }
 
@@ -42,10 +42,10 @@ public class CleanTask extends AbstractWeaverTask {
     public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
-            final CleanProcessor cp =
+            final CleanProcessor cleanProcessor =
                 new CleanProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties());
-            cp.clean();
-        } catch (Exception e) {
+            cleanProcessor.clean();
+        } catch (final Exception e) {
             throw new BuildException(e);
         }
     }

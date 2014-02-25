@@ -41,8 +41,8 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
         new ConcurrentSkipListMap<Constructor<T>, WeavableConstructor<T>>(new Comparator<Constructor<?>>() {
 
             @Override
-            public int compare(Constructor<?> o1, Constructor<?> o2) {
-                return Args.compare(o1.getParameterTypes(), o2.getParameterTypes());
+            public int compare(final Constructor<?> ctor1, final Constructor<?> ctor2) {
+                return Args.compare(ctor1.getParameterTypes(), ctor2.getParameterTypes());
             }
         });
 
@@ -50,9 +50,9 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
         new ConcurrentSkipListMap<Method, WeavableMethod<T>>(new Comparator<Method>() {
 
             @Override
-            public int compare(Method o1, Method o2) {
-                int result = o1.getName().compareTo(o2.getName());
-                return result == 0 ? Args.compare(o1.getParameterTypes(), o2.getParameterTypes()) : result;
+            public int compare(final Method methd1, final Method methd2) {
+                final int result = methd1.getName().compareTo(methd2.getName());
+                return result == 0 ? Args.compare(methd1.getParameterTypes(), methd2.getParameterTypes()) : result;
             }
         });
 
@@ -61,7 +61,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
      * @param target {@link Class}
      * @param parent {@link WeavablePackage} enclosing
      */
-    public WeavableClass(Class<T> target, WeavablePackage parent) {
+    public WeavableClass(final Class<T> target, final WeavablePackage parent) {
         super(target, parent);
     }
 
@@ -70,29 +70,29 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
      * @param fld to wrap
      * @return {@link WeavableField}
      */
-    public WeavableField<T> getWeavable(Field fld) {
+    public WeavableField<T> getWeavable(final Field fld) {
         final String key = fld.getName();
         if (fields.containsKey(key)) {
-            final WeavableField<T> result = (WeavableField<T>) fields.get(key);
+            final WeavableField<T> result = fields.get(key);
             return result;
         }
         final WeavableField<T> result = new WeavableField<T>(fld, this);
-        final WeavableField<T> faster = (WeavableField<T>) fields.putIfAbsent(key, result);
+        final WeavableField<T> faster = fields.putIfAbsent(key, result);
         return faster == null ? result : faster;
     }
 
     /**
      * Get a {@link WeavableMethod} representing {@code mt}.
-     * @param mt to wrap
+     * @param methd to wrap
      * @return {@link WeavableMethod}
      */
-    public WeavableMethod<T> getWeavable(Method mt) {
-        if (methods.containsKey(mt)) {
-            final WeavableMethod<T> result = (WeavableMethod<T>) methods.get(mt);
+    public WeavableMethod<T> getWeavable(final Method methd) {
+        if (methods.containsKey(methd)) {
+            final WeavableMethod<T> result = methods.get(methd);
             return result;
         }
-        final WeavableMethod<T> result = (WeavableMethod<T>) new WeavableMethod<T>(mt, this);
-        final WeavableMethod<T> faster = (WeavableMethod<T>) methods.putIfAbsent(mt, result);
+        final WeavableMethod<T> result = new WeavableMethod<T>(methd, this);
+        final WeavableMethod<T> faster = methods.putIfAbsent(methd, result);
         return faster == null ? result : faster;
     }
 
@@ -101,13 +101,13 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
      * @param ctor to wrap
      * @return {@link WeavableConstructor}
      */
-    public WeavableConstructor<T> getWeavable(Constructor<T> ctor) {
+    public WeavableConstructor<T> getWeavable(final Constructor<T> ctor) {
         if (ctors.containsKey(ctor)) {
-            final WeavableConstructor<T> result = (WeavableConstructor<T>) ctors.get(ctor);
+            final WeavableConstructor<T> result = ctors.get(ctor);
             return result;
         }
-        final WeavableConstructor<T> result = (WeavableConstructor<T>) new WeavableConstructor<T>(ctor, this);
-        final WeavableConstructor<T> faster = (WeavableConstructor<T>) ctors.putIfAbsent(ctor, result);
+        final WeavableConstructor<T> result = new WeavableConstructor<T>(ctor, this);
+        final WeavableConstructor<T> faster = ctors.putIfAbsent(ctor, result);
         return faster == null ? result : faster;
     }
 
@@ -139,7 +139,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
      * {@inheritDoc}
      */
     @Override
-    protected int localCompareTo(WeavableClass<T> o) {
-        return getTarget().getName().compareTo(o.getTarget().getName());
+    protected int localCompareTo(final WeavableClass<T> obj) {
+        return getTarget().getName().compareTo(obj.getTarget().getName());
     }
 }

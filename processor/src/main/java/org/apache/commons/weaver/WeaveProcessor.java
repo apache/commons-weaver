@@ -48,9 +48,9 @@ public class WeaveProcessor {
     private static final List<Weaver> WEAVERS;
 
     static {
-        List<Weaver> weavers = new ArrayList<Weaver>();
-        for (Weaver w : ServiceLoader.load(Weaver.class)) {
-            weavers.add(w);
+        final List<Weaver> weavers = new ArrayList<Weaver>();
+        for (final Weaver weaver : ServiceLoader.load(Weaver.class)) {
+            weavers.add(weaver);
         }
         WEAVERS = Collections.unmodifiableList(weavers);
     }
@@ -77,7 +77,7 @@ public class WeaveProcessor {
      * @param target not {@code null}
      * @param configuration not {@code null}
      */
-    public WeaveProcessor(List<String> classpath, File target, Properties configuration) {
+    public WeaveProcessor(final List<String> classpath, final File target, final Properties configuration) {
         super();
         this.classpath = Validate.notNull(classpath, "classpath");
         this.target = Validate.notNull(target, "target");
@@ -97,7 +97,7 @@ public class WeaveProcessor {
         finderClasspath.addAll(classpath);
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        for (Weaver weaver : WEAVERS) {
+        for (final Weaver weaver : WEAVERS) {
             final WeaveEnvironment env =
                 new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass()
                     .getName()));

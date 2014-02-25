@@ -31,7 +31,7 @@ public class WeaveTask extends AbstractWeaverTask {
      * Create a new {@link WeaveTask} instance.
      * @param project owner
      */
-    public WeaveTask(Project project) {
+    public WeaveTask(final Project project) {
         super(project);
     }
 
@@ -42,10 +42,10 @@ public class WeaveTask extends AbstractWeaverTask {
     public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
-            final WeaveProcessor wp =
+            final WeaveProcessor weaveProcessor =
                 new WeaveProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties());
-            wp.weave();
-        } catch (Exception e) {
+            weaveProcessor.weave();
+        } catch (final Exception e) {
             throw new BuildException(e);
         }
     }

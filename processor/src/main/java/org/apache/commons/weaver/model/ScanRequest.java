@@ -43,7 +43,7 @@ public class ScanRequest {
      * @param interest {@link WeaveInterest} to add
      * @return {@code this}, fluently
      */
-    public ScanRequest add(WeaveInterest interest) {
+    public ScanRequest add(final WeaveInterest interest) {
         if (interest == null) {
             throw new NullPointerException();
         }
@@ -56,7 +56,7 @@ public class ScanRequest {
      * @param types {@link Class}es to add
      * @return {@code this}, fluently
      */
-    public ScanRequest addSupertypes(Class<?>... types) {
+    public ScanRequest addSupertypes(final Class<?>... types) {
         Collections.addAll(supertypes, Validate.noNullElements(types, "null element at [%s]"));
         return this;
     }

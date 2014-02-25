@@ -59,7 +59,7 @@ public class ScanResult {
         AnnotatedElements<CHILD> {
         private final Iterable<PARENT> parents;
 
-        Projection(Iterable<PARENT> parents) {
+        Projection(final Iterable<PARENT> parents) {
             super();
             this.parents = parents;
         }
@@ -98,7 +98,7 @@ public class ScanResult {
 
                 private Iterator<CHILD> nextChildren() {
                     while (parentIterator.hasNext()) {
-                        Iterator<CHILD> prospect = childrenOf(parentIterator.next()).iterator();
+                        final Iterator<CHILD> prospect = childrenOf(parentIterator.next()).iterator();
                         if (prospect.hasNext()) {
                             return prospect;
                         }
@@ -109,7 +109,7 @@ public class ScanResult {
         }
 
         @Override
-        public AnnotatedElements<CHILD> with(Class<? extends Annotation> annotationType) {
+        public AnnotatedElements<CHILD> with(final Class<? extends Annotation> annotationType) {
             return new AnnotatedWith<CHILD>(this, annotationType);
         }
     }
@@ -118,7 +118,7 @@ public class ScanResult {
         final Iterable<W> wrapped;
         final Class<? extends Annotation> annotationType;
 
-        AnnotatedWith(Iterable<W> wrapped, Class<? extends Annotation> annotationType) {
+        AnnotatedWith(final Iterable<W> wrapped, final Class<? extends Annotation> annotationType) {
             super();
             this.wrapped = wrapped;
             this.annotationType = annotationType;
@@ -132,9 +132,9 @@ public class ScanResult {
 
                 private W read() {
                     while (iter.hasNext()) {
-                        W t = iter.next();
-                        if (t.isAnnotationPresent(annotationType)) {
-                            return t;
+                        final W element = iter.next();
+                        if (element.isAnnotationPresent(annotationType)) {
+                            return element;
                         }
                     }
                     return null;
@@ -165,7 +165,7 @@ public class ScanResult {
         }
 
         @Override
-        public AnnotatedElements<W> with(Class<? extends Annotation> annotationType) {
+        public AnnotatedElements<W> with(final Class<? extends Annotation> annotationType) {
             return new AnnotatedWith<W>(this, annotationType);
         }
 
@@ -179,7 +179,7 @@ public class ScanResult {
      * @param pkg to wrap
      * @return {@link WeavablePackage}
      */
-    public WeavablePackage getWeavable(Package pkg) {
+    public WeavablePackage getWeavable(final Package pkg) {
         final String key = pkg.getName();
         if (packages.containsKey(key)) {
             return packages.get(key);
@@ -195,7 +195,7 @@ public class ScanResult {
      * @param <T> type
      * @return {@link WeavableClass}
      */
-    public <T> WeavableClass<T> getWeavable(Class<T> cls) {
+    public <T> WeavableClass<T> getWeavable(final Class<T> cls) {
         return getWeavable(cls.getPackage()).getWeavable(cls);
     }
 
@@ -204,17 +204,17 @@ public class ScanResult {
      * @param fld to wrap
      * @return {@link WeavableField}
      */
-    public WeavableField<?> getWeavable(Field fld) {
+    public WeavableField<?> getWeavable(final Field fld) {
         return getWeavable(fld.getDeclaringClass()).getWeavable(fld);
     }
 
     /**
      * Public for use by {@link WeaveProcessor}.
-     * @param mt to wrap
+     * @param methd to wrap
      * @return {@link WeavableMethod}
      */
-    public WeavableMethod<?> getWeavable(Method mt) {
-        return getWeavable(mt.getDeclaringClass()).getWeavable(mt);
+    public WeavableMethod<?> getWeavable(final Method methd) {
+        return getWeavable(methd.getDeclaringClass()).getWeavable(methd);
     }
 
     /**
@@ -223,7 +223,7 @@ public class ScanResult {
      * @param <T> type
      * @return {@link WeavableConstructor}
      */
-    public <T> WeavableConstructor<T> getWeavable(Constructor<T> ctor) {
+    public <T> WeavableConstructor<T> getWeavable(final Constructor<T> ctor) {
         return getWeavable(ctor.getDeclaringClass()).getWeavable(ctor);
     }
 
@@ -240,7 +240,7 @@ public class ScanResult {
             }
 
             @Override
-            public AnnotatedElements<WeavablePackage> with(Class<? extends Annotation> annotationType) {
+            public AnnotatedElements<WeavablePackage> with(final Class<? extends Annotation> annotationType) {
                 return new AnnotatedWith<WeavablePackage>(packages.values(), annotationType);
             }
         };
@@ -254,7 +254,7 @@ public class ScanResult {
         return new Projection<WeavablePackage, WeavableClass<?>>(getPackages()) {
 
             @Override
-            protected Iterable<WeavableClass<?>> childrenOf(WeavablePackage parent) {
+            protected Iterable<WeavableClass<?>> childrenOf(final WeavablePackage parent) {
                 return parent.getClasses();
             }
         };
@@ -271,7 +271,7 @@ public class ScanResult {
         return new Projection<WeavablePackage, WeavableClass<?>>(getPackages()) {
 
             @Override
-            protected Iterable<WeavableClass<?>> childrenOf(WeavablePackage parent) {
+            protected Iterable<WeavableClass<?>> childrenOf(final WeavablePackage parent) {
                 return parent.getClasses();
             }
 
@@ -327,7 +327,7 @@ public class ScanResult {
         return new Projection<WeavableClass<?>, WeavableField<?>>(getClasses()) {
 
             @Override
-            protected Iterable<WeavableField<?>> childrenOf(WeavableClass<?> parent) {
+            protected Iterable<WeavableField<?>> childrenOf(final WeavableClass<?> parent) {
                 @SuppressWarnings({ "unchecked", "rawtypes" })
                 final Iterable<WeavableField<?>> result = ((WeavableClass) parent).getFields();
                 return result;
@@ -343,7 +343,7 @@ public class ScanResult {
         return new Projection<WeavableClass<?>, WeavableConstructor<?>>(getClasses()) {
 
             @Override
-            protected Iterable<WeavableConstructor<?>> childrenOf(WeavableClass<?> parent) {
+            protected Iterable<WeavableConstructor<?>> childrenOf(final WeavableClass<?> parent) {
                 @SuppressWarnings({ "unchecked", "rawtypes" })
                 final Iterable<WeavableConstructor<?>> result = ((WeavableClass) parent).getConstructors();
                 return result;
@@ -359,7 +359,7 @@ public class ScanResult {
         return new Projection<WeavableClass<?>, WeavableMethod<?>>(getClasses()) {
 
             @Override
-            protected Iterable<WeavableMethod<?>> childrenOf(WeavableClass<?> parent) {
+            protected Iterable<WeavableMethod<?>> childrenOf(final WeavableClass<?> parent) {
                 @SuppressWarnings({ "unchecked", "rawtypes" })
                 final Iterable<WeavableMethod<?>> result = ((WeavableClass) parent).getMethods();
                 return result;
@@ -375,7 +375,7 @@ public class ScanResult {
         return new Projection<WeavableMethod<?>, WeavableMethodParameter<?>>(getMethods()) {
 
             @Override
-            protected Iterable<WeavableMethodParameter<?>> childrenOf(WeavableMethod<?> parent) {
+            protected Iterable<WeavableMethodParameter<?>> childrenOf(final WeavableMethod<?> parent) {
                 @SuppressWarnings({ "unchecked", "rawtypes" })
                 final Iterable<WeavableMethodParameter<?>> result = ((WeavableMethod) parent).getParameters();
                 return result;
@@ -392,7 +392,7 @@ public class ScanResult {
         return new Projection<WeavableConstructor<?>, WeavableConstructorParameter<?>>(getConstructors()) {
 
             @Override
-            protected Iterable<WeavableConstructorParameter<?>> childrenOf(WeavableConstructor<?> parent) {
+            protected Iterable<WeavableConstructorParameter<?>> childrenOf(final WeavableConstructor<?> parent) {
                 @SuppressWarnings({ "unchecked", "rawtypes" })
                 final Iterable<WeavableConstructorParameter<?>> result = ((WeavableConstructor) parent).getParameters();
                 return result;

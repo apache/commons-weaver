@@ -56,7 +56,7 @@ public class WeaverSettings extends DataType {
      * Create a new {@link WeaverSettings} object.
      * @param project owner
      */
-    public WeaverSettings(Project project) {
+    public WeaverSettings(final Project project) {
         super();
         setProject(project);
     }
@@ -76,7 +76,7 @@ public class WeaverSettings extends DataType {
      * Set the {@code target} directory.
      * @param target {@link File}
      */
-    public void setTarget(File target) {
+    public void setTarget(final File target) {
         if (isReference()) {
             throw tooManyAttributes();
         }
@@ -98,7 +98,7 @@ public class WeaverSettings extends DataType {
      * Set the {@code classpathref}.
      * @param classpathref {@link String}
      */
-    public void setClasspathRef(String classpathref) {
+    public void setClasspathRef(final String classpathref) {
         if (isReference()) {
             throw tooManyAttributes();
         }
@@ -111,14 +111,14 @@ public class WeaverSettings extends DataType {
      * @return List<String>
      */
     public List<String> getClasspathEntries() {
-        final Path p = new Path(getProject());
-        final Path cp = getClasspath();
-        if (cp != null) {
-            p.add(cp);
+        final Path path = new Path(getProject());
+        final Path classpath = getClasspath();
+        if (classpath != null) {
+            path.add(classpath);
         }
-        p.add(Path.systemClasspath);
+        path.add(Path.systemClasspath);
 
-        return Arrays.asList(p.list());
+        return Arrays.asList(path.list());
     }
 
     /**
@@ -131,7 +131,7 @@ public class WeaverSettings extends DataType {
         }
         if (classpath == null) {
             if (getClasspathref() != null) {
-                Path ref = new Path(getProject());
+                final Path ref = new Path(getProject());
                 ref.setRefid(new Reference(getProject(), getClasspathref()));
                 return ref;
             }
@@ -145,7 +145,7 @@ public class WeaverSettings extends DataType {
      * Set the {@code classpath}.
      * @param classpath {@link Path}
      */
-    public void setClasspath(Path classpath) {
+    public void setClasspath(final Path classpath) {
         if (isReference()) {
             throw tooManyAttributes();
         }
@@ -203,15 +203,15 @@ public class WeaverSettings extends DataType {
             result.putAll(propertySet.getProperties());
         }
         if (inlineProperties != null) {
-            for (Map.Entry<Object, Object> e : inlineProperties.properties.entrySet()) {
-                result.put(e.getKey(), StringUtils.trim((String) e.getValue()));
+            for (final Map.Entry<Object, Object> entry : inlineProperties.properties.entrySet()) {
+                result.put(entry.getKey(), StringUtils.trim((String) entry.getValue()));
             }
         }
         return result;
     }
 
     private WeaverSettings getRef() {
-        return (WeaverSettings) getCheckedRef(WeaverSettings.class, "settings");
+        return getCheckedRef(WeaverSettings.class, "settings");
     }
 
 }

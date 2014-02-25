@@ -37,7 +37,7 @@ public class FieldAccess extends Field {
      * @param name of field
      * @param type of field
      */
-    public FieldAccess(int access, Type owner, String name, Type type) {
+    public FieldAccess(final int access, final Type owner, final String name, final Type type) {
         super(access, name, type);
         this.owner = owner;
     }
@@ -48,7 +48,7 @@ public class FieldAccess extends Field {
      * @return whether Objects are equal
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
         }

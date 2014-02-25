@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.ScanResult;
@@ -61,7 +62,7 @@ class Finder extends AnnotationFinder implements Scanner {
         final Class<? extends Annotation> annotationType;
         final Map<String, Object> elements = new LinkedHashMap<String, Object>();
 
-        AnnotationInflater(String desc, AnnotationVisitor wrapped) {
+        AnnotationInflater(final String desc, final AnnotationVisitor wrapped) {
             super(wrapped);
             this.annotationType = toClass(Type.getType(desc)).asSubclass(Annotation.class);
         }
@@ -71,25 +72,25 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         @Override
-        protected void storeValue(String name, Object value) {
+        protected void storeValue(final String name, final Object value) {
             Object toStore = value;
             Validate.notNull(toStore, "null annotation element");
             if (toStore.getClass().isArray()) {
                 final Class<?> requiredType;
                 try {
                     requiredType = annotationType.getDeclaredMethod(name).getReturnType();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     throw new RuntimeException(e);
                 }
                 if (!requiredType.isInstance(toStore)) {
                     final int len = Array.getLength(toStore);
                     final Object typedArray = Array.newInstance(requiredType.getComponentType(), len);
                     for (int i = 0; i < len; i++) {
-                        Object o = Array.get(toStore, i);
-                        if (o instanceof Type) {
-                            o = toClass((Type) o);
+                        Object element = Array.get(toStore, i);
+                        if (element instanceof Type) {
+                            element = toClass((Type) element);
                         }
-                        Array.set(typedArray, i, o);
+                        Array.set(typedArray, i, element);
                     }
                     toStore = typedArray;
                 }
@@ -101,7 +102,7 @@ class Finder extends AnnotationFinder implements Scanner {
     }
 
     private abstract class AnnotationCapturer extends AnnotationVisitor {
-        public AnnotationCapturer(AnnotationVisitor wrapped) {
+        public AnnotationCapturer(final AnnotationVisitor wrapped) {
             super(Opcodes.ASM4, wrapped);
         }
 
@@ -113,7 +114,7 @@ class Finder extends AnnotationFinder implements Scanner {
         protected abstract void storeValue(String name, Object value);
 
         @Override
-        public void visit(String name, Object value) {
+        public void visit(final String name, final Object value) {
             storeValue(name, value);
         }
 
@@ -142,25 +143,25 @@ class Finder extends AnnotationFinder implements Scanner {
                 }
 
                 @Override
-                protected void storeValue(String name, Object value) {
+                protected void storeValue(final String name, final Object value) {
                     values.add(value);
                 }
             };
         }
 
         @Override
-        public void visitEnum(String name, String desc, String value) {
+        public void visitEnum(final String name, final String desc, final String value) {
             super.visitEnum(name, desc, value);
             @SuppressWarnings("rawtypes")
             final Class<? extends Enum> enumType;
             try {
                 enumType = Class.forName(Type.getType(desc).getClassName()).asSubclass(Enum.class);
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
             @SuppressWarnings("unchecked")
-            final Enum<?> e = Enum.valueOf(enumType, value);
-            storeValue(name, e);
+            final Enum<?> enumValue = Enum.valueOf(enumType, value);
+            storeValue(name, enumValue);
         }
 
     }
@@ -168,7 +169,7 @@ class Finder extends AnnotationFinder implements Scanner {
     private class TopLevelAnnotationInflater extends AnnotationInflater {
         private final Info info;
 
-        TopLevelAnnotationInflater(String desc, AnnotationVisitor wrapped, Info info) {
+        TopLevelAnnotationInflater(final String desc, final AnnotationVisitor wrapped, final Info info) {
             super(desc, wrapped);
             this.info = info;
         }
@@ -179,7 +180,7 @@ class Finder extends AnnotationFinder implements Scanner {
             classfileAnnotationsFor(info).add(inflate());
         }
 
-        private List<Annotation> classfileAnnotationsFor(Info info) {
+        private List<Annotation> classfileAnnotationsFor(final Info info) {
             synchronized (CLASSFILE_ANNOTATIONS) {
                 if (!CLASSFILE_ANNOTATIONS.get().containsKey(info)) {
                     final List<Annotation> result = new ArrayList<Annotation>();
@@ -198,13 +199,14 @@ class Finder extends AnnotationFinder implements Scanner {
     public class Visitor extends ClassVisitor {
         private final InfoBuildingVisitor wrapped;
 
-        public Visitor(InfoBuildingVisitor wrapped) {
+        public Visitor(final InfoBuildingVisitor wrapped) {
             super(Opcodes.ASM4, wrapped);
             this.wrapped = wrapped;
         }
 
         @Override
-        public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        public FieldVisitor visitField(final int access, final String name, final String desc, final String signature,
+            final Object value) {
             final FieldVisitor toWrap = wrapped.visitField(access, name, desc, signature, value);
             final ClassInfo classInfo = (ClassInfo) wrapped.getInfo();
             FieldInfo testFieldInfo = null;
@@ -222,7 +224,7 @@ class Finder extends AnnotationFinder implements Scanner {
             final FieldInfo fieldInfo = testFieldInfo;
             return new FieldVisitor(Opcodes.ASM4, toWrap) {
                 @Override
-                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
                     return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, fieldInfo);
                 }
@@ -230,7 +232,8 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(final int access, final String name, final String desc,
+            final String signature, final String[] exceptions) {
             final MethodVisitor toWrap = wrapped.visitMethod(access, name, desc, signature, exceptions);
             final ClassInfo classInfo = (ClassInfo) wrapped.getInfo();
 
@@ -241,19 +244,19 @@ class Finder extends AnnotationFinder implements Scanner {
                 return toWrap;
             }
             MethodInfo testMethodInfo = null;
-            final Member m;
+            final Member member;
             try {
-                m = compareMethodInfo.get();
+                member = compareMethodInfo.get();
                 // should be the most recently added method, so iterate backward:
                 for (int i = classInfo.getMethods().size() - 1; i >= 0; i--) {
                     final MethodInfo atI = classInfo.getMethods().get(i);
-                    if (atI.getName().equals(name) && atI.get().equals(m)) {
+                    if (atI.getName().equals(name) && atI.get().equals(member)) {
                         testMethodInfo = atI;
                         break;
                     }
                 }
-            } catch (ClassNotFoundException e) {
-                //ignore
+            } catch (final ClassNotFoundException e) {
+                return toWrap;
             }
             if (testMethodInfo == null) {
                 return toWrap;
@@ -261,13 +264,14 @@ class Finder extends AnnotationFinder implements Scanner {
             final MethodInfo methodInfo = testMethodInfo;
             return new MethodVisitor(Opcodes.ASM4, toWrap) {
                 @Override
-                public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
                     return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, methodInfo);
                 }
 
                 @Override
-                public AnnotationVisitor visitParameterAnnotation(int param, String desc, boolean visible) {
+                public AnnotationVisitor visitParameterAnnotation(final int param, final String desc,
+                    final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitParameterAnnotation(param, desc, visible);
                     if (visible) {
                         return toWrap;
@@ -282,8 +286,8 @@ class Finder extends AnnotationFinder implements Scanner {
                                 parameterInfo = atI;
                                 break;
                             }
-                        } catch (ClassNotFoundException e) {
-                            //ignore
+                        } catch (final ClassNotFoundException e) {
+                            continue;
                         }
                     }
                     return parameterInfo == null ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, parameterInfo);
@@ -292,17 +296,17 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         @Override
-        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+        public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
             final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
             return visible ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, wrapped.getInfo());
         }
 
-        private boolean isJavaIdentifier(String s) {
-            if (s.isEmpty() || !Character.isJavaIdentifierStart(s.charAt(0))) {
+        private boolean isJavaIdentifier(final String toCheck) {
+            if (toCheck.isEmpty() || !Character.isJavaIdentifierStart(toCheck.charAt(0))) {
                 return false;
             }
-            for (int i = 1, sz = s.length(); i < sz; i++) {
-                if (!Character.isJavaIdentifierPart(s.charAt(i))) {
+            for (final char chr : toCheck.substring(1).toCharArray()) {
+                if (!Character.isJavaIdentifierPart(chr)) {
                     return false;
                 }
             }
@@ -311,32 +315,22 @@ class Finder extends AnnotationFinder implements Scanner {
     }
 
     private static class IncludesClassfile<T extends AnnotatedElement> implements Annotated<T> {
-        private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
         private final T target;
         private final Annotation[] annotations;
 
-        IncludesClassfile(T target, List<Annotation> classfileAnnotations) {
-            this(target, classfileAnnotations.toArray(EMPTY_ANNOTATION_ARRAY));
+        IncludesClassfile(final T target, final List<Annotation> classfileAnnotations) {
+            this(target, classfileAnnotations.toArray(new Annotation[classfileAnnotations.size()]));
         }
 
-        IncludesClassfile(T target, Annotation[] classfileAnnotations) {
+        IncludesClassfile(final T target, final Annotation[] classfileAnnotations) {
             super();
             this.target = target;
-
-            final Annotation[] runtime = target.getAnnotations();
-            if (classfileAnnotations == null || classfileAnnotations.length == 0) {
-                annotations = runtime;
-            } else {
-                annotations = new Annotation[runtime.length + classfileAnnotations.length];
-                System.arraycopy(runtime, 0, annotations, 0, runtime.length);
-                System.arraycopy(classfileAnnotations, 0, annotations, runtime.length, classfileAnnotations.length);
-            }
+            this.annotations = ArrayUtils.addAll(target.getAnnotations(), classfileAnnotations);
         }
 
         @Override
-        public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-            for (Annotation prospect : annotations) {
+        public <A extends Annotation> A getAnnotation(final Class<A> annotationType) {
+            for (final Annotation prospect : annotations) {
                 if (prospect.annotationType().equals(annotationType)) {
                     @SuppressWarnings("unchecked")
                     final A result = (A) prospect;
@@ -359,7 +353,7 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         @Override
-        public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+        public boolean isAnnotationPresent(final Class<? extends Annotation> annotationType) {
             return getAnnotation(annotationType) != null;
         }
 
@@ -374,41 +368,43 @@ class Finder extends AnnotationFinder implements Scanner {
      * Helper class for finding elements with annotations (including those with classfile-level retention).
      */
     public final class WithAnnotations {
+        private static final String INIT = "<init>";
+
         private WithAnnotations() {
         }
 
-        public List<Annotated<Package>> findAnnotatedPackages(Class<? extends Annotation> annotation) {
+        public List<Annotated<Package>> findAnnotatedPackages(final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedPackages(annotation);
             final List<Annotated<Package>> result = new ArrayList<Annotated<Package>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof PackageInfo) {
-                    PackageInfo packageInfo = (PackageInfo) info;
+                    final PackageInfo packageInfo = (PackageInfo) info;
                     try {
-                        IncludesClassfile<Package> annotated =
+                        final IncludesClassfile<Package> annotated =
                             new IncludesClassfile<Package>(packageInfo.get(), classfileAnnotationsFor(packageInfo));
                         if (annotated.isAnnotationPresent(annotation)) {
                             result.add(annotated);
                         }
-                    } catch (ClassNotFoundException e) {
-                        //ignore
+                    } catch (final ClassNotFoundException e) {
+                        continue;
                     }
                 }
             }
             return result;
         }
 
-        public List<Annotated<Class<?>>> findAnnotatedClasses(Class<? extends Annotation> annotation) {
+        public List<Annotated<Class<?>>> findAnnotatedClasses(final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedClasses(annotation);
             final List<Annotated<Class<?>>> result = new ArrayList<Annotated<Class<?>>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof ClassInfo) {
-                    ClassInfo classInfo = (ClassInfo) info;
+                    final ClassInfo classInfo = (ClassInfo) info;
 
                     IncludesClassfile<Class<?>> annotated;
                     try {
                         annotated =
                             new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
                     if (annotated.isAnnotationPresent(annotation)) {
@@ -419,7 +415,7 @@ class Finder extends AnnotationFinder implements Scanner {
             return result;
         }
 
-        public List<Annotated<Class<?>>> findAssignableTypes(Class<?> supertype) {
+        public List<Annotated<Class<?>>> findAssignableTypes(final Class<?> supertype) {
             final List<Annotated<Class<?>>> result = new ArrayList<Annotated<Class<?>>>();
             final List<?> assignableTypes;
             if (supertype.isInterface()) {
@@ -428,12 +424,12 @@ class Finder extends AnnotationFinder implements Scanner {
                 assignableTypes = Finder.this.findSubclasses(supertype);
             }
 
-            for (Object object : assignableTypes) {
+            for (final Object object : assignableTypes) {
                 final ClassInfo classInfo = classInfos.get(((Class<?>) object).getName());
                 final IncludesClassfile<Class<?>> annotated;
                 try {
                     annotated = new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
-                } catch (ClassNotFoundException e) {
+                } catch (final ClassNotFoundException e) {
                     continue;
                 }
                 result.add(annotated);
@@ -441,13 +437,13 @@ class Finder extends AnnotationFinder implements Scanner {
             return result;
         }
 
-        public List<Annotated<Method>> findAnnotatedMethods(Class<? extends Annotation> annotation) {
+        public List<Annotated<Method>> findAnnotatedMethods(final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedMethods(annotation);
             final List<Annotated<Method>> result = new ArrayList<Annotated<Method>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof MethodInfo) {
-                    MethodInfo methodInfo = (MethodInfo) info;
-                    if ("<init>".equals(methodInfo.getName())) {
+                    final MethodInfo methodInfo = (MethodInfo) info;
+                    if (INIT.equals(methodInfo.getName())) {
                         continue;
                     }
                     IncludesClassfile<Method> annotated;
@@ -455,7 +451,7 @@ class Finder extends AnnotationFinder implements Scanner {
                         annotated =
                             new IncludesClassfile<Method>((Method) methodInfo.get(),
                                 classfileAnnotationsFor(methodInfo));
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
                     if (annotated.isAnnotationPresent(annotation)) {
@@ -468,24 +464,24 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         public List<Annotated<Parameter<Method>>> findAnnotatedMethodParameters(
-            Class<? extends Annotation> annotationType) {
+            final Class<? extends Annotation> annotationType) {
             Finder.this.findAnnotatedMethodParameters(annotationType);
             final List<Annotated<Parameter<Method>>> result = new ArrayList<Annotated<Parameter<Method>>>();
-            for (Info info : getAnnotationInfos(annotationType.getName())) {
+            for (final Info info : getAnnotationInfos(annotationType.getName())) {
                 if (info instanceof ParameterInfo) {
-                    ParameterInfo parameterInfo = (ParameterInfo) info;
-                    if ("<init>".equals(parameterInfo.getDeclaringMethod().getName())) {
+                    final ParameterInfo parameterInfo = (ParameterInfo) info;
+                    if (INIT.equals(parameterInfo.getDeclaringMethod().getName())) {
                         continue;
                     }
                     Parameter<Method> parameter;
                     try {
                         @SuppressWarnings("unchecked")
-                        Parameter<Method> unchecked = (Parameter<Method>) parameterInfo.get();
+                        final Parameter<Method> unchecked = (Parameter<Method>) parameterInfo.get();
                         parameter = unchecked;
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
-                    IncludesClassfile<Parameter<Method>> annotated =
+                    final IncludesClassfile<Parameter<Method>> annotated =
                         new IncludesClassfile<Parameter<Method>>(parameter, classfileAnnotationsFor(parameterInfo));
                     if (annotated.isAnnotationPresent(annotationType)) {
                         result.add(annotated);
@@ -495,21 +491,21 @@ class Finder extends AnnotationFinder implements Scanner {
             return result;
         }
 
-        public List<Annotated<Constructor<?>>> findAnnotatedConstructors(Class<? extends Annotation> annotation) {
+        public List<Annotated<Constructor<?>>> findAnnotatedConstructors(final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedConstructors(annotation);
             final List<Annotated<Constructor<?>>> result = new ArrayList<Annotated<Constructor<?>>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof MethodInfo) {
-                    MethodInfo methodInfo = (MethodInfo) info;
-                    if (!"<init>".equals(methodInfo.getName())) {
+                    final MethodInfo methodInfo = (MethodInfo) info;
+                    if (!INIT.equals(methodInfo.getName())) {
                         continue;
                     }
-                    IncludesClassfile<Constructor<?>> annotated;
+                    final IncludesClassfile<Constructor<?>> annotated;
                     try {
                         annotated =
                             new IncludesClassfile<Constructor<?>>((Constructor<?>) methodInfo.get(),
                                 classfileAnnotationsFor(methodInfo));
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
                     if (annotated.isAnnotationPresent(annotation)) {
@@ -521,25 +517,25 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         public List<Annotated<Parameter<Constructor<?>>>> findAnnotatedConstructorParameters(
-            Class<? extends Annotation> annotation) {
+            final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedConstructorParameters(annotation);
             final List<Annotated<Parameter<Constructor<?>>>> result =
                 new ArrayList<Annotated<Parameter<Constructor<?>>>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof ParameterInfo) {
-                    ParameterInfo parameterInfo = (ParameterInfo) info;
-                    if (!"<init>".equals(parameterInfo.getDeclaringMethod().getName())) {
+                    final ParameterInfo parameterInfo = (ParameterInfo) info;
+                    if (!INIT.equals(parameterInfo.getDeclaringMethod().getName())) {
                         continue;
                     }
                     Parameter<Constructor<?>> parameter;
                     try {
                         @SuppressWarnings("unchecked")
-                        Parameter<Constructor<?>> unchecked = (Parameter<Constructor<?>>) parameterInfo.get();
+                        final Parameter<Constructor<?>> unchecked = (Parameter<Constructor<?>>) parameterInfo.get();
                         parameter = unchecked;
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
-                    IncludesClassfile<Parameter<Constructor<?>>> annotated =
+                    final IncludesClassfile<Parameter<Constructor<?>>> annotated =
                         new IncludesClassfile<Parameter<Constructor<?>>>(parameter,
                             classfileAnnotationsFor(parameterInfo));
                     if (annotated.isAnnotationPresent(annotation)) {
@@ -550,19 +546,19 @@ class Finder extends AnnotationFinder implements Scanner {
             return result;
         }
 
-        public List<Annotated<Field>> findAnnotatedFields(Class<? extends Annotation> annotation) {
+        public List<Annotated<Field>> findAnnotatedFields(final Class<? extends Annotation> annotation) {
             Finder.this.findAnnotatedFields(annotation);
             final List<Annotated<Field>> result = new ArrayList<Annotated<Field>>();
-            for (Info info : getAnnotationInfos(annotation.getName())) {
+            for (final Info info : getAnnotationInfos(annotation.getName())) {
                 if (info instanceof FieldInfo) {
-                    FieldInfo fieldInfo = (FieldInfo) info;
+                    final FieldInfo fieldInfo = (FieldInfo) info;
                     try {
-                        IncludesClassfile<Field> annotated =
+                        final IncludesClassfile<Field> annotated =
                             new IncludesClassfile<Field>((Field) fieldInfo.get(), classfileAnnotationsFor(fieldInfo));
                         if (annotated.isAnnotationPresent(annotation)) {
                             result.add(annotated);
                         }
-                    } catch (ClassNotFoundException e) {
+                    } catch (final ClassNotFoundException e) {
                         continue;
                     }
                 }
@@ -570,7 +566,7 @@ class Finder extends AnnotationFinder implements Scanner {
             return result;
         }
 
-        private List<Annotation> classfileAnnotationsFor(Info info) {
+        private List<Annotation> classfileAnnotationsFor(final Info info) {
             synchronized (classfileAnnotations) {
                 if (!classfileAnnotations.containsKey(info)) {
                     final List<Annotation> result = new ArrayList<Annotation>();
@@ -592,7 +588,8 @@ class Finder extends AnnotationFinder implements Scanner {
      */
     private static final ThreadLocal<Map<Info, List<Annotation>>> CLASSFILE_ANNOTATIONS =
         new ThreadLocal<Map<Info, List<Annotation>>>() {
-            protected java.util.Map<Info, java.util.List<Annotation>> initialValue() {
+            @Override
+            protected Map<Info, List<Annotation>> initialValue() {
                 return new IdentityHashMap<AnnotationFinder.Info, List<Annotation>>();
             }
         };
@@ -605,7 +602,7 @@ class Finder extends AnnotationFinder implements Scanner {
      * Create a new {@link Finder} instance.
      * @param archive
      */
-    public Finder(Archive archive) {
+    public Finder(final Archive archive) {
         super(archive, false);
         classfileAnnotations = CLASSFILE_ANNOTATIONS.get();
         CLASSFILE_ANNOTATIONS.remove();
@@ -625,12 +622,13 @@ class Finder extends AnnotationFinder implements Scanner {
     /**
      * {@inheritDoc}
      */
-    protected void readClassDef(InputStream in) throws IOException {
+    @Override
+    protected void readClassDef(final InputStream bytecode) throws IOException {
         try {
-            ClassReader classReader = new ClassReader(in);
+            final ClassReader classReader = new ClassReader(bytecode);
             classReader.accept(new Visitor(new InfoBuildingVisitor()), ASM_FLAGS);
         } finally {
-            in.close();
+            bytecode.close();
         }
     }
 
@@ -638,7 +636,7 @@ class Finder extends AnnotationFinder implements Scanner {
      * {@inheritDoc}
      */
     @Override
-    public AnnotationFinder select(Class<?>... arg0) {
+    public AnnotationFinder select(final Class<?>... arg0) {
         throw new UnsupportedOperationException();
     }
 
@@ -646,7 +644,7 @@ class Finder extends AnnotationFinder implements Scanner {
      * {@inheritDoc}
      */
     @Override
-    public AnnotationFinder select(Iterable<String> clazz) {
+    public AnnotationFinder select(final Iterable<String> clazz) {
         throw new UnsupportedOperationException();
     }
 
@@ -654,7 +652,7 @@ class Finder extends AnnotationFinder implements Scanner {
      * {@inheritDoc}
      */
     @Override
-    public AnnotationFinder select(String... clazz) {
+    public AnnotationFinder select(final String... clazz) {
         throw new UnsupportedOperationException();
     }
 
@@ -662,43 +660,46 @@ class Finder extends AnnotationFinder implements Scanner {
      * {@inheritDoc}
      */
     @Override
-    public ScanResult scan(ScanRequest request) {
+    public ScanResult scan(final ScanRequest request) {
         final ScanResult result = new ScanResult();
 
-        for (WeaveInterest interest : request.getInterests()) {
+        for (final WeaveInterest interest : request.getInterests()) {
             switch (interest.target) {
             case PACKAGE:
-                for (Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(interest.annotationType)) {
+                for (final Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(
+                    interest.annotationType)) {
                     result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotations());
                 }
             case TYPE:
-                for (Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(interest.annotationType)) {
+                for (final Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(
+                    interest.annotationType)) {
                     result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
                 }
                 break;
             case METHOD:
-                for (Annotated<Method> method : this.withAnnotations().findAnnotatedMethods(interest.annotationType)) {
+                for (final Annotated<Method> method : this.withAnnotations().findAnnotatedMethods(
+                    interest.annotationType)) {
                     result.getWeavable(method.get()).addAnnotations(method.getAnnotations());
                 }
                 break;
             case CONSTRUCTOR:
-                for (Annotated<Constructor<?>> cs : this.withAnnotations().findAnnotatedConstructors(
+                for (final Annotated<Constructor<?>> ctor : this.withAnnotations().findAnnotatedConstructors(
                     interest.annotationType)) {
-                    result.getWeavable(cs.get()).addAnnotations(cs.getAnnotations());
+                    result.getWeavable(ctor.get()).addAnnotations(ctor.getAnnotations());
                 }
                 break;
             case FIELD:
-                for (Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
+                for (final Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
                     result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
                 }
                 break;
             case PARAMETER:
-                for (Annotated<Parameter<Method>> parameter : this.withAnnotations().findAnnotatedMethodParameters(
-                    interest.annotationType)) {
+                for (final Annotated<Parameter<Method>> parameter : this.withAnnotations()
+                    .findAnnotatedMethodParameters(interest.annotationType)) {
                     result.getWeavable(parameter.get().getDeclaringExecutable())
                         .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
                 }
-                for (Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
+                for (final Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
                     .findAnnotatedConstructorParameters(interest.annotationType)) {
                     result.getWeavable(parameter.get().getDeclaringExecutable())
                         .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
@@ -709,28 +710,33 @@ class Finder extends AnnotationFinder implements Scanner {
                 break;
             }
         }
-        for (Class<?> supertype : request.getSupertypes()) {
-            for (Annotated<Class<?>> type : this.withAnnotations().findAssignableTypes(supertype)) {
+        for (final Class<?> supertype : request.getSupertypes()) {
+            for (final Annotated<Class<?>> type : this.withAnnotations().findAssignableTypes(supertype)) {
                 result.getWeavable(type.get()).addAnnotations(type.getAnnotations());
             }
         }
         return inflater.inflate(result);
     }
 
-    private Class<?> toClass(Type type) {
-        final String className = (type.getSort() == Type.ARRAY ? type.getElementType() : type).getClassName();
+    private Class<?> toClass(final Type type) {
+        final String className;
+        if (type.getSort() == Type.ARRAY) {
+            className = type.getElementType().getClassName();
+        } else {
+            className = type.getClassName();
+        }
         Class<?> result;
         try {
             result = Class.forName(className);
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             try {
                 result = getArchive().loadClass(className);
-            } catch (ClassNotFoundException e1) {
+            } catch (final ClassNotFoundException e1) {
                 throw new RuntimeException(e1);
             }
         }
         if (type.getSort() == Type.ARRAY) {
-            int[] dims = new int[type.getDimensions()];
+            final int[] dims = new int[type.getDimensions()];
             Arrays.fill(dims, 0);
             result = Array.newInstance(result, dims).getClass();
         }

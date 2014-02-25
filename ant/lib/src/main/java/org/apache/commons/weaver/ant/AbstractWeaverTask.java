@@ -33,7 +33,7 @@ public abstract class AbstractWeaverTask extends Task {
      * Create a new {@link AbstractWeaverTask} instance.
      * @param project owner
      */
-    protected AbstractWeaverTask(Project project) {
+    protected AbstractWeaverTask(final Project project) {
         super();
         setProject(project);
     }
@@ -42,7 +42,7 @@ public abstract class AbstractWeaverTask extends Task {
      * Add a nested {@link WeaverSettings}.
      * @param settings to add
      */
-    public void add(WeaverSettings settings) {
+    public void add(final WeaverSettings settings) {
         if (this.settings != null) {
             throw new BuildException("settings already specified");
         }
@@ -61,7 +61,7 @@ public abstract class AbstractWeaverTask extends Task {
      * Set a project reference to a {@link WeaverSettings} object.
      * @param refid key
      */
-    public void setSettingsRef(String refid) {
+    public void setSettingsRef(final String refid) {
         final WeaverSettings settings = new WeaverSettings(getProject());
         settings.setRefid(new Reference(getProject(), refid));
         add(settings);

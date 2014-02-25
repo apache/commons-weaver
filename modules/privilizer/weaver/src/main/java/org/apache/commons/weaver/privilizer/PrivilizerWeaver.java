@@ -35,28 +35,28 @@ import org.apache.commons.weaver.spi.Weaver;
  */
 public class PrivilizerWeaver implements Weaver {
     @Override
-    public boolean process(WeaveEnvironment weaveEnvironment, Scanner scanner) {
+    public boolean process(final WeaveEnvironment weaveEnvironment, final Scanner scanner) {
         final Privilizer privilizer = new Privilizer(weaveEnvironment);
 
         final Set<Class<?>> privilizedTypes = new LinkedHashSet<Class<?>>();
 
         // handle blueprints:
-        for (WeavableClass<?> type : scanner.scan(
+        for (final WeavableClass<?> type : scanner.scan(
             new ScanRequest().add(WeaveInterest.of(Privilizing.class, ElementType.TYPE))).getClasses()) {
 
-            final Class<?> t = type.getTarget();
-            if (privilizedTypes.add(t) && validateRequest(privilizer, type)) {
-                privilizer.blueprint(t, type.getAnnotation(Privilizing.class));
+            final Class<?> target = type.getTarget();
+            if (privilizedTypes.add(target) && validateRequest(privilizer, type)) {
+                privilizer.blueprint(target, type.getAnnotation(Privilizing.class));
             }
         }
 
         // handle remaining classes declaring @Privileged methods:
 
-        for (WeavableClass<?> type : scanner.scan(
+        for (final WeavableClass<?> type : scanner.scan(
             new ScanRequest().add(WeaveInterest.of(Privileged.class, ElementType.METHOD))).getClasses()) {
-            final Class<?> t = type.getTarget();
-            if (privilizedTypes.add(t) && validateRequest(privilizer, type)) {
-                privilizer.privilize(t);
+            final Class<?> target = type.getTarget();
+            if (privilizedTypes.add(target) && validateRequest(privilizer, type)) {
+                privilizer.privilize(target);
             }
         }
         return !privilizedTypes.isEmpty();
@@ -69,13 +69,14 @@ public class PrivilizerWeaver implements Weaver {
      * @return whether weaving should proceed
      * @throws IllegalStateException if class has already been woven with some other policy
      */
-    private boolean validateRequest(Privilizer privilizer, WeavableClass<?> type) {
-        Privilized marker = type.getAnnotation(Privilized.class);
+    private boolean validateRequest(final Privilizer privilizer, final WeavableClass<?> type) {
+        final Privilized marker = type.getAnnotation(Privilized.class);
         if (marker == null) {
             return privilizer.policy != Policy.NEVER;
         }
         Validate.validState(privilizer.policy.name().equals(marker.value()), "%s already privilized with policy %s",
             type.getTarget().getName(), marker.value());
+
         return false;
     }
 }

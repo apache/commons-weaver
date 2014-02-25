@@ -34,7 +34,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
      * Create a new {@link WeavablePackage} instance.
      * @param target package
      */
-    public WeavablePackage(Package target) {
+    public WeavablePackage(final Package target) {
         super(target);
     }
 
@@ -44,7 +44,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
      * @param <T> generic type of {@code cls}
      * @return {@link WeavableClass}
      */
-    public synchronized <T> WeavableClass<T> getWeavable(Class<T> cls) {
+    public synchronized <T> WeavableClass<T> getWeavable(final Class<T> cls) {
         final String key = cls.getName();
         if (clazzes.containsKey(key)) {
             @SuppressWarnings("unchecked")
@@ -71,7 +71,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
      * @return int per {@link Comparable#compareTo(Object)} contract
      */
     @Override
-    public int compareTo(WeavablePackage arg0) {
+    public int compareTo(final WeavablePackage arg0) {
         return getTarget().getName().compareTo(arg0.getTarget().getName());
     }
 }

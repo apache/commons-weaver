@@ -70,28 +70,30 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
      * @param cv wrapped
      * @param config annotation
      */
-    BlueprintingVisitor(Privilizer privilizer, ClassVisitor cv, Privilizing config) {
+    BlueprintingVisitor(final Privilizer privilizer,
+        final ClassVisitor cv, //NOPMD
+        final Privilizing config) {
         privilizer.super(new ClassNode(Opcodes.ASM4));
         this.next = cv;
 
         // load up blueprint methods:
-        for (Privilizing.CallTo callTo : config.value()) {
+        for (final Privilizing.CallTo callTo : config.value()) {
             final Type blueprintType = Type.getType(callTo.value());
             blueprintTypes.add(blueprintType);
-            for (Map.Entry<Method, MethodNode> e : getMethods(blueprintType).entrySet()) {
+            for (final Map.Entry<Method, MethodNode> entry : getMethods(blueprintType).entrySet()) {
                 boolean found = false;
                 if (callTo.methods().length == 0) {
                     found = true;
                 } else {
-                    for (String name : callTo.methods()) {
-                        if (e.getKey().getName().equals(name)) {
+                    for (final String name : callTo.methods()) {
+                        if (entry.getKey().getName().equals(name)) {
                             found = true;
                             break;
                         }
                     }
                 }
                 if (found) {
-                    blueprintRegistry.put(Pair.of(blueprintType, e.getKey()), e.getValue());
+                    blueprintRegistry.put(Pair.of(blueprintType, entry.getKey()), entry.getValue());
                 }
             }
         }
@@ -107,7 +109,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         @SuppressWarnings("unchecked")
         final List<MethodNode> methods = classNode.methods;
 
-        for (MethodNode methodNode : methods) {
+        for (final MethodNode methodNode : methods) {
             if (Modifier.isStatic(methodNode.access) && !"<clinit>".equals(methodNode.name)) {
                 result.put(new Method(methodNode.name, methodNode.desc), methodNode);
             }
@@ -116,13 +118,13 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         return result;
     }
 
-    private ClassNode read(String className) {
+    private ClassNode read(final String className) {
         final ClassNode result = new ClassNode(Opcodes.ASM4);
         InputStream bytecode = null;
         try {
             bytecode = privilizer().env.getClassfile(className).getInputStream();
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(bytecode);
@@ -131,24 +133,26 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+    public void visit(final int version, final int access, final String name, final String signature,
+        final String superName, final String[] interfaces) {
         Validate.isTrue(!blueprintTypes.contains(Type.getObjectType(name)),
             "Class %s cannot declare itself as a blueprint!", name);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-        return new MethodInvocationHandler(mv) {
+    public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+        final String[] exceptions) {
+        final MethodVisitor toWrap = super.visitMethod(access, name, desc, signature, exceptions);
+        return new MethodInvocationHandler(toWrap) {
             @Override
-            boolean shouldImport(Pair<Type, Method> methodKey) {
+            boolean shouldImport(final Pair<Type, Method> methodKey) {
                 return blueprintRegistry.containsKey(methodKey);
             }
         };
     }
 
-    private String importMethod(Pair<Type, Method> key) {
+    private String importMethod(final Pair<Type, Method> key) {
         if (importedMethods.containsKey(key)) {
             return importedMethods.get(key);
         }
@@ -169,8 +173,8 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         source.accept(new MethodVisitor(Opcodes.ASM4) {
             @Override
-            public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-                final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name, Type.getType(desc));
+            public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
+                final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name);
 
                 super.visitFieldInsn(opcode, owner, name, desc);
                 if (!Modifier.isPublic(fieldAccess.access)) {
@@ -183,7 +187,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             new MethodNode(access, result, source.desc, source.signature, exceptions);
 
         // spider own methods:
-        MethodVisitor mv = new NestedMethodInvocationHandler(withAccessibleAdvice, key.getLeft());
+        MethodVisitor mv = new NestedMethodInvocationHandler(withAccessibleAdvice, key.getLeft()); //NOPMD
 
         if (!fieldAccesses.isEmpty()) {
             // accessesNonPublicFields = true;
@@ -192,9 +196,8 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         source.accept(mv);
 
-        if (Modifier.isPrivate(source.access)) {
-            // can only be called by other privileged methods, so no need to mark as privileged
-        } else {
+        // private can only be called by other privileged methods, so no need to mark as privileged
+        if (!Modifier.isPrivate(source.access)) {
             withAccessibleAdvice.visitAnnotation(Type.getType(Privileged.class).getDescriptor(), false).visitEnd();
         }
 
@@ -203,7 +206,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         return result;
     }
 
-    private FieldAccess fieldAccess(final Type owner, String name, Type desc) {
+    private FieldAccess fieldAccess(final Type owner, final String name) {
         final Pair<Type, String> key = Pair.of(owner, name);
         if (!fieldAccessMap.containsKey(key)) {
             try {
@@ -216,20 +219,20 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                         bytecode = privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream();
                         new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
                             @Override
-                            public void visit(int version, int access, String name, String signature, String superName,
-                                String[] interfaces) {
+                            public void visit(final int version, final int access, final String name,
+                                final String signature, final String superName, final String[] interfaces) {
                                 super.visit(version, access, name, signature, superName, interfaces);
                                 next.setValue(Type.getObjectType(superName));
                             }
 
                             @Override
-                            public FieldVisitor visitField(int access, String name, String desc, String signature,
-                                Object value) {
-                                for (Type type : stk) {
-                                    final Pair<Type, String> k = Pair.of(type, name);
+                            public FieldVisitor visitField(final int access, final String name, final String desc,
+                                final String signature, final Object value) {
+                                for (final Type type : stk) {
+                                    final Pair<Type, String> key = Pair.of(type, name);
                                     // skip shadowed fields:
-                                    if (!fieldAccessMap.containsKey(k)) {
-                                        fieldAccessMap.put(k,
+                                    if (!fieldAccessMap.containsKey(key)) {
+                                        fieldAccessMap.put(key,
                                             new FieldAccess(access, target, name, Type.getType(desc)));
                                     }
                                 }
@@ -243,7 +246,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                         break;
                     }
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             }
             Validate.isTrue(fieldAccessMap.containsKey(key), "Could not locate %s.%s", owner.getClassName(), name);
@@ -258,15 +261,15 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     private abstract class MethodInvocationHandler extends MethodVisitor {
-        MethodInvocationHandler(MethodVisitor mv) {
-            super(Opcodes.ASM4, mv);
+        MethodInvocationHandler(final MethodVisitor mvr) {
+            super(Opcodes.ASM4, mvr);
         }
 
         @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
             if (opcode == Opcodes.INVOKESTATIC) {
-                final Method m = new Method(name, desc);
-                final Pair<Type, Method> methodKey = Pair.of(Type.getObjectType(owner), m);
+                final Method methd = new Method(name, desc);
+                final Pair<Type, Method> methodKey = Pair.of(Type.getObjectType(owner), methd);
                 if (shouldImport(methodKey)) {
                     final String importedName = importMethod(methodKey);
                     super.visitMethodInsn(opcode, className, importedName, desc);
@@ -282,13 +285,13 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     class NestedMethodInvocationHandler extends MethodInvocationHandler {
         final Type owner;
 
-        NestedMethodInvocationHandler(MethodVisitor mv, Type owner) {
-            super(mv);
+        NestedMethodInvocationHandler(final MethodVisitor mvr, final Type owner) {
+            super(mvr);
             this.owner = owner;
         }
 
         @Override
-        boolean shouldImport(Pair<Type, Method> methodKey) {
+        boolean shouldImport(final Pair<Type, Method> methodKey) {
             // call anything called within a class hierarchy:
             final Type called = methodKey.getLeft();
             // "I prefer the short cut":
@@ -299,13 +302,13 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                 final Class<?> inner = load(called);
                 final Class<?> outer = load(owner);
                 return inner.isAssignableFrom(outer);
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 return false;
             }
         }
 
-        private Class<?> load(Type t) throws ClassNotFoundException {
-            return privilizer().env.classLoader.loadClass(t.getClassName());
+        private Class<?> load(final Type type) throws ClassNotFoundException {
+            return privilizer().env.classLoader.loadClass(type.getClassName());
         }
     }
 
@@ -326,8 +329,9 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         int bitSet;
         int fieldCounter;
 
-        AccessibleAdvisor(MethodVisitor mv, int access, String name, String desc, List<FieldAccess> fieldAccesses) {
-            super(ASM4, mv, access, name, desc);
+        AccessibleAdvisor(final MethodVisitor mvr, final int access, final String name, final String desc,
+            final List<FieldAccess> fieldAccesses) {
+            super(ASM4, mvr, access, name, desc);
             this.fieldAccesses = fieldAccesses;
         }
 
@@ -352,14 +356,14 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             // populate localFieldArray
             push(0);
             storeLocal(fieldCounter);
-            for (FieldAccess access : fieldAccesses) {
+            for (final FieldAccess access : fieldAccesses) {
                 prehandle(access);
                 iinc(fieldCounter, 1);
             }
             mark(begin);
         }
 
-        private void prehandle(FieldAccess access) {
+        private void prehandle(final FieldAccess access) {
             // push owner.class literal
             visitLdcInsn(access.owner);
             push(access.name);
@@ -397,7 +401,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         }
 
         @Override
-        public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+        public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
             final Pair<Type, String> key = Pair.of(Type.getObjectType(owner), name);
             final FieldAccess fieldAccess = fieldAccessMap.get(key);
             Validate.isTrue(fieldAccesses.contains(fieldAccess), "Cannot find field %s", key);
@@ -437,19 +441,19 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         }
 
         @Override
-        public void visitMaxs(int maxStack, int maxLocals) {
+        public void visitMaxs(final int maxStack, final int maxLocals) {
             // put try-finally around the whole method
-            final Label fy = mark();
+            final Label fny = mark();
             // null exception type signifies finally block:
             final Type exceptionType = null;
-            catchException(begin, fy, exceptionType);
+            catchException(begin, fny, exceptionType);
             onFinally();
             throwException();
             super.visitMaxs(maxStack, maxLocals);
         }
 
         @Override
-        protected void onMethodExit(int opcode) {
+        protected void onMethodExit(final int opcode) {
             if (opcode != ATHROW) {
                 onFinally();
             }

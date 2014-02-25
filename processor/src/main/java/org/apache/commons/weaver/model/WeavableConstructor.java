@@ -33,7 +33,7 @@ public class WeavableConstructor<T> extends
      * @param target {@link Constructor}
      * @param parent enclosing {@link WeavableClass}
      */
-    public WeavableConstructor(Constructor<T> target, WeavableClass<T> parent) {
+    public WeavableConstructor(final Constructor<T> target, final WeavableClass<T> parent) {
         super(target, parent);
     }
 
@@ -49,7 +49,7 @@ public class WeavableConstructor<T> extends
      * {@inheritDoc}
      */
     @Override
-    protected WeavableConstructorParameter<T> createParameter(int index) {
+    protected WeavableConstructorParameter<T> createParameter(final int index) {
         return new WeavableConstructorParameter<T>(Integer.valueOf(index), this);
     }
 

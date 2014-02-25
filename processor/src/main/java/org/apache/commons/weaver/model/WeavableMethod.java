@@ -32,7 +32,7 @@ public class WeavableMethod<T> extends WeavableExecutable<WeavableMethod<T>, Met
      * @param target method
      * @param parent enclosing {@link WeavableClass}
      */
-    public WeavableMethod(Method target, WeavableClass<T> parent) {
+    public WeavableMethod(final Method target, final WeavableClass<T> parent) {
         super(target, parent);
     }
 
@@ -48,16 +48,16 @@ public class WeavableMethod<T> extends WeavableExecutable<WeavableMethod<T>, Met
      * {@inheritDoc}
      */
     @Override
-    protected int localCompareTo(WeavableMethod<T> o) {
-        int result = getTarget().getName().compareTo(o.getTarget().getName());
-        return result == 0 ? super.localCompareTo(o) : result;
+    protected int localCompareTo(final WeavableMethod<T> obj) {
+        final int result = getTarget().getName().compareTo(obj.getTarget().getName());
+        return result == 0 ? super.localCompareTo(obj) : result;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected WeavableMethodParameter<T> createParameter(int index) {
+    protected WeavableMethodParameter<T> createParameter(final int index) {
         return new WeavableMethodParameter<T>(Integer.valueOf(index), this);
     }
 }

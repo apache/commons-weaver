@@ -40,7 +40,7 @@ public class InlineProperties implements DynamicElementNS {
     public final class InlineProperty {
         private final String name;
 
-        private InlineProperty(String name) {
+        private InlineProperty(final String name) {
             this.name = name;
         }
 
@@ -48,7 +48,7 @@ public class InlineProperties implements DynamicElementNS {
          * Add text to this property.
          * @param text to add
          */
-        public void addText(String text) {
+        public void addText(final String text) {
             final String value;
             if (properties.containsKey(name)) {
                 value = StringUtils.join(properties.getProperty(name), text);
@@ -72,7 +72,7 @@ public class InlineProperties implements DynamicElementNS {
      * @return InlineProperty
      */
     @Override
-    public InlineProperty createDynamicElement(String uri, String localName, String qName) {
+    public InlineProperty createDynamicElement(final String uri, final String localName, final String qName) {
         return new InlineProperty(localName);
     }
 }

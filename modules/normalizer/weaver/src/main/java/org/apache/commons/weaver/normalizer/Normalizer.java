@@ -64,6 +64,8 @@ import org.objectweb.asm.commons.SimpleRemapper;
  * Handles the work of "normalizing" anonymous class definitions.
  */
 public class Normalizer {
+    private static final String INIT = "<init>";
+
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
     /**
@@ -77,7 +79,7 @@ public class Normalizer {
         final Class<?> wrapped;
         final boolean mustRewriteConstructor;
 
-        ClassWrapper(Class<?> wrapped, boolean mustRewriteConstructor) {
+        ClassWrapper(final Class<?> wrapped, final boolean mustRewriteConstructor) {
             this.wrapped = wrapped;
             this.mustRewriteConstructor = mustRewriteConstructor;
         }
@@ -90,12 +92,12 @@ public class Normalizer {
             super(Opcodes.ASM4, new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
         }
 
-        WriteClass(ClassReader reader) {
+        WriteClass(final ClassReader reader) {
             super(Opcodes.ASM4, new ClassWriter(reader, 0));
         }
 
         @Override
-        public void visit(int version, int access, String name, String signature, String superName, String[] intrfces) {
+        public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] intrfces) {
             super.visit(version, access, name, signature, superName, intrfces);
             className = name;
         }
@@ -111,7 +113,7 @@ public class Normalizer {
             try {
                 outputStream = classfile.getOutputStream();
                 IOUtils.write(bytecode, outputStream);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             } finally {
                 IOUtils.closeQuietly(outputStream);
@@ -150,7 +152,7 @@ public class Normalizer {
      * Create a new {@link Normalizer} instance.
      * @param env {@link WeaveEnvironment}
      */
-    public Normalizer(WeaveEnvironment env) {
+    public Normalizer(final WeaveEnvironment env) {
         this.env = env;
 
         this.targetPackage =
@@ -167,21 +169,23 @@ public class Normalizer {
      * @param scanner to scan with
      * @return whether any work was done
      */
-    public boolean normalize(Scanner scanner) {
+    public boolean normalize(final Scanner scanner) {
         boolean result = false;
-        for (Class<?> supertype : normalizeTypes) {
+        for (final Class<?> supertype : normalizeTypes) {
             final Set<Class<?>> subtypes = getBroadlyEligibleSubclasses(supertype, scanner);
             try {
                 final Map<Pair<String, String>, Set<ClassWrapper>> segregatedSubtypes = segregate(subtypes);
-                for (Map.Entry<Pair<String, String>, Set<ClassWrapper>> e : segregatedSubtypes.entrySet()) {
-                    final Set<ClassWrapper> likeTypes = e.getValue();
+                for (final Map.Entry<Pair<String, String>, Set<ClassWrapper>> entry : segregatedSubtypes.entrySet()) {
+                    final Set<ClassWrapper> likeTypes = entry.getValue();
                     if (likeTypes.size() > 1) {
                         result = true;
-                        rewrite(e.getKey(), likeTypes);
+                        rewrite(entry.getKey(), likeTypes);
                     }
                 }
-            } catch (Exception e) {
-                throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+            } catch (final RuntimeException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
             }
         }
         return result;
@@ -192,16 +196,16 @@ public class Normalizer {
      * @param sort values
      * @return {@link Map} of enclosing classname to {@link Map} of internal name to {@link ClassWrapper}
      */
-    private Map<String, Map<String, ClassWrapper>> byEnclosingClass(Set<ClassWrapper> sort) {
+    private Map<String, Map<String, ClassWrapper>> byEnclosingClass(final Set<ClassWrapper> sort) {
         final Map<String, Map<String, ClassWrapper>> result = new HashMap<String, Map<String, ClassWrapper>>();
-        for (ClassWrapper w : sort) {
-            final String outer = w.wrapped.getEnclosingClass().getName();
-            Map<String, ClassWrapper> m = result.get(outer);
-            if (m == null) {
-                m = new LinkedHashMap<String, Normalizer.ClassWrapper>();
-                result.put(outer, m);
+        for (final ClassWrapper wrapper : sort) {
+            final String outer = wrapper.wrapped.getEnclosingClass().getName();
+            Map<String, ClassWrapper> map = result.get(outer);
+            if (map == null) {
+                map = new LinkedHashMap<String, Normalizer.ClassWrapper>();
+                result.put(outer, map);
             }
-            m.put(w.wrapped.getName().replace('.', '/'), w);
+            map.put(wrapper.wrapped.getName().replace('.', '/'), wrapper);
         }
         return result;
     }
@@ -213,18 +217,18 @@ public class Normalizer {
      * @throws IOException on I/O error
      * @throws ClassNotFoundException if class not found
      */
-    private void rewrite(Pair<String, String> key, Set<ClassWrapper> toMerge) throws IOException,
+    private void rewrite(final Pair<String, String> key, final Set<ClassWrapper> toMerge) throws IOException,
         ClassNotFoundException {
         final String target = copy(key, toMerge.iterator().next());
         env.info("Merging %s identical %s implementations with constructor %s to type %s", toMerge.size(),
             key.getLeft(), key.getRight(), target);
 
         final Map<String, Map<String, ClassWrapper>> byEnclosingClass = byEnclosingClass(toMerge);
-        for (final Map.Entry<String, Map<String, ClassWrapper>> e : byEnclosingClass.entrySet()) {
-            final String outer = e.getKey();
-            env.debug("Normalizing %s inner classes of %s", e.getValue().size(), outer);
+        for (final Map.Entry<String, Map<String, ClassWrapper>> entry : byEnclosingClass.entrySet()) {
+            final String outer = entry.getKey();
+            env.debug("Normalizing %s inner classes of %s", entry.getValue().size(), outer);
             final Map<String, String> classMap = new HashMap<String, String>();
-            for (String merged : e.getValue().keySet()) {
+            for (final String merged : entry.getValue().keySet()) {
                 classMap.put(merged, target);
             }
             final Remapper remapper = new SimpleRemapper(classMap);
@@ -234,30 +238,32 @@ public class Normalizer {
                 enclosingBytecode = env.getClassfile(outer).getInputStream();
                 final ClassReader reader = new ClassReader(enclosingBytecode);
 
-                final ClassVisitor cv = new RemappingClassAdapter(new WriteClass(reader), remapper) {
+                final ClassVisitor cv = // NOPMD
+                        new RemappingClassAdapter(new WriteClass(reader), remapper) {
 
                     @Override
-                    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+                    public void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
                         if (!classMap.containsKey(name)) {
                             super.visitInnerClass(name, outerName, innerName, access);
                         }
                     }
 
                     @Override
-                    public MethodVisitor visitMethod(int access, String name, String desc, String signature,
-                        String[] exceptions) {
-                        final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+                    public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
+                        final String[] exceptions) {
+                        final MethodVisitor mv = // NOPMD
+                                super.visitMethod(access, name, desc, signature, exceptions);
                         return new MethodVisitor(Opcodes.ASM4, mv) {
                             @Override
-                            public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+                            public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
                                 String useDescriptor = desc;
-                                if ("<init>".equals(name)) {
-                                    final ClassWrapper w = e.getValue().get(owner);
-                                    if (w != null && w.mustRewriteConstructor) {
+                                if (INIT.equals(name)) {
+                                    final ClassWrapper wrapper = entry.getValue().get(owner);
+                                    if (wrapper != null && wrapper.mustRewriteConstructor) {
                                         // simply replace first argument type with OBJECT_TYPE:
                                         final Type[] args = Type.getArgumentTypes(desc);
                                         args[0] = OBJECT_TYPE;
-                                        useDescriptor = new Method("<init>", Type.VOID_TYPE, args).getDescriptor();
+                                        useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
                                     }
                                 }
                                 super.visitMethodInsn(opcode, owner, name, useDescriptor);
@@ -270,7 +276,7 @@ public class Normalizer {
             } finally {
                 IOUtils.closeQuietly(enclosingBytecode);
             }
-            for (String merged : e.getValue().keySet()) {
+            for (final String merged : entry.getValue().keySet()) {
                 if (env.deleteClassfile(merged)) {
                     env.debug("Deleted class %s", merged);
                 } else {
@@ -297,24 +303,23 @@ public class Normalizer {
      * @return {@link Set} of {@link Class}
      * @see #segregate(Iterable)
      */
-    private Set<Class<?>> getBroadlyEligibleSubclasses(Class<?> supertype, Scanner scanner) {
+    private Set<Class<?>> getBroadlyEligibleSubclasses(final Class<?> supertype, final Scanner scanner) {
         final ScanResult scanResult = scanner.scan(new ScanRequest().addSupertypes(supertype));
         final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
-        for (WeavableClass<?> w : scanResult.getClasses()) {
-            final Class<?> subtype = w.getTarget();
-            IneligibilityReason reason = null;
+        for (final WeavableClass<?> cls : scanResult.getClasses()) {
+            final Class<?> subtype = cls.getTarget();
+            final IneligibilityReason reason;
             if (!subtype.isAnonymousClass()) {
                 reason = IneligibilityReason.NOT_ANONYMOUS;
             } else if (subtype.getDeclaredConstructors().length != 1) {
                 reason = IneligibilityReason.TOO_MANY_CONSTRUCTORS;
             } else if (subtype.getDeclaredMethods().length > 0) {
                 reason = IneligibilityReason.IMPLEMENTS_METHODS;
-            }
-            if (reason == null) {
-                result.add(subtype);
             } else {
-                env.debug("Removed %s from consideration due to %s", subtype, reason);
+                result.add(subtype);
+                continue;
             }
+            env.debug("Removed %s from consideration due to %s", subtype, reason);
         }
         return result;
     }
@@ -338,12 +343,13 @@ public class Normalizer {
      * </p>
      * @param subtypes
      * @return Map of Pair<String, String> to Set of Classes
-     * @throws Exception
+     * @throws IOException
      */
-    private Map<Pair<String, String>, Set<ClassWrapper>> segregate(Iterable<Class<?>> subtypes) throws Exception {
+    private Map<Pair<String, String>, Set<ClassWrapper>> segregate(final Iterable<Class<?>> subtypes)
+        throws IOException {
         final Map<Pair<String, String>, Set<ClassWrapper>> classMap =
             new LinkedHashMap<Pair<String, String>, Set<ClassWrapper>>();
-        for (Class<?> subtype : subtypes) {
+        for (final Class<?> subtype : subtypes) {
             final MutablePair<String, String> key = new MutablePair<String, String>();
             final MutableBoolean ignore = new MutableBoolean(false);
             final MutableBoolean valid = new MutableBoolean(true);
@@ -356,8 +362,8 @@ public class Normalizer {
                     String superName;
 
                     @Override
-                    public void visit(int version, int access, String name, String signature, String superName,
-                        String[] interfaces) {
+                    public void visit(final int version, final int access, final String name, final String signature,
+                        final String superName, final String[] interfaces) {
                         super.visit(version, access, name, signature, superName, interfaces);
                         this.superName = superName;
                         final String left;
@@ -372,7 +378,7 @@ public class Normalizer {
                     }
 
                     @Override
-                    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+                    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                         if (Type.getType(Marker.class).getDescriptor().equals(desc)) {
                             ignore.setValue(true);
                         }
@@ -380,19 +386,23 @@ public class Normalizer {
                     }
 
                     @Override
-                    public MethodVisitor visitMethod(int access, String name, String desc, String signature,
-                        String[] exceptions) {
-                        if ("<init>".equals(name)) {
+                    public MethodVisitor visitMethod(final int access, final String name, final String desc,
+                        final String signature, final String[] exceptions) {
+                        if (INIT.equals(name)) {
                             return new MethodVisitor(Opcodes.ASM4) {
-                                public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-                                    if ("<init>".equals(name) && owner.equals(superName)) {
+                                @Override
+                                public void visitMethodInsn(final int opcode, final String owner, final String name,
+                                    final String desc) {
+                                    if (INIT.equals(name) && owner.equals(superName)) {
                                         key.setRight(desc);
                                     } else {
                                         valid.setValue(false);
                                     }
                                 }
 
-                                public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+                                @Override
+                                public void visitFieldInsn(final int opcode, final String owner, final String name,
+                                    final String desc) {
                                     if ("this$0".equals(name) && opcode == Opcodes.PUTFIELD) {
                                         mustRewriteConstructor.setValue(true);
                                         return;
@@ -435,12 +445,12 @@ public class Normalizer {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private String copy(final Pair<String, String> key, ClassWrapper classWrapper) throws IOException,
+    private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException,
         ClassNotFoundException {
         final MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         md5.update(key.getLeft().getBytes(UTF8));
@@ -458,7 +468,7 @@ public class Normalizer {
             bytecode = env.getClassfile(classWrapper.wrapped).getInputStream();
             final ClassReader reader = new ClassReader(bytecode);
 
-            final ClassVisitor w = new WriteClass();
+            final ClassVisitor writeClass = new WriteClass();
 
             // we're doing most of this by hand; we only read the original class to hijack signature, ctor exceptions,
             // etc.:
@@ -467,34 +477,34 @@ public class Normalizer {
                 Type supertype;
 
                 @Override
-                public void visit(int version, int access, String name, String signature, String superName,
-                    String[] interfaces) {
+                public void visit(final int version, final int access, final String name, final String signature,
+                    final String superName, final String[] interfaces) {
                     supertype = Type.getObjectType(superName);
-                    w.visit(version, Opcodes.ACC_PUBLIC, result, signature, superName, interfaces);
+                    writeClass.visit(version, Opcodes.ACC_PUBLIC, result, signature, superName, interfaces);
 
                     visitAnnotation(Type.getType(Marker.class).getDescriptor(), false);
                 }
 
                 @Override
-                public MethodVisitor visitMethod(int access, String name, String desc, String signature,
-                    String[] exceptions) {
-                    if ("<init>".equals(name)) {
+                public MethodVisitor visitMethod(final int access, final String name, final String desc,
+                    final String signature, final String[] exceptions) {
+                    if (INIT.equals(name)) {
 
-                        final Method staticCtor = new Method("<init>", key.getRight());
+                        final Method staticCtor = new Method(INIT, key.getRight());
                         final Type[] argumentTypes = staticCtor.getArgumentTypes();
                         final Type[] exceptionTypes = toObjectTypes(exceptions);
 
                         {
-                            final GeneratorAdapter mg =
-                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, staticCtor, signature, exceptionTypes, w);
-                            mg.visitCode();
-                            mg.loadThis();
+                            final GeneratorAdapter mgen =
+                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, staticCtor, signature, exceptionTypes, writeClass);
+                            mgen.visitCode();
+                            mgen.loadThis();
                             for (int i = 0; i < argumentTypes.length; i++) {
-                                mg.loadArg(i);
+                                mgen.loadArg(i);
                             }
-                            mg.invokeConstructor(supertype, staticCtor);
-                            mg.returnValue();
-                            mg.endMethod();
+                            mgen.invokeConstructor(supertype, staticCtor);
+                            mgen.returnValue();
+                            mgen.endMethod();
                         }
                         /*
                          * now declare a dummy constructor that will match, and discard,
@@ -504,17 +514,17 @@ public class Normalizer {
                          */
                         {
                             final Method instanceCtor =
-                                new Method("<init>", Type.VOID_TYPE, ArrayUtils.add(argumentTypes, 0, OBJECT_TYPE));
-                            final GeneratorAdapter mg =
-                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, instanceCtor, signature, exceptionTypes, w);
-                            mg.visitCode();
-                            mg.loadThis();
+                                new Method(INIT, Type.VOID_TYPE, ArrayUtils.add(argumentTypes, 0, OBJECT_TYPE));
+                            final GeneratorAdapter mgen =
+                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, instanceCtor, signature, exceptionTypes, writeClass);
+                            mgen.visitCode();
+                            mgen.loadThis();
                             for (int i = 0; i < argumentTypes.length; i++) {
-                                mg.loadArg(i + 1);
+                                mgen.loadArg(i + 1);
                             }
-                            mg.invokeConstructor(supertype, staticCtor);
-                            mg.returnValue();
-                            mg.endMethod();
+                            mgen.invokeConstructor(supertype, staticCtor);
+                            mgen.returnValue();
+                            mgen.endMethod();
                         }
                         return null;
                     }
@@ -523,7 +533,7 @@ public class Normalizer {
 
                 @Override
                 public void visitEnd() {
-                    w.visitEnd();
+                    writeClass.visitEnd();
                 }
             }, 0);
         } finally {
@@ -538,7 +548,7 @@ public class Normalizer {
      * @return {@link Type}[]
      * @see Type#getObjectType(String)
      */
-    private static Type[] toObjectTypes(String[] types) {
+    private static Type[] toObjectTypes(final String[] types) {
         if (types == null) {
             return null;
         }

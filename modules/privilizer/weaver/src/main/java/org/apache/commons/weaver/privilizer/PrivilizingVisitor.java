@@ -52,7 +52,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
      * @param privilizer owner
      * @param cv next
      */
-    PrivilizingVisitor(Privilizer privilizer, ClassVisitor cv) {
+    PrivilizingVisitor(final Privilizer privilizer, final ClassVisitor cv) { //NOPMD
         privilizer.super();
         this.policy = privilizer.policy;
         this.accessLevel = privilizer.accessLevel;
@@ -72,13 +72,14 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     @Override
-    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+    public void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
         annotate();
         super.visitInnerClass(name, outerName, innerName, access);
     }
 
     @Override
-    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+    public FieldVisitor visitField(final int access, final String name, final String desc, final String signature,
+        final Object value) {
         annotate();
         return super.visitField(access, name, desc, signature, value);
     }
@@ -88,24 +89,24 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
         final String[] exceptions) {
         annotate();
         final MethodVisitor originalMethod = super.visitMethod(access, name, desc, signature, exceptions);
-        final Method m = new Method(name, desc);
+        final Method methd = new Method(name, desc);
 
         return new GeneratorAdapter(Opcodes.ASM4, originalMethod, access, name, desc) {
 
             @Override
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                 if (Type.getType(Privileged.class).getDescriptor().equals(desc)) {
                     final AccessLevel localAccessLevel = AccessLevel.of(access);
                     if (accessLevel.compareTo(localAccessLevel) > 0) {
-                        throw new RuntimeException(new IllegalAccessException("Method " + className + "#" + m
+                        throw new RuntimeException(new IllegalAccessException("Method " + className + "#" + methd
                             + " must have maximum access level '" + accessLevel + "' but is defined wider ('"
                             + localAccessLevel + "')"));
                     }
                     if (AccessLevel.PACKAGE.compareTo(accessLevel) > 0) {
                         privilizer().env.warn("Possible security leak: granting privileges to %s method %s.%s",
-                            localAccessLevel, className, m);
+                            localAccessLevel, className, methd);
                     }
-                    privilegedMethods.put(m, privilizer().generateName(name));
+                    privilegedMethods.put(methd, privilizer().generateName(name));
                 }
                 return super.visitAnnotation(desc, visible);
             }
@@ -113,10 +114,10 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
             @Override
             public void visitCode() {
                 super.visitCode();
-                if (!privilegedMethods.containsKey(m)) {
+                if (!privilegedMethods.containsKey(methd)) {
                     return;
                 }
-                final String impl = privilegedMethods.get(m);
+                final String impl = privilegedMethods.get(methd);
                 final boolean instanceMethod = !Modifier.isStatic(access);
 
                 if (policy.isConditional()) {
@@ -150,11 +151,11 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 // generate action:
                 final Type[] ctorArgs;
                 if (instanceMethod) {
-                    ctorArgs = ArrayUtils.add(m.getArgumentTypes(), 0, target);
+                    ctorArgs = ArrayUtils.add(methd.getArgumentTypes(), 0, target);
                 } else {
-                    ctorArgs = m.getArgumentTypes();
+                    ctorArgs = methd.getArgumentTypes();
                 }
-                final Type actionType = new ActionGenerator(access, m, exceptions, PrivilizingVisitor.this).build();
+                final Type actionType = new ActionGenerator(access, methd, exceptions, PrivilizingVisitor.this).build();
                 newInstance(actionType);
                 dup();
                 if (instanceMethod) {
@@ -173,7 +174,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 final Method doPrivileged = new Method("doPrivileged", Type.getType(Object.class), new Type[] { arg });
                 invokeStatic(Type.getType(AccessController.class), doPrivileged);
 
-                unbox(m.getReturnType());
+                unbox(methd.getReturnType());
                 returnValue();
 
                 if (exc) {
@@ -200,6 +201,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     }
 
+    @Override
     public void visitEnd() {
         annotate();
         if (privilizer().policy == Policy.ON_INIT) {
@@ -208,13 +210,13 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
             visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC + Opcodes.ACC_FINAL, fieldName,
                 Type.BOOLEAN_TYPE.getDescriptor(), null, null).visitEnd();
 
-            final GeneratorAdapter mg =
+            final GeneratorAdapter mgen =
                 new GeneratorAdapter(Opcodes.ACC_STATIC, new Method("<clinit>", "()V"), null,
                     Privilizer.EMPTY_TYPE_ARRAY, this);
-            checkSecurityManager(mg);
-            mg.putStatic(target, fieldName, Type.BOOLEAN_TYPE);
-            mg.returnValue();
-            mg.endMethod();
+            checkSecurityManager(mgen);
+            mgen.putStatic(target, fieldName, Type.BOOLEAN_TYPE);
+            mgen.returnValue();
+            mgen.endMethod();
         }
         super.visitEnd();
     }
@@ -222,18 +224,18 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
     /**
      * Generates the instructions to push onto the stack whether there is a
      * security manager available.
-     * @param mg to control
+     * @param mgen to control
      */
-    private static void checkSecurityManager(GeneratorAdapter mg) {
+    private static void checkSecurityManager(final GeneratorAdapter mgen) {
         final Label setFalse = new Label();
         final Label done = new Label();
-        mg.invokeStatic(Type.getType(System.class),
+        mgen.invokeStatic(Type.getType(System.class),
             new Method("getSecurityManager", Type.getType(SecurityManager.class), Privilizer.EMPTY_TYPE_ARRAY));
-        mg.ifNull(setFalse);
-        mg.push(true);
-        mg.goTo(done);
-        mg.mark(setFalse);
-        mg.push(false);
-        mg.mark(done);
+        mgen.ifNull(setFalse);
+        mgen.push(true);
+        mgen.goTo(done);
+        mgen.mark(setFalse);
+        mgen.push(false);
+        mgen.mark(done);
     }
 }

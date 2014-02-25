@@ -75,8 +75,8 @@ public abstract class AbstractPrepareMojo extends AbstractMojo {
         getLog().debug(String.format("classpath=%s%ntarget=%s%nconfig=%s", classpath, target, config));
 
         try {
-            final CleanProcessor cp = new CleanProcessor(classpath, target, config);
-            cp.clean();
+            final CleanProcessor cleanProcessor = new CleanProcessor(classpath, target, config);
+            cleanProcessor.clean();
         } catch (Exception e) {
             throw new MojoExecutionException("cleaning failed due to " + e.getMessage(), e);
         } finally {

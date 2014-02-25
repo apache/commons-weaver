@@ -37,7 +37,7 @@ public final class WeaveInterest {
      */
     public final ElementType target;
 
-    private WeaveInterest(Class<? extends Annotation> annotationType, ElementType target) {
+    private WeaveInterest(final Class<? extends Annotation> annotationType, final ElementType target) {
         super();
         this.annotationType = annotationType;
         this.target = target;
@@ -49,7 +49,7 @@ public final class WeaveInterest {
      * @param target attached element type
      * @return {@link WeaveInterest}
      */
-    public static WeaveInterest of(Class<? extends Annotation> annotationType, ElementType target) {
+    public static WeaveInterest of(final Class<? extends Annotation> annotationType, final ElementType target) {
         return new WeaveInterest(annotationType, target);
     }
 }

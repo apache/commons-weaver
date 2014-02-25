@@ -33,13 +33,13 @@ public final class Args {
      * @return {@code int} as specified by
      *         {@link java.util.Comparator#compare(Object, Object)}
      */
-    public static int compare(Class<?>[] paramTypes1, Class<?>[] paramTypes2) {
-        int i = 0;
-        while (i < paramTypes1.length) {
-            if (i >= paramTypes2.length) {
+    public static int compare(final Class<?>[] paramTypes1, final Class<?>[] paramTypes2) {
+        final int param = 0;
+        while (param < paramTypes1.length) {
+            if (param >= paramTypes2.length) {
                 return 1;
             }
-            final int test = paramTypes1[i].getName().compareTo(paramTypes2[i].getName());
+            final int test = paramTypes1[param].getName().compareTo(paramTypes2[param].getName());
             if (test == 0) {
                 continue;
             }
