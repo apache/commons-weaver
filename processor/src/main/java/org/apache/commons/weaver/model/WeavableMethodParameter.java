@@ -33,7 +33,7 @@ public class WeavableMethodParameter<T> extends
      * @param target index
      * @param parent declaring {@link WeavableMethod}
      */
-    public WeavableMethodParameter(Integer target, WeavableMethod<T> parent) {
+    public WeavableMethodParameter(final Integer target, final WeavableMethod<T> parent) {
         super(target, parent);
     }
 

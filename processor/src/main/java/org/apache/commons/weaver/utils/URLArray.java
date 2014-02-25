@@ -39,19 +39,23 @@ public final class URLArray {
     public static URL[] fromPaths(final Iterable<String> files) {
         return fromFiles(new Iterable<File>() {
 
+            @Override
             public Iterator<File> iterator() {
                 final Iterator<String> path = files.iterator();
                 return new Iterator<File>() {
 
+                    @Override
                     public boolean hasNext() {
                         return path.hasNext();
                     }
 
+                    @Override
                     public File next() {
-                        final String p = path.next();
-                        return p == null ? null : new File(p);
+                        final String element = path.next();
+                        return element == null ? null : new File(element);
                     }
 
+                    @Override
                     public void remove() {
                         throw new UnsupportedOperationException();
                     }
@@ -65,16 +69,16 @@ public final class URLArray {
      * @param files to convert
      * @return URL[]
      */
-    public static URL[] fromFiles(Iterable<File> files) {
+    public static URL[] fromFiles(final Iterable<File> files) {
         final ArrayList<URL> result = new ArrayList<URL>();
-        for (File f : files) {
-            if (f == null) {
+        for (final File file : files) {
+            if (file == null) {
                 result.add(null);
                 continue;
             }
             try {
-                result.add(f.toURI().toURL());
-            } catch (MalformedURLException e) {
+                result.add(file.toURI().toURL());
+            } catch (final MalformedURLException e) {
                 // this shouldn't happen
                 throw new RuntimeException(e);
             }

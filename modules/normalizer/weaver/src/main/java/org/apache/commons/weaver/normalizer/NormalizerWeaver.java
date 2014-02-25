@@ -32,7 +32,7 @@ public class NormalizerWeaver implements Weaver {
      * {@inheritDoc}
      */
     @Override
-    public boolean process(WeaveEnvironment environment, Scanner scanner) {
+    public boolean process(final WeaveEnvironment environment, final Scanner scanner) {
         return new Normalizer(environment).normalize(scanner);
     }
 

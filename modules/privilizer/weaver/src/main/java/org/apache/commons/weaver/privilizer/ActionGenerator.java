@@ -41,7 +41,7 @@ import org.objectweb.asm.signature.SignatureWriter;
  */
 class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
     final PrivilizingVisitor owner;
-    final Method m;
+    final Method methd;
     final boolean exc;
     final Type[] exceptions;
     final String simpleName;
@@ -57,25 +57,25 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
     /**
      * Create a new {@link ActionGenerator}.
      * @param access modifier
-     * @param m {@link Method} to implement
+     * @param methd {@link Method} to implement
      * @param exceptions thrown
      * @param owner of the action class
      */
-    ActionGenerator(final int access, final Method m, final String[] exceptions, PrivilizingVisitor owner) {
+    ActionGenerator(final int access, final Method methd, final String[] exceptions, final PrivilizingVisitor owner) {
         owner.privilizer().super(new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES));
-        this.m = m;
+        this.methd = methd;
         this.exc = ArrayUtils.isNotEmpty(exceptions);
         this.exceptions = exc ? new Type[] { Type.getType(Exception.class) } : null;
         this.owner = owner;
-        this.simpleName = generateName(m);
+        this.simpleName = generateName(methd);
         this.action = Type.getObjectType(owner.className + '$' + simpleName);
 
         int privilegedAccessIndex = -1;
         String implName = null;
-        for (Map.Entry<Method, String> e : owner.privilegedMethods.entrySet()) {
+        for (final Map.Entry<Method, String> entry : owner.privilegedMethods.entrySet()) {
             privilegedAccessIndex++;
-            if (e.getKey().equals(m)) {
-                implName = e.getValue();
+            if (entry.getKey().equals(methd)) {
+                implName = entry.getValue();
                 break;
             }
         }
@@ -83,27 +83,27 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
 
         this.index = privilegedAccessIndex;
 
-        this.impl = new Method(implName, m.getDescriptor());
+        this.impl = new Method(implName, methd.getDescriptor());
         this.implIsStatic = Modifier.isStatic(access);
-        final Type[] args = implIsStatic ? m.getArgumentTypes() : ArrayUtils.add(m.getArgumentTypes(), 0, owner.target);
-        this.helper = new Method(privilizer().generateName("access$" + index), m.getReturnType(), args);
-        this.result = privilizer().wrap(m.getReturnType());
+        final Type[] args = implIsStatic ? methd.getArgumentTypes() : ArrayUtils.add(methd.getArgumentTypes(), 0, owner.target);
+        this.helper = new Method(privilizer().generateName("access$" + index), methd.getReturnType(), args);
+        this.result = privilizer().wrap(methd.getReturnType());
         this.fields = fields(args);
         this.actionInterface = Type.getType(exc ? PrivilegedExceptionAction.class : PrivilegedAction.class);
     }
 
-    private static String generateName(Method m) {
-        final StringBuilder b = new StringBuilder(m.getName());
-        if (m.getArgumentTypes().length > 0) {
-            b.append("$$");
-            for (Type arg : m.getArgumentTypes()) {
-                b.append(arg.getDescriptor().replace("[", "arrayOf").replace('/', '_').replace(';', '$'));
+    private static String generateName(final Method methd) {
+        final StringBuilder buf = new StringBuilder(methd.getName());
+        if (methd.getArgumentTypes().length > 0) {
+            buf.append("$$");
+            for (final Type arg : methd.getArgumentTypes()) {
+                buf.append(arg.getDescriptor().replace("[", "arrayOf").replace('/', '_').replace(';', '$'));
             }
         }
-        return b.append("_ACTION").toString();
+        return buf.append("_ACTION").toString();
     }
 
-    private static Field[] fields(Type[] args) {
+    private static Field[] fields(final Type[] args) {
         final Field[] result = new Field[args.length];
 
         for (int i = 0; i < args.length; i++) {
@@ -133,18 +133,18 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
     private void generateHelper() {
         owner.privilizer().env.debug("Generating static helper method %s.%s to call %s", owner.target.getClassName(),
             helper, impl);
-        final GeneratorAdapter mg =
+        final GeneratorAdapter mgen =
             new GeneratorAdapter(Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC, helper, null, exceptions, owner);
 
-        mg.visitCode();
-        mg.loadArgs();
+        mgen.visitCode();
+        mgen.loadArgs();
         if (implIsStatic) {
-            mg.invokeStatic(owner.target, impl);
+            mgen.invokeStatic(owner.target, impl);
         } else {
-            mg.invokeVirtual(owner.target, impl);
+            mgen.invokeVirtual(owner.target, impl);
         }
-        mg.returnValue();
-        mg.endMethod();
+        mgen.returnValue();
+        mgen.endMethod();
     }
 
     private void begin() {
@@ -155,7 +155,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final SignatureVisitor actionImplemented = type.visitInterface();
         actionImplemented.visitClassType(actionInterface.getInternalName());
         final SignatureVisitor visitTypeArgument = actionImplemented.visitTypeArgument('=');
-        final SignatureReader result = new SignatureReader(privilizer().wrap(m.getReturnType()).getDescriptor());
+        final SignatureReader result = new SignatureReader(privilizer().wrap(methd.getReturnType()).getDescriptor());
         result.accept(visitTypeArgument);
         actionImplemented.visitEnd();
 
@@ -170,39 +170,39 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
      * Add fields and generate constructor.
      */
     private void init() {
-        for (Field field : fields) {
+        for (final Field field : fields) {
             visitField(field.access, field.name, field.type.getDescriptor(), null, null).visitEnd();
         }
         final Method init = new Method("<init>", Type.VOID_TYPE, helper.getArgumentTypes());
 
-        final GeneratorAdapter mg =
+        final GeneratorAdapter mgen =
             new GeneratorAdapter(0, init, null, Privilizer.EMPTY_TYPE_ARRAY, this);
 
-        mg.visitCode();
-        final Label begin = mg.mark();
+        mgen.visitCode();
+        final Label begin = mgen.mark();
 
         // invoke super constructor
-        mg.loadThis();
-        mg.invokeConstructor(Type.getType(Object.class), Method.getMethod("void <init> ()"));
+        mgen.loadThis();
+        mgen.invokeConstructor(Type.getType(Object.class), Method.getMethod("void <init> ()"));
         // assign remaining fields
 
         int arg = 0;
-        for (Field field : fields) {
-            mg.loadThis();
-            mg.loadArg(arg++);
-            mg.putField(action, field.name, field.type);
+        for (final Field field : fields) {
+            mgen.loadThis();
+            mgen.loadArg(arg++);
+            mgen.putField(action, field.name, field.type);
         }
 
-        mg.returnValue();
-        final Label end = mg.mark();
+        mgen.returnValue();
+        final Label end = mgen.mark();
 
         // declare local vars
-        mg.visitLocalVariable("this", action.getDescriptor(), null, begin, end, 0);
+        mgen.visitLocalVariable("this", action.getDescriptor(), null, begin, end, 0);
         arg = 1;
-        for (Field field : fields) {
-            mg.visitLocalVariable("arg" + arg, field.type.getDescriptor(), null, begin, end, arg++);
+        for (final Field field : fields) {
+            mgen.visitLocalVariable("arg" + arg, field.type.getDescriptor(), null, begin, end, arg++);
         }
-        mg.endMethod();
+        mgen.endMethod();
     }
 
     /**
@@ -211,22 +211,22 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
     private void impl() {
         final Method run = Method.getMethod("Object run()");
 
-        final GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PUBLIC, run, null, exceptions, this);
+        final GeneratorAdapter mgen = new GeneratorAdapter(Opcodes.ACC_PUBLIC, run, null, exceptions, this);
 
-        for (Field field : fields) {
-            mg.loadThis();
-            mg.getField(action, field.name, field.type);
+        for (final Field field : fields) {
+            mgen.loadThis();
+            mgen.getField(action, field.name, field.type);
         }
 
-        mg.invokeStatic(owner.target, helper);
+        mgen.invokeStatic(owner.target, helper);
 
-        if (m.getReturnType().getSort() < Type.ARRAY) {
-            mg.valueOf(m.getReturnType());
+        if (methd.getReturnType().getSort() < Type.ARRAY) {
+            mgen.valueOf(methd.getReturnType());
         }
 
-        mg.returnValue();
+        mgen.returnValue();
 
-        mg.endMethod();
+        mgen.endMethod();
     }
 
 }

@@ -46,42 +46,42 @@ class Inflater {
     private class InfoMatcher {
         final Class<? extends Info> type;
 
-        InfoMatcher(Class<? extends Info> type) {
+        InfoMatcher(final Class<? extends Info> type) {
             super();
             this.type = type;
         }
 
-        boolean test(Info info) {
+        boolean test(final Info info) {
             return type.isInstance(info);
         }
 
     }
 
     private class MethodMatcher extends InfoMatcher {
-        final boolean cs;
+        final boolean isCtor;
 
-        MethodMatcher(boolean cs) {
+        MethodMatcher(final boolean isCtor) {
             super(MethodInfo.class);
-            this.cs = cs;
+            this.isCtor = isCtor;
         }
 
         @Override
-        boolean test(Info info) {
-            return super.test(info) && ((MethodInfo) info).isConstructor() == cs;
+        boolean test(final Info info) {
+            return super.test(info) && ((MethodInfo) info).isConstructor() == isCtor;
         }
     }
 
     private class ParameterMatcher extends InfoMatcher {
-        final boolean cs;
+        final boolean isCtor;
 
-        ParameterMatcher(boolean cs) {
+        ParameterMatcher(final boolean isCtor) {
             super(ParameterInfo.class);
-            this.cs = cs;
+            this.isCtor = isCtor;
         }
 
         @Override
-        boolean test(Info info) {
-            return super.test(info) && ((ParameterInfo) info).getDeclaringMethod().isConstructor() == cs;
+        boolean test(final Info info) {
+            return super.test(info) && ((ParameterInfo) info).getDeclaringMethod().isConstructor() == isCtor;
         }
     }
 
@@ -93,98 +93,101 @@ class Inflater {
     final Map<ParameterInfo, List<Annotation>> ctorParameterAnnotations;
     final Map<ParameterInfo, List<Annotation>> methodParameterAnnotations;
 
-    Inflater(Map<Info, List<Annotation>> m) {
+    Inflater(final Map<Info, List<Annotation>> annotationMap) {
         super();
 
-        this.packageAnnotations = subMap(m, new InfoMatcher(PackageInfo.class));
-        this.classAnnotations = subMap(m, new InfoMatcher(ClassInfo.class));
-        this.fieldAnnotations = subMap(m, new InfoMatcher(FieldInfo.class));
-        this.ctorAnnotations = subMap(m, new MethodMatcher(true));
-        this.methodAnnotations = subMap(m, new MethodMatcher(false));
-        this.ctorParameterAnnotations = subMap(m, new ParameterMatcher(true));
-        this.methodParameterAnnotations = subMap(m, new ParameterMatcher(false));
+        this.packageAnnotations = subMap(annotationMap, new InfoMatcher(PackageInfo.class));
+        this.classAnnotations = subMap(annotationMap, new InfoMatcher(ClassInfo.class));
+        this.fieldAnnotations = subMap(annotationMap, new InfoMatcher(FieldInfo.class));
+        this.ctorAnnotations = subMap(annotationMap, new MethodMatcher(true));
+        this.methodAnnotations = subMap(annotationMap, new MethodMatcher(false));
+        this.ctorParameterAnnotations = subMap(annotationMap, new ParameterMatcher(true));
+        this.methodParameterAnnotations = subMap(annotationMap, new ParameterMatcher(false));
     }
 
-    static <I extends Info> Map<I, List<Annotation>> subMap(Map<Info, List<Annotation>> source, InfoMatcher matcher) {
+    static <I extends Info> Map<I, List<Annotation>> subMap(final Map<Info, List<Annotation>> source,
+        final InfoMatcher matcher) {
         final HashMap<I, List<Annotation>> result = new HashMap<I, List<Annotation>>();
-        for (Map.Entry<Info, List<Annotation>> e : source.entrySet()) {
-            if (matcher.test(e.getKey())) {
+        for (final Map.Entry<Info, List<Annotation>> entry : source.entrySet()) {
+            if (matcher.test(entry.getKey())) {
                 @SuppressWarnings("unchecked")
-                final I key = (I) e.getKey();
-                result.put(key, e.getValue());
+                final I key = (I) entry.getKey();
+                result.put(key, entry.getValue());
             }
         }
         return result;
     }
 
     ScanResult inflate(final ScanResult scanResult) {
-        for (WeavablePackage pkg : scanResult.getPackages()) {
-            for (Map.Entry<PackageInfo, List<Annotation>> e : packageAnnotations.entrySet()) {
-                if (e.getKey().getName().equals(pkg.getTarget().getName())) {
-                    pkg.addAnnotations(e.getValue());
+        for (final WeavablePackage pkg : scanResult.getPackages()) {
+            for (final Map.Entry<PackageInfo, List<Annotation>> entry : packageAnnotations.entrySet()) {
+                if (entry.getKey().getName().equals(pkg.getTarget().getName())) {
+                    pkg.addAnnotations(entry.getValue());
                 }
             }
-            for (WeavableClass<?> cls : pkg.getClasses()) {
-                for (Map.Entry<ClassInfo, List<Annotation>> e : classAnnotations.entrySet()) {
-                    if (e.getKey().getName().equals(cls.getTarget().getName())) {
-                        cls.addAnnotations(e.getValue());
+            for (final WeavableClass<?> cls : pkg.getClasses()) {
+                for (final Map.Entry<ClassInfo, List<Annotation>> entry : classAnnotations.entrySet()) {
+                    if (entry.getKey().getName().equals(cls.getTarget().getName())) {
+                        cls.addAnnotations(entry.getValue());
                     }
                 }
-                for (WeavableField<?> fld : cls.getFields()) {
-                    for (Map.Entry<FieldInfo, List<Annotation>> e : fieldAnnotations.entrySet()) {
+                for (final WeavableField<?> fld : cls.getFields()) {
+                    for (final Map.Entry<FieldInfo, List<Annotation>> entry : fieldAnnotations.entrySet()) {
                         try {
-                            if (e.getKey().get().equals(fld.getTarget())) {
-                                fld.addAnnotations(e.getValue());
+                            if (entry.getKey().get().equals(fld.getTarget())) {
+                                fld.addAnnotations(entry.getValue());
                             }
-                        } catch (ClassNotFoundException cnfe) {
-                            // :/
+                        } catch (final ClassNotFoundException cnfe) {
+                            continue;
                         }
                     }
                 }
-                for (WeavableConstructor<?> cs : cls.getConstructors()) {
-                    for (Map.Entry<MethodInfo, List<Annotation>> e : ctorAnnotations.entrySet()) {
+                for (final WeavableConstructor<?> ctor : cls.getConstructors()) {
+                    for (final Map.Entry<MethodInfo, List<Annotation>> entry : ctorAnnotations.entrySet()) {
                         try {
-                            if (e.getKey().get().equals(cs.getTarget())) {
-                                cs.addAnnotations(e.getValue());
+                            if (entry.getKey().get().equals(ctor.getTarget())) {
+                                ctor.addAnnotations(entry.getValue());
                             }
-                        } catch (ClassNotFoundException cnfe) {
-                            // :/
+                        } catch (final ClassNotFoundException cnfe) {
+                            continue;
                         }
                     }
-                    for (WeavableConstructorParameter<?> p : cs.getParameters()) {
-                        for (Map.Entry<ParameterInfo, List<Annotation>> e : ctorParameterAnnotations.entrySet()) {
+                    for (final WeavableConstructorParameter<?> param : ctor.getParameters()) {
+                        for (final Map.Entry<ParameterInfo, List<Annotation>> entry : ctorParameterAnnotations
+                            .entrySet()) {
                             try {
-                                final Parameter<?> parameter = e.getKey().get();
-                                if (parameter.getDeclaringExecutable().equals(cs.getTarget())
-                                    && p.getTarget().intValue() == parameter.getIndex()) {
-                                    p.addAnnotations(e.getValue());
+                                final Parameter<?> parameter = entry.getKey().get();
+                                if (parameter.getDeclaringExecutable().equals(ctor.getTarget())
+                                    && param.getTarget().intValue() == parameter.getIndex()) {
+                                    param.addAnnotations(entry.getValue());
                                 }
-                            } catch (ClassNotFoundException cnfe) {
-                                // :/
+                            } catch (final ClassNotFoundException cnfe) {
+                                continue;
                             }
                         }
                     }
                 }
-                for (WeavableMethod<?> mt : cls.getMethods()) {
-                    for (Map.Entry<MethodInfo, List<Annotation>> e : methodAnnotations.entrySet()) {
+                for (final WeavableMethod<?> methd : cls.getMethods()) {
+                    for (final Map.Entry<MethodInfo, List<Annotation>> entry : methodAnnotations.entrySet()) {
                         try {
-                            if (e.getKey().get().equals(mt.getTarget())) {
-                                mt.addAnnotations(e.getValue());
+                            if (entry.getKey().get().equals(methd.getTarget())) {
+                                methd.addAnnotations(entry.getValue());
                             }
-                        } catch (ClassNotFoundException cnfe) {
-                            // :/
+                        } catch (final ClassNotFoundException cnfe) {
+                            continue;
                         }
                     }
-                    for (WeavableMethodParameter<?> p : mt.getParameters()) {
-                        for (Map.Entry<ParameterInfo, List<Annotation>> e : methodParameterAnnotations.entrySet()) {
+                    for (final WeavableMethodParameter<?> param : methd.getParameters()) {
+                        for (final Map.Entry<ParameterInfo, List<Annotation>> entry : methodParameterAnnotations
+                            .entrySet()) {
                             try {
-                                final Parameter<?> parameter = e.getKey().get();
-                                if (parameter.getDeclaringExecutable().equals(mt.getTarget())
-                                    && p.getTarget().intValue() == parameter.getIndex()) {
-                                    p.addAnnotations(e.getValue());
+                                final Parameter<?> parameter = entry.getKey().get();
+                                if (parameter.getDeclaringExecutable().equals(methd.getTarget())
+                                    && param.getTarget().intValue() == parameter.getIndex()) {
+                                    param.addAnnotations(entry.getValue());
                                 }
-                            } catch (ClassNotFoundException cnfe) {
-                                // :/
+                            } catch (final ClassNotFoundException cnfe) {
+                                continue;
                             }
                         }
                     }

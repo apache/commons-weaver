@@ -37,7 +37,7 @@ final class Utils {
      *         {@code '.'} with {@code '/'} and removed any terminating separator
      * @throws IllegalArgumentException if invalid
      */
-    static String validatePackageName(String pkg) {
+    static String validatePackageName(final String pkg) {
         if (StringUtils.isBlank(pkg)) {
             return "";
         }
@@ -47,17 +47,17 @@ final class Utils {
 
         boolean next = true;
         for (int pos = 0; pos < result.length(); pos++) {
-            final char c = result.charAt(pos);
+            final char chr = result.charAt(pos);
             if (next) {
                 next = false;
-                Validate.isTrue(Character.isJavaIdentifierStart(c), unexpected, c, pos, result);
+                Validate.isTrue(Character.isJavaIdentifierStart(chr), unexpected, chr, pos, result);
                 continue;
             }
-            if (c == '/' || c == '.') {
+            if (chr == '/' || chr == '.') {
                 next = true;
                 continue;
             }
-            Validate.isTrue(Character.isJavaIdentifierPart(c), unexpected, c, pos, result);
+            Validate.isTrue(Character.isJavaIdentifierPart(chr), unexpected, chr, pos, result);
         }
 
         result = result.replace('.', '/');
@@ -73,15 +73,15 @@ final class Utils {
      * {@link String} of fully-qualified or internal names (i.e., slashes are
      * legal).
      * @param types to parse
-     * @param cl {@link ClassLoader} to search
+     * @param classLoader {@link ClassLoader} to search
      * @return {@link Set} of {@link Class}
      */
-    static Set<Class<?>> parseTypes(String types, ClassLoader cl) {
+    static Set<Class<?>> parseTypes(final String types, final ClassLoader classLoader) {
         final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
-        for (String s : StringUtils.splitByWholeSeparatorPreserveAllTokens(types, ",")) {
+        for (final String token : StringUtils.splitByWholeSeparatorPreserveAllTokens(types, ",")) {
             try {
-                result.add(ClassUtils.getClass(cl, s.trim().replace('/', '.')));
-            } catch (ClassNotFoundException e) {
+                result.add(ClassUtils.getClass(classLoader, token.trim().replace('/', '.')));
+            } catch (final ClassNotFoundException e) {
                 throw new IllegalArgumentException(e);
             }
         }

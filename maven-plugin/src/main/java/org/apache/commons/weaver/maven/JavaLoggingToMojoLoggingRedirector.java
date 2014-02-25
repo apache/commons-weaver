@@ -28,6 +28,7 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -35,19 +36,20 @@ import org.apache.maven.plugin.logging.Log;
  * This class redirects calls to java.util Logging to Mojo logging.
  */
 public class JavaLoggingToMojoLoggingRedirector {
-    private JDKLogHandler activeHandler;
-    private List<Handler> removedHandlers = new ArrayList<Handler>();
+    private final List<Handler> removedHandlers = new ArrayList<Handler>();
 
     /**
      * The Maven mojo logger to delegate messages to.
      */
-    private Log mojoLogger;
+    private final Log mojoLogger;
+
+    private JDKLogHandler activeHandler;
 
     /**
      * @param mojoLogger
      *            the Maven mojo logger to delegate messages to.
      */
-    public JavaLoggingToMojoLoggingRedirector(Log mojoLogger) {
+    public JavaLoggingToMojoLoggingRedirector(final Log mojoLogger) {
         this.mojoLogger = mojoLogger;
     }
 
@@ -57,9 +59,9 @@ public class JavaLoggingToMojoLoggingRedirector {
      */
     public void activate() throws MojoExecutionException {
         try {
-            Logger rootLogger = LogManager.getLogManager().getLogger("");
+            final Logger rootLogger = LogManager.getLogManager().getLogger("");
             // remove old handlers
-            for (Handler handler : rootLogger.getHandlers()) {
+            for (final Handler handler : rootLogger.getHandlers()) {
                 rootLogger.removeHandler(handler);
                 removedHandlers.add(handler);
             }
@@ -83,15 +85,15 @@ public class JavaLoggingToMojoLoggingRedirector {
      * again.
      */
     public void deactivate() {
-        Logger rootLogger = LogManager.getLogManager().getLogger("");
+        final Logger rootLogger = LogManager.getLogManager().getLogger("");
         // remove old handlers
-        for (Handler handler : rootLogger.getHandlers()) {
+        for (final Handler handler : rootLogger.getHandlers()) {
             if (handler == activeHandler) {
                 rootLogger.removeHandler(handler);
             }
         }
 
-        for (Handler oldHandler : removedHandlers) {
+        for (final Handler oldHandler : removedHandlers) {
             rootLogger.addHandler(oldHandler);
         }
     }
@@ -99,7 +101,7 @@ public class JavaLoggingToMojoLoggingRedirector {
     private class JDKLogHandler extends Handler {
 
         @Override
-        public void publish(LogRecord record) {
+        public void publish(final LogRecord record) {
             final Throwable exception = record.getThrown();
             final Level level = record.getLevel();
             if (level == Level.SEVERE && mojoLogger.isErrorEnabled()) {
@@ -129,17 +131,18 @@ public class JavaLoggingToMojoLoggingRedirector {
             }
         }
 
-        private String getMessage(LogRecord record) {
-            String message = record.getMessage();
-            ResourceBundle bundle = record.getResourceBundle();
-            Object[] params = record.getParameters();
-            if (bundle != null && bundle.containsKey(message)) {
+        private String getMessage(final LogRecord record) {
+            final ResourceBundle bundle = record.getResourceBundle();
+            final Object[] params = record.getParameters();
+            final String message;
+            if (bundle != null && bundle.containsKey(record.getMessage())) {
                 // todo: cannot enforce Locale.ENGLISH here
-                message = bundle.getString(message);
+                message = bundle.getString(record.getMessage());
+            } else {
+                message = record.getMessage();
             }
-            if (params != null && params.length > 0) {
-                MessageFormat format = new MessageFormat(message);
-                message = format.format(params);
+            if (ArrayUtils.isNotEmpty(params)) {
+                return new MessageFormat(message).format(params);
             }
             return message;
         }

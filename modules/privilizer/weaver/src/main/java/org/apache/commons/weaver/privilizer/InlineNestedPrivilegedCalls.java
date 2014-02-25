@@ -48,7 +48,8 @@ class InlineNestedPrivilegedCalls extends ClassNode {
      * @param privilegedMethods map of original method to name of internal implementation method
      * @param next visitor
      */
-    InlineNestedPrivilegedCalls(Privilizer privilizer, Map<Method, String> privilegedMethods, ClassVisitor next) {
+    InlineNestedPrivilegedCalls(final Privilizer privilizer, final Map<Method, String> privilegedMethods,
+        final ClassVisitor next) {
         super(Opcodes.ASM4);
         this.privilizer = privilizer;
         this.privilegedMethods = privilegedMethods;
@@ -61,27 +62,28 @@ class InlineNestedPrivilegedCalls extends ClassNode {
 
         accept(new ClassVisitor(Opcodes.ASM4, next) {
             @Override
-            public MethodVisitor visitMethod(int access, final String name, String desc, String signature,
-                String[] exceptions) {
+            public MethodVisitor visitMethod(final int access, final String name, final String desc,
+                final String signature, final String[] exceptions) {
                 final Method outer = new Method(name, desc);
                 final MethodVisitor orig = super.visitMethod(access, name, desc, signature, exceptions);
-                if (privilegedMethods.containsValue(name)) {
-                    return new MethodVisitor(Opcodes.ASM4, orig) {
-                        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-                            String useName = name;
-                            if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
-                                final Method m = new Method(name, desc);
-                                if (privilegedMethods.containsKey(m)) {
-                                    useName = privilegedMethods.get(m);
-                                    privilizer.env.debug("Inlining call from %s to %s as %s", outer, m,
-                                        useName);
-                                }
-                            }
-                            super.visitMethodInsn(opcode, owner, useName, desc);
-                        }
-                    };
+                if (!privilegedMethods.containsValue(name)) {
+                    return orig;
                 }
-                return orig;
+                return new MethodVisitor(Opcodes.ASM4, orig) {
+                    @Override
+                    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+                        String useName = name;
+                        if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
+                            final Method methd = new Method(name, desc);
+                            if (privilegedMethods.containsKey(methd)) {
+                                useName = privilegedMethods.get(methd);
+                                privilizer.env.debug("Inlining call from %s to %s as %s", outer, methd,
+                                    useName);
+                            }
+                        }
+                        super.visitMethodInsn(opcode, owner, useName, desc);
+                    }
+                };
             }
         });
     }

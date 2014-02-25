@@ -72,8 +72,8 @@ public abstract class AbstractWeaveMojo extends AbstractMojo {
         getLog().debug(String.format("classpath=%s%ntarget=%s%nconfig=%s", classpath, target, config));
 
         try {
-            final WeaveProcessor wp = new WeaveProcessor(classpath, target, config);
-            wp.weave();
+            final WeaveProcessor weaveProcessor = new WeaveProcessor(classpath, target, config);
+            weaveProcessor.weave();
         } catch (Exception e) {
             throw new MojoExecutionException("weaving failed due to " + e.getMessage(), e);
         } finally {

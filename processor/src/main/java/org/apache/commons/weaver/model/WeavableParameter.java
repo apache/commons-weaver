@@ -40,7 +40,7 @@ public abstract class WeavableParameter
      * @param target index
      * @param parent executable
      */
-    protected WeavableParameter(Integer target, PARENT parent) {
+    protected WeavableParameter(final Integer target, final PARENT parent) {
         super(target, parent);
     }
 
@@ -48,7 +48,7 @@ public abstract class WeavableParameter
      * {@inheritDoc}
      */
     @Override
-    protected int localCompareTo(SELF o) {
+    protected int localCompareTo(final SELF obj) {
         return getTarget().compareTo(getTarget());
     }
 

@@ -32,25 +32,26 @@ class LocalWeaveEnvironment extends WeaveEnvironment {
 
     private final File target;
 
-    protected LocalWeaveEnvironment(File target, ClassLoader classLoader, Properties config, Logger log) {
+    protected LocalWeaveEnvironment(final File target, final ClassLoader classLoader, final Properties config,
+        final Logger log) {
         super(classLoader, config, log);
         Validate.notNull(target, "target");
         this.target = target;
     }
 
     @Override
-    public boolean deleteResource(String name) {
+    public boolean deleteResource(final String name) {
         return new File(target, name).delete();
     }
 
     @Override
-    protected OutputStream getOutputStream(String resourceName) throws IOException {
+    protected OutputStream getOutputStream(final String resourceName) throws IOException {
         final File file = new File(target, resourceName);
         final File parent = file.getParentFile();
-        if (!parent.exists()) {
-            Validate.validState(parent.mkdirs(), "Unable to create output directory %s", parent);
-        } else {
+        if (parent.exists()) {
             Validate.validState(parent.isDirectory(), "Cannot write %s to non-directory parent", file);
+        } else {
+            Validate.validState(parent.mkdirs(), "Unable to create output directory %s", parent);
         }
         return new FileOutputStream(file);
     }

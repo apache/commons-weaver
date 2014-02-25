@@ -33,7 +33,7 @@ public class WeavableConstructorParameter<T> extends
      * @param target parameter index
      * @param parent declaring {@link WeavableConstructor}
      */
-    public WeavableConstructorParameter(Integer target, WeavableConstructor<T> parent) {
+    public WeavableConstructorParameter(final Integer target, final WeavableConstructor<T> parent) {
         super(target, parent);
     }
 

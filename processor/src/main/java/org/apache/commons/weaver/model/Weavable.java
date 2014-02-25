@@ -45,7 +45,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * Create a new {@link Weavable} instance.
      * @param target {@code TARGET}
      */
-    protected Weavable(TARGET target) {
+    protected Weavable(final TARGET target) {
         this.target = target;
         if (target instanceof AnnotatedElement) {
             addAnnotations(((AnnotatedElement) target).getAnnotations());
@@ -57,7 +57,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * @param toAdd {@link Annotation}[]
      * @return whether any change was made
      */
-    public boolean addAnnotations(Annotation... toAdd) {
+    public final boolean addAnnotations(final Annotation... toAdd) {
         Validate.noNullElements(toAdd);
         return addAnnotations(Arrays.asList(toAdd));
     }
@@ -67,7 +67,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * @param toAdd {@link Iterable} of {@link Annotation}
      * @return whether any change was made
      */
-    public boolean addAnnotations(Iterable<Annotation> toAdd) {
+    public final boolean addAnnotations(final Iterable<Annotation> toAdd) {
         if (toAdd == null) {
             return false;
         }
@@ -77,8 +77,8 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
             }
         }
         boolean result = false;
-        for (Annotation a : toAdd) {
-            result = a != null && annotations.add(a) || result;
+        for (final Annotation ann : toAdd) {
+            result = ann != null && annotations.add(ann) || result;
         }
         return result;
     }
@@ -99,10 +99,10 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
     public final Annotation[] getAnnotations() {
         synchronized (this) {
             if (annotations == null) {
-                return EMPTY_ANNOTATION_ARRAY;
+                return EMPTY_ANNOTATION_ARRAY; //NOPMD - no problem sharing zero-length array
             }
         }
-        return annotations.toArray(EMPTY_ANNOTATION_ARRAY);
+        return annotations.toArray(new Annotation[annotations.size()]);
     }
 
     /**
@@ -112,11 +112,11 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * @return {@code T} instance if available, else {@code null}
      */
     @Override
-    public synchronized <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+    public synchronized <T extends Annotation> T getAnnotation(final Class<T> annotationClass) {
         if (annotations == null) {
             return null;
         }
-        for (Annotation prospect : annotations) {
+        for (final Annotation prospect : annotations) {
             if (annotationClass.equals(prospect.annotationType())) {
                 @SuppressWarnings("unchecked")
                 final T result = (T) prospect;
@@ -141,7 +141,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * @return {@code boolean}
      */
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+    public boolean isAnnotationPresent(final Class<? extends Annotation> annotationClass) {
         return getAnnotation(annotationClass) != null;
     }
 

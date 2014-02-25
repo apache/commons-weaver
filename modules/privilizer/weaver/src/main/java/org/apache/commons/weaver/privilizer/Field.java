@@ -48,7 +48,7 @@ public class Field {
      * @param name of field
      * @param type of field
      */
-    public Field(int access, String name, Type type) {
+    public Field(final int access, final String name, final Type type) {
         super();
         this.access = access;
         this.name = Validate.notNull(name);
@@ -60,8 +60,9 @@ public class Field {
      * @param obj to check for equality
      * @return whether equal
      */
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
         }

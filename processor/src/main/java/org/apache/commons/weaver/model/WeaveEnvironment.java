@@ -39,7 +39,7 @@ public abstract class WeaveEnvironment {
     private class Resource implements DataSource {
         private final String name;
 
-        Resource(String name) {
+        Resource(final String name) {
             this.name = name;
         }
 
@@ -98,7 +98,7 @@ public abstract class WeaveEnvironment {
      * @param config property
      * @param log property
      */
-    protected WeaveEnvironment(ClassLoader classLoader, Properties config, Logger log) {
+    protected WeaveEnvironment(final ClassLoader classLoader, final Properties config, final Logger log) {
         super();
         this.classLoader = classLoader;
         this.config = (Properties) Validate.notNull(config, "config").clone();
@@ -111,7 +111,7 @@ public abstract class WeaveEnvironment {
      * @param args format
      * @see String#format(String, Object...)
      */
-    public void debug(String message, Object... args) {
+    public void debug(final String message, final Object... args) {
         log.fine(String.format(message, args));
     }
 
@@ -121,7 +121,7 @@ public abstract class WeaveEnvironment {
      * @param args format
      * @see String#format(String, Object...)
      */
-    public void verbose(String message, Object... args) {
+    public void verbose(final String message, final Object... args) {
         log.fine(String.format(message, args));
     }
 
@@ -131,7 +131,7 @@ public abstract class WeaveEnvironment {
      * @param args format
      * @see String#format(String, Object...)
      */
-    public void warn(String message, Object... args) {
+    public void warn(final String message, final Object... args) {
         log.warning(String.format(message, args));
     }
 
@@ -141,7 +141,7 @@ public abstract class WeaveEnvironment {
      * @param args format
      * @see String#format(String, Object...)
      */
-    public void info(String message, Object... args) {
+    public void info(final String message, final Object... args) {
         log.info(String.format(message, args));
     }
 
@@ -151,7 +151,7 @@ public abstract class WeaveEnvironment {
      * @param args format
      * @see String#format(String, Object...)
      */
-    public void error(String message, Object... args) {
+    public void error(final String message, final Object... args) {
         log.severe(String.format(message, args));
     }
 
@@ -160,7 +160,7 @@ public abstract class WeaveEnvironment {
      * @param cls type
      * @return {@link DataSource}
      */
-    public final DataSource getClassfile(Class<?> cls) {
+    public final DataSource getClassfile(final Class<?> cls) {
         return getClassfile(cls.getName());
     }
 
@@ -169,7 +169,7 @@ public abstract class WeaveEnvironment {
      * @param classname of type
      * @return {@link DataSource}
      */
-    public final DataSource getClassfile(String classname) {
+    public final DataSource getClassfile(final String classname) {
         return getResource(getResourceName(classname));
     }
 
@@ -178,7 +178,7 @@ public abstract class WeaveEnvironment {
      * @param name of resource
      * @return {@link DataSource}
      */
-    public final DataSource getResource(String name) {
+    public final DataSource getResource(final String name) {
         return new Resource(name);
     }
 
@@ -187,7 +187,7 @@ public abstract class WeaveEnvironment {
      * @param cls type
      * @return whether successful
      */
-    public final boolean deleteClassfile(Class<?> cls) {
+    public final boolean deleteClassfile(final Class<?> cls) {
         return deleteClassfile(cls.getName());
     }
 
@@ -196,7 +196,7 @@ public abstract class WeaveEnvironment {
      * @param classname of type
      * @return whether successful
      */
-    public final boolean deleteClassfile(String classname) {
+    public final boolean deleteClassfile(final String classname) {
         return deleteResource(getResourceName(classname));
     }
 
@@ -220,7 +220,7 @@ public abstract class WeaveEnvironment {
      * @param classname to convert
      * @return String
      */
-    protected static String getResourceName(String classname) {
+    protected static String getResourceName(final String classname) {
         return classname.replace('.', '/') + ".class";
     }
 }

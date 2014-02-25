@@ -40,7 +40,7 @@ import org.objectweb.asm.Opcodes;
 public class PrivilizerCleaner implements Cleaner {
 
     @Override
-    public boolean clean(WeaveEnvironment environment, Scanner scanner) {
+    public boolean clean(final WeaveEnvironment environment, final Scanner scanner) {
         final Privilizer privilizer = new Privilizer(environment);
 
         final List<String> toDelete = new ArrayList<String>();
@@ -48,7 +48,7 @@ public class PrivilizerCleaner implements Cleaner {
         final ScanRequest scanRequest = new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
 
         environment.debug("Cleaning classes privilized with policy other than %s", privilizer.policy);
-        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
+        for (final WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses().with(Privilized.class)) {
             final Policy privilizedPolicy = Policy.valueOf(weavableClass.getAnnotation(Privilized.class).value());
             if (privilizedPolicy == privilizer.policy) {
                 continue;
@@ -62,26 +62,27 @@ public class PrivilizerCleaner implements Cleaner {
                 final ClassReader classReader = new ClassReader(bytecode);
                 classReader.accept(new ClassVisitor(Opcodes.ASM4) {
                     @Override
-                    public void visit(int version, int access, String name, String signature, String superName,
-                        String[] interfaces) {
+                    public void visit(final int version, final int access, final String name, final String signature,
+                        final String superName, final String[] interfaces) {
                         toDelete.add(name);
                     }
 
                     @Override
-                    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+                    public void visitInnerClass(final String name, final String outerName, final String innerName,
+                        final int access) {
                         if (toDelete.contains(outerName)) {
                             toDelete.add(name);
                         }
                     }
                 }, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(e);
             } finally {
                 IOUtils.closeQuietly(bytecode);
             }
         }
         boolean result = false;
-        for (String className : toDelete) {
+        for (final String className : toDelete) {
             final String resourcePath = toResourcePath(className);
             final boolean success = environment.deleteResource(resourcePath);
             environment.debug("Deletion of resource %s was %ssuccessful.", resourcePath, success ? "" : "un");
@@ -90,7 +91,7 @@ public class PrivilizerCleaner implements Cleaner {
         return result;
     }
 
-    private static String toResourcePath(String className) {
+    private static String toResourcePath(final String className) {
         return className.replace('.', '/') + ".class";
     }
 

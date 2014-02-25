@@ -47,10 +47,11 @@ public abstract class WeavableExecutable
      * @param target executable
      * @param parent enclosing {@link WeavableClass}
      */
-    protected WeavableExecutable(TARGET target, WeavableClass<T> parent) {
+    protected WeavableExecutable(final TARGET target, final WeavableClass<T> parent) {
         super(target, parent);
         final List<P> params = new ArrayList<P>();
-        for (int i = 0, sz = getParameterTypes().length; i < sz; i++) {
+        final int paramCount = getParameterTypes().length;
+        for (int i = 0; i < paramCount; i++) {
             params.add(createParameter(i));
         }
         parameters = Collections.unmodifiableList(params);
@@ -73,8 +74,8 @@ public abstract class WeavableExecutable
      * {@inheritDoc}
      */
     @Override
-    protected int localCompareTo(SELF o) {
-        return Args.compare(getParameterTypes(), o.getParameterTypes());
+    protected int localCompareTo(final SELF obj) {
+        return Args.compare(getParameterTypes(), obj.getParameterTypes());
     }
 
     /**
@@ -82,7 +83,7 @@ public abstract class WeavableExecutable
      * @param index {@code int}
      * @return {@code P}
      */
-    public P getWeavableParameter(int index) {
+    public P getWeavableParameter(final int index) {
         return parameters.get(index);
     }
 

@@ -58,14 +58,14 @@ public enum Policy {
 
     /**
      * Parse from a {@link String} returning {@link #defaultValue()} for blank/null input.
-     * @param s to parse
+     * @param str to parse
      * @return {@link Policy}
      */
-    public static Policy parse(String s) {
-        if (StringUtils.isBlank(s)) {
+    public static Policy parse(final String str) {
+        if (StringUtils.isBlank(str)) {
             return defaultValue();
         }
-        return valueOf(s.trim().toUpperCase(Locale.US));
+        return valueOf(str.trim().toUpperCase(Locale.US));
     }
 
     /**

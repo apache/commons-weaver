@@ -39,7 +39,7 @@ public abstract class NestedWeavable
      * @param target element
      * @param parent enclosing
      */
-    protected NestedWeavable(TARGET target, PARENT parent) {
+    protected NestedWeavable(final TARGET target, final PARENT parent) {
         super(target);
         this.parent = parent;
     }
@@ -54,19 +54,19 @@ public abstract class NestedWeavable
 
     /**
      * Implement {@link Comparable}.
-     * @param o {@code SELF}
+     * @param obj {@code SELF}
      * @return int per {@link Comparable#compareTo(Object)} contract
      */
     @Override
-    public final int compareTo(SELF o) {
-        int result = getParent().compareTo(o.getParent());
-        return result == 0 ? localCompareTo(o) : result;
+    public final int compareTo(final SELF obj) {
+        final int result = getParent().compareTo(obj.getParent());
+        return result == 0 ? localCompareTo(obj) : result;
     }
 
     /**
      * Compare against {@code o} without respect to {@link #getParent()}.
-     * @param o SELF{@code SELF}
+     * @param obj SELF{@code SELF}
      * @return int per {@link Comparable#compareTo(Object)} contract
      */
-    protected abstract int localCompareTo(SELF o);
+    protected abstract int localCompareTo(SELF obj);
 }

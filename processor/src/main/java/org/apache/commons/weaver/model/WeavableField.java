@@ -32,7 +32,7 @@ public class WeavableField<T> extends NestedWeavable<WeavableField<T>, Field, We
      * @param target field
      * @param parent enclosing {@link WeavableClass}
      */
-    public WeavableField(Field target, WeavableClass<T> parent) {
+    public WeavableField(final Field target, final WeavableClass<T> parent) {
         super(target, parent);
     }
 
@@ -40,7 +40,7 @@ public class WeavableField<T> extends NestedWeavable<WeavableField<T>, Field, We
      * {@inheritDoc}
      */
     @Override
-    protected int localCompareTo(WeavableField<T> o) {
-        return getTarget().getName().compareTo(o.getTarget().getName());
+    protected int localCompareTo(final WeavableField<T> obj) {
+        return getTarget().getName().compareTo(obj.getTarget().getName());
     }
 }
