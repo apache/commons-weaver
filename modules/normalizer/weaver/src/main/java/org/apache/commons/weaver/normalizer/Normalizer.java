@@ -97,7 +97,8 @@ public class Normalizer {
         }
 
         @Override
-        public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] intrfces) {
+        public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] intrfces) {
             super.visit(version, access, name, signature, superName, intrfces);
             className = name;
         }
@@ -242,20 +243,22 @@ public class Normalizer {
                         new RemappingClassAdapter(new WriteClass(reader), remapper) {
 
                     @Override
-                    public void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
+                    public void visitInnerClass(final String name, final String outerName, final String innerName,
+                        final int access) {
                         if (!classMap.containsKey(name)) {
                             super.visitInnerClass(name, outerName, innerName, access);
                         }
                     }
 
                     @Override
-                    public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
-                        final String[] exceptions) {
+                    public MethodVisitor visitMethod(final int access, final String name, final String desc,
+                        final String signature, final String[] exceptions) {
                         final MethodVisitor mv = // NOPMD
                                 super.visitMethod(access, name, desc, signature, exceptions);
                         return new MethodVisitor(Opcodes.ASM4, mv) {
                             @Override
-                            public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+                            public void visitMethodInsn(final int opcode, final String owner, final String name,
+                                final String desc) {
                                 String useDescriptor = desc;
                                 if (INIT.equals(name)) {
                                     final ClassWrapper wrapper = entry.getValue().get(owner);
@@ -496,7 +499,8 @@ public class Normalizer {
 
                         {
                             final GeneratorAdapter mgen =
-                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, staticCtor, signature, exceptionTypes, writeClass);
+                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, staticCtor, signature, exceptionTypes,
+                                    writeClass);
                             mgen.visitCode();
                             mgen.loadThis();
                             for (int i = 0; i < argumentTypes.length; i++) {
@@ -516,7 +520,8 @@ public class Normalizer {
                             final Method instanceCtor =
                                 new Method(INIT, Type.VOID_TYPE, ArrayUtils.add(argumentTypes, 0, OBJECT_TYPE));
                             final GeneratorAdapter mgen =
-                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, instanceCtor, signature, exceptionTypes, writeClass);
+                                new GeneratorAdapter(Opcodes.ACC_PUBLIC, instanceCtor, signature, exceptionTypes,
+                                    writeClass);
                             mgen.visitCode();
                             mgen.loadThis();
                             for (int i = 0; i < argumentTypes.length; i++) {

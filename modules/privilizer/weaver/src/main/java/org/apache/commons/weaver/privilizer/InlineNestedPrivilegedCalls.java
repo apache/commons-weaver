@@ -71,7 +71,8 @@ class InlineNestedPrivilegedCalls extends ClassNode {
                 }
                 return new MethodVisitor(Opcodes.ASM4, orig) {
                     @Override
-                    public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+                    public void visitMethodInsn(final int opcode, final String owner, final String name,
+                        final String desc) {
                         String useName = name;
                         if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
                             final Method methd = new Method(name, desc);
