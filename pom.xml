@@ -27,7 +27,7 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
-  <version>1.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Commons Weaver</name>
@@ -75,9 +75,9 @@ under the License.
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.0_RC2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/</url>
   </scm>
 
   <distributionManagement>
