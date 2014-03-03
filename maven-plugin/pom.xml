@@ -143,6 +143,14 @@ under the License.
           <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 

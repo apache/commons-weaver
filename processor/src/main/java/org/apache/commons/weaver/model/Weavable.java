@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * {@link Weavable} extends {@link AnnotatedElement} to include
@@ -75,12 +76,15 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
             if (annotations == null) {
                 annotations = new LinkedHashSet<Annotation>();
             }
+            boolean result = false;
+            for (final Annotation ann : toAdd) {
+                if (ann == null) {
+                    continue;
+                }
+                result = annotations.add(ann) || result;
+            }
+            return result;
         }
-        boolean result = false;
-        for (final Annotation ann : toAdd) {
-            result = ann != null && annotations.add(ann) || result;
-        }
-        return result;
     }
 
     /**
@@ -96,11 +100,9 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
      * @return {@link Annotation}[]
      */
     @Override
-    public final Annotation[] getAnnotations() {
-        synchronized (this) {
-            if (annotations == null) {
-                return EMPTY_ANNOTATION_ARRAY; //NOPMD - no problem sharing zero-length array
-            }
+    public final synchronized Annotation[] getAnnotations() {
+        if (annotations == null) {
+            return EMPTY_ANNOTATION_ARRAY; //NOPMD - no problem sharing zero-length array
         }
         return annotations.toArray(new Annotation[annotations.size()]);
     }
@@ -152,5 +154,27 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
     @Override
     public String toString() {
         return "Weavable " + getTarget().toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!getClass().isInstance(obj)) {
+            return false;
+        }
+        return getTarget().equals(((Weavable<?, ?>) obj).getTarget());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(getTarget()).toHashCode();
     }
 }

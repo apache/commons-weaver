@@ -670,6 +670,7 @@ class Finder extends AnnotationFinder implements Scanner {
                     interest.annotationType)) {
                     result.getWeavable(pkg.get()).addAnnotations(pkg.getAnnotations());
                 }
+                break;
             case TYPE:
                 for (final Annotated<Class<?>> type : this.withAnnotations().findAnnotatedClasses(
                     interest.annotationType)) {
