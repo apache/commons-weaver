@@ -74,4 +74,5 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
     public int compareTo(final WeavablePackage arg0) {
         return getTarget().getName().compareTo(arg0.getTarget().getName());
     }
+
 }
