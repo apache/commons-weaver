@@ -65,8 +65,8 @@ public class Privilizer {
         }
 
         @Override
-        public void visit(final int version, final int access, final String name, final String signature, final String superName,
-            final String[] interfaces) {
+        public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] interfaces) {
             super.visit(version, access, name, signature, superName, interfaces);
             className = name;
             target = Type.getObjectType(name);
@@ -237,7 +237,8 @@ public class Privilizer {
             final Set<String> innerNames = new HashSet<String>();
 
             @Override
-            public void visitInnerClass(final String name, final String outerName, final String innerName, final int access) {
+            public void visitInnerClass(final String name, final String outerName, final String innerName,
+                final int access) {
                 super.visitInnerClass(name, outerName, innerName, access);
                 Validate.validState(innerNames.add(innerName), "%s already defined", innerName);
             }
