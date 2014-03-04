@@ -17,12 +17,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <artifactId>commons-weaver-maven-plugin</artifactId>
@@ -38,9 +38,9 @@ under the License.
   </properties>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/maven-plugin</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2/maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2/maven-plugin</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.0_RC2/maven-plugin</url>
   </scm>
 
   <dependencies>
