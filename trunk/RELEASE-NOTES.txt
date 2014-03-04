@@ -1,0 +1,19 @@
+
+              Apache Commons Weaver 1.0
+                  RELEASE NOTES
+
+The Apache Commons team is pleased to announce the release of Apache Commons Weaver 1.0
+
+Apache Commons Weaver provides an easy way to enhance compiled classes with
+new functionality by generating ("weaving") bytecode into those classes.
+
+Initial release
+
+No changes defined in this version.
+
+Historical list of changes: http://commons.apache.org/commons-weaver-parent/changes-report.html
+
+For complete information on Apache Commons Weaver Parent POM, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Apache Commons Weaver Parent POM website:
+
+http://commons.apache.org/commons-weaver-parent/

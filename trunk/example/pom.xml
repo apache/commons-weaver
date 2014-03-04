@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-parent</artifactId>
+    <version>1.0</version>
+  </parent>
+  <artifactId>commons-weaver-example</artifactId>
+  <name>Apache Commons Weaver Privilizer Example</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <privilizer.policy>ON_INIT</privilizer.policy>
+    <privilizer.verify>true</privilizer.verify>
+  </properties>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2/example</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.0_RC2/example</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.0_RC2/example</url>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-privilizer-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-weaver-maven-plugin</artifactId>
+        <version>${project.version}</version>
+        <configuration>
+          <weaverConfig>
+            <privilizer.accessLevel>PACKAGE</privilizer.accessLevel>
+            <privilizer.policy>${privilizer.policy}</privilizer.policy>
+            <privilizer.verify>${privilizer.verify}</privilizer.verify>
+          </weaverConfig>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare</goal>
+              <goal>weave</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-weaver-privilizer</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>sec</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-testResources</id>
+                <phase />
+                <goals>
+                  <goal>testResources</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>filter-testResources</id>
+                <phase>process-test-resources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <mkdir dir="${project.build.testOutputDirectory}" />
+                    <condition property="slash" value="/" else="">
+                      <os family="windows" />
+                    </condition>
+                    <copy todir="${project.build.testOutputDirectory}" overwrite="true">
+                      <fileset dir="${project.basedir}/src/test/resources" erroronmissingdir="false" />
+                      <filterchain>
+                        <expandproperties />
+                        <!-- append extra slash on windows only -->
+                        <replacestring from="file://" to="file://${slash}" />
+                        <replacestring from="${file.separator}" to="/" />
+                        <!-- preserve system-specific file separator -->
+                        <expandproperties>
+                          <propertyset>
+                            <propertyref prefix="project." />
+                            <globmapper from="*" to="preserve.*" />
+                          </propertyset>
+                        </expandproperties>
+                      </filterchain>
+                    </copy>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Djava.security.manager -Djava.security.policy=${project.build.testOutputDirectory}/java.policy</argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
