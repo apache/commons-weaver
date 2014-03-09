@@ -576,6 +576,20 @@ under the License.
           <aggregate>true</aggregate>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <excludeSubProjects>false</excludeSubProjects>
+          <excludes>
+            <exclude>**/target/**</exclude>
+            <exclude>**/dependency-reduced-pom.xml</exclude>
+            <exclude>**/.*</exclude>
+            <exclude>**/.*/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 
