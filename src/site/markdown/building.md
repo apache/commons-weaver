@@ -29,7 +29,10 @@ various modules visible to one another using the Maven reactor, detailed
 Without installing to your local Maven repository, however, certain items
 will always fail; e.g. `mvn clean` without `package`, `mvn dependency:list`,
 `mvn dependency:tree`, and probably others. In general, `mvn install` will
-avoid further surprises down the line.
+avoid further surprises down the line. Additionally, there seems currently
+to be an issue with the recursive dependencies expressed in the Commons
+Weaver multimodule project structure when run with Maven 3.2.x; the project
+has been set to require Maven 3.0.0-3.1.x for the time being.
 
 ### Testing with security enabled
 The Privilizer is the fundamental "guinea pig" weaver module.
@@ -40,13 +43,19 @@ always. The `example` and `ant/test` modules each have a `sec` profile defined;
 You can run their tests with this profile enabled to turn on Java security.
 
 ### Antlib Test module
-Located at `ant/test`, this module\'s tests are implemented by unpacking the
+Located at `ant/test`, this module&apos;s tests are implemented by unpacking the
 source of the `example` module and reusing it. For this reason, the
 `example` module must have been packaged previously to executing the `ant/test`
 tests, so in a multimodule build you should at least specify the `package`
-phase of the default lifecycle. Alternatively, you can disable this module\'s
+phase of the default lifecycle. Alternatively, you can disable this module&apos;s
 tests by deactivating the profile in which they are set up: `antlib-test`.
 
 Similarly, when building the project site you should deactivate the
-`antlib-test` profile, to stop this module\'s tests from requiring the
-`example` module to have been previously packaged. 
+`antlib-test` profile, to stop these tests from requiring the `example` module
+to have been previously packaged.
+
+### Additional site building issues
+The Commons Weaver site runs out of permgen space when built with default JVM
+settings; the `MAVEN_OPTS` environment variable can be used to set `MaxPermGen`.
+`-XX:MaxPermGen=96m` seems to be adequate.
+
