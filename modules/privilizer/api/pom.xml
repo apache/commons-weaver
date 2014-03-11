@@ -61,11 +61,28 @@ under the License.
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <rulesets>
+            <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
+          </rulesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
           <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
         </configuration>
       </plugin>
     </plugins>
