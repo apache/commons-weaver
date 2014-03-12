@@ -125,6 +125,8 @@ under the License.
     </dependency>
   </dependencies>
 
+  <!-- TODO create md5 and sha1 hashes directly, since skipped deploy
+       plugin won't be doing it for us -->
   <build>
     <plugins>
       <plugin>
