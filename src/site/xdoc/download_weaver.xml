@@ -45,11 +45,11 @@ limitations under the License.
 -->
 <document>
   <properties>
-    <title>Download Apache Commons Weaver Parent POM</title>
+    <title>Download Apache Commons Weaver</title>
     <author email="dev@commons.apache.org">Commons Documentation Team</author>
   </properties>
   <body>
-    <section name="Download Apache Commons Weaver Parent POM">
+    <section name="Download Apache Commons Weaver">
     <subsection name="Using a Mirror">
       <p>
         We recommend you use a mirror to download our release
@@ -95,7 +95,7 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Weaver Parent POM 1.0 ">
+    <section name="Apache Commons Weaver 1.0 ">
       <subsection name="Binaries">
         <table>
           <tr>
