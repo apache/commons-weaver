@@ -56,6 +56,6 @@ to have been previously packaged.
 
 ### Additional site building issues
 The Commons Weaver site runs out of permgen space when built with default JVM
-settings; the `MAVEN_OPTS` environment variable can be used to set `MaxPermGen`.
-`-XX:MaxPermGen=96m` seems to be adequate.
+settings; the `MAVEN_OPTS` environment variable can be used to set
+`MaxPermSize`. `-XX:MaxPermSize=96m` seems to be adequate.
 
