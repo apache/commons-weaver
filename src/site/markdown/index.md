@@ -28,6 +28,8 @@ classes. Occasionally, however, our only recourse is to manipulate existing
 class files. It is these situations which Apache Commons Weaver was designed
 to address.
 
+Latest API documentation is [here](apidocs/index.html).
+
 Apache Commons Weaver consists of:
 
 ## Core Framework
