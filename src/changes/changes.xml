@@ -23,6 +23,6 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
-    <release version="1.0" date="2014-03-15" description="Initial release" />
+    <release version="1.0" date="2014-03-16" description="Initial release" />
   </body>
 </document>
