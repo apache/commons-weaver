@@ -492,6 +492,9 @@ under the License.
         <artifactId>maven-scm-publish-plugin</artifactId>
         <configuration>
           <content>${project.build.directory}/staging</content>
+          <ignorePathsToDelete>
+            <ignorePathToDelete>javadocs</ignorePathToDelete>
+          </ignorePathsToDelete>
         </configuration>
       </plugin>
       <plugin>
