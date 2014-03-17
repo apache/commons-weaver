@@ -54,7 +54,6 @@ under the License.
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <version>${ant.version}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
@@ -144,6 +143,21 @@ under the License.
           </execution>
         </executions>
       </plugin>
+      <!-- must suppress clirr until we release weaver 1.0.1 with
+           ant as a compile-scoped dependency. It really should
+           be provided, but clirr can't find provided dependencies
+           on the old artifact, and for the purposes of an Antlib
+           it doesn't really hurt anything to declare as 'compile'.
+        -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -164,6 +178,21 @@ under the License.
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
           <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
+        </configuration>
+      </plugin>
+      <!-- must suppress clirr until we release weaver 1.0.1 with
+           ant as a compile-scoped dependency. It really should
+           be provided, but clirr can't find provided dependencies
+           on the old artifact, and for the purposes of an Antlib
+           it doesn't really hurt anything to declare as 'compile'.
+        -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>
