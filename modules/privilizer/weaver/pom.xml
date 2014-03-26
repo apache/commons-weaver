@@ -210,7 +210,6 @@ under the License.
         <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
-          <headerLocation>org/apache/commons/weaver/license-header.txt</headerLocation>
         </configuration>
       </plugin>
       <plugin>
