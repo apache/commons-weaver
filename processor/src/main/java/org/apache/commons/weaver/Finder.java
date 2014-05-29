@@ -25,7 +25,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,19 +34,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.utils.Annotations;
-import org.apache.xbean.asm4.AnnotationVisitor;
-import org.apache.xbean.asm4.ClassReader;
-import org.apache.xbean.asm4.ClassVisitor;
-import org.apache.xbean.asm4.FieldVisitor;
-import org.apache.xbean.asm4.MethodVisitor;
-import org.apache.xbean.asm4.Opcodes;
-import org.apache.xbean.asm4.Type;
+import org.apache.xbean.asm5.AnnotationVisitor;
+import org.apache.xbean.asm5.ClassReader;
+import org.apache.xbean.asm5.ClassVisitor;
+import org.apache.xbean.asm5.FieldVisitor;
+import org.apache.xbean.asm5.MethodVisitor;
+import org.apache.xbean.asm5.Opcodes;
+import org.apache.xbean.asm5.Type;
 import org.apache.xbean.finder.Annotated;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.Parameter;
@@ -103,7 +103,7 @@ class Finder extends AnnotationFinder implements Scanner {
 
     private abstract class AnnotationCapturer extends AnnotationVisitor {
         public AnnotationCapturer(final AnnotationVisitor wrapped) {
-            super(Opcodes.ASM4, wrapped);
+            super(Opcodes.ASM5, wrapped);
         }
 
         /**
@@ -200,7 +200,7 @@ class Finder extends AnnotationFinder implements Scanner {
         private final InfoBuildingVisitor wrapped;
 
         public Visitor(final InfoBuildingVisitor wrapped) {
-            super(Opcodes.ASM4, wrapped);
+            super(Opcodes.ASM5, wrapped);
             this.wrapped = wrapped;
         }
 
@@ -209,20 +209,25 @@ class Finder extends AnnotationFinder implements Scanner {
             final Object value) {
             final FieldVisitor toWrap = wrapped.visitField(access, name, desc, signature, value);
             final ClassInfo classInfo = (ClassInfo) wrapped.getInfo();
+            final Type fieldType = Type.getType(desc);
             FieldInfo testFieldInfo = null;
             // should be the most recently added field, so iterate backward:
             for (int i = classInfo.getFields().size() - 1; i >= 0; i--) {
                 final FieldInfo atI = classInfo.getFields().get(i);
-                if (atI.getName().equals(name) && atI.getType().equals(desc)) {
-                    testFieldInfo = atI;
-                    break;
+                if (atI.getName().equals(name)) {
+                    final String type = atI.getType();
+                    if (StringUtils.equals(type, fieldType.getClassName())
+                        || StringUtils.equals(type, fieldType.getDescriptor())) {
+                        testFieldInfo = atI;
+                        break;
+                    }
                 }
             }
             if (testFieldInfo == null) {
                 return toWrap;
             }
             final FieldInfo fieldInfo = testFieldInfo;
-            return new FieldVisitor(Opcodes.ASM4, toWrap) {
+            return new FieldVisitor(Opcodes.ASM5, toWrap) {
                 @Override
                 public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
@@ -244,25 +249,19 @@ class Finder extends AnnotationFinder implements Scanner {
                 return toWrap;
             }
             MethodInfo testMethodInfo = null;
-            final Member member;
-            try {
-                member = compareMethodInfo.get();
-                // should be the most recently added method, so iterate backward:
-                for (int i = classInfo.getMethods().size() - 1; i >= 0; i--) {
-                    final MethodInfo atI = classInfo.getMethods().get(i);
-                    if (atI.getName().equals(name) && atI.get().equals(member)) {
-                        testMethodInfo = atI;
-                        break;
-                    }
+            // should be the most recently added method, so iterate backward:
+            for (int i = classInfo.getMethods().size() - 1; i >= 0; i--) {
+                final MethodInfo atI = classInfo.getMethods().get(i);
+                if (atI.getName().equals(name) && StringUtils.equals(atI.getDescriptor(), desc)) {
+                    testMethodInfo = atI;
+                    break;
                 }
-            } catch (final ClassNotFoundException e) {
-                return toWrap;
             }
             if (testMethodInfo == null) {
                 return toWrap;
             }
             final MethodInfo methodInfo = testMethodInfo;
-            return new MethodVisitor(Opcodes.ASM4, toWrap) {
+            return new MethodVisitor(Opcodes.ASM5, toWrap) {
                 @Override
                 public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
@@ -281,13 +280,9 @@ class Finder extends AnnotationFinder implements Scanner {
                     // should be the most recently added parameter, so iterate backward:
                     for (int i = methodInfo.getParameters().size() - 1; i >= 0; i--) {
                         final ParameterInfo atI = methodInfo.getParameters().get(i);
-                        try {
-                            if (atI.get().getIndex() == param) {
-                                parameterInfo = atI;
-                                break;
-                            }
-                        } catch (final ClassNotFoundException e) {
-                            continue;
+                        if (atI.getName().equals(Integer.toString(param))) {
+                            parameterInfo = atI;
+                            break;
                         }
                     }
                     return parameterInfo == null ? toWrap : new TopLevelAnnotationInflater(desc, toWrap, parameterInfo);
