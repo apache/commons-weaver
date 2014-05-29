@@ -158,7 +158,7 @@ current configuration is incompatible with the results of an earlier "weaving."
          Weaver can be thought of as providing a structured environment in
          which these technologies can be put to use. I.e., the bytecode
          modifications made by a given `Weaver` implementation would typically
-         be done with one of these (or comparable) libraries.
+         be implemented using one of these (or comparable) libraries.
 
 [mvnplugin]: commons-weaver-maven-plugin/plugin-info.html
 [antlib]: commons-weaver-antlib-parent/commons-weaver-antlib/index.html
