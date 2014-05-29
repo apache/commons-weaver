@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-antlib-parent</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>commons-weaver-antlib</artifactId>
@@ -143,7 +143,7 @@ under the License.
           </execution>
         </executions>
       </plugin>
-      <!-- must suppress clirr until we release weaver 1.0.1 with
+      <!-- must suppress clirr until we release weaver 1.1 with
            ant as a compile-scoped dependency. It really should
            be provided, but clirr can't find provided dependencies
            on the old artifact, and for the purposes of an Antlib
@@ -179,7 +179,7 @@ under the License.
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
         </configuration>
       </plugin>
-      <!-- must suppress clirr until we release weaver 1.0.1 with
+      <!-- must suppress clirr until we release weaver 1.1 with
            ant as a compile-scoped dependency. It really should
            be provided, but clirr can't find provided dependencies
            on the old artifact, and for the purposes of an Antlib
