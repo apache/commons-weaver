@@ -62,7 +62,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
      * @param owner of the action class
      */
     ActionGenerator(final int access, final Method methd, final String[] exceptions, final PrivilizingVisitor owner) {
-        owner.privilizer().super(new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES));
+        owner.privilizer().super(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         this.methd = methd;
         this.exc = ArrayUtils.isNotEmpty(exceptions);
         this.exceptions = exc ? new Type[] { Type.getType(Exception.class) } : null;

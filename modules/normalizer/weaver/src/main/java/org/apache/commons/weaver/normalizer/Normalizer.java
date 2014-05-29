@@ -85,15 +85,53 @@ public class Normalizer {
         }
     }
 
+    /**
+     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader
+     */
+    private final class CustomClassWriter extends ClassWriter {
+        CustomClassWriter(int flags) {
+            super(flags);
+        }
+
+        CustomClassWriter(ClassReader classReader, int flags) {
+            super(classReader, flags);
+        }
+
+        @Override
+        protected String getCommonSuperClass(String type1, String type2) {
+            Class<?> c;
+            Class<?> d;
+            try {
+                c = Class.forName(type1.replace('/', '.'), false, env.classLoader);
+                d = Class.forName(type2.replace('/', '.'), false, env.classLoader);
+            } catch (Exception e) {
+                throw new RuntimeException(e.toString());
+            }
+            if (c.isAssignableFrom(d)) {
+                return type1;
+            }
+            if (d.isAssignableFrom(c)) {
+                return type2;
+            }
+            if (c.isInterface() || d.isInterface()) {
+                return "java/lang/Object";
+            }
+            do {
+                c = c.getSuperclass();
+            } while (!c.isAssignableFrom(d));
+            return c.getName().replace('.', '/');
+        }
+    }
+
     private class WriteClass extends ClassVisitor {
         private String className;
 
         WriteClass() {
-            super(Opcodes.ASM4, new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            super(Opcodes.ASM5, new CustomClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
         }
 
         WriteClass(final ClassReader reader) {
-            super(Opcodes.ASM4, new ClassWriter(reader, 0));
+            super(Opcodes.ASM5, new CustomClassWriter(reader, 0));
         }
 
         @Override
@@ -255,10 +293,11 @@ public class Normalizer {
                         final String signature, final String[] exceptions) {
                         final MethodVisitor mv = // NOPMD
                                 super.visitMethod(access, name, desc, signature, exceptions);
-                        return new MethodVisitor(Opcodes.ASM4, mv) {
+                        return new MethodVisitor(Opcodes.ASM5, mv) {
+
                             @Override
                             public void visitMethodInsn(final int opcode, final String owner, final String name,
-                                final String desc) {
+                                final String desc, boolean itf) {
                                 String useDescriptor = desc;
                                 if (INIT.equals(name)) {
                                     final ClassWrapper wrapper = entry.getValue().get(owner);
@@ -269,7 +308,7 @@ public class Normalizer {
                                         useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
                                     }
                                 }
-                                super.visitMethodInsn(opcode, owner, name, useDescriptor);
+                                super.visitMethodInsn(opcode, owner, name, useDescriptor, itf);
                             }
                         };
                     }
@@ -361,7 +400,7 @@ public class Normalizer {
 
             try {
                 bytecode = env.getClassfile(subtype).getInputStream();
-                new ClassReader(bytecode).accept(new ClassVisitor(Opcodes.ASM4) {
+                new ClassReader(bytecode).accept(new ClassVisitor(Opcodes.ASM5) {
                     String superName;
 
                     @Override
@@ -392,10 +431,10 @@ public class Normalizer {
                     public MethodVisitor visitMethod(final int access, final String name, final String desc,
                         final String signature, final String[] exceptions) {
                         if (INIT.equals(name)) {
-                            return new MethodVisitor(Opcodes.ASM4) {
+                            return new MethodVisitor(Opcodes.ASM5) {
                                 @Override
                                 public void visitMethodInsn(final int opcode, final String owner, final String name,
-                                    final String desc) {
+                                    final String desc, final boolean itf) {
                                     if (INIT.equals(name) && owner.equals(superName)) {
                                         key.setRight(desc);
                                     } else {
@@ -450,6 +489,7 @@ public class Normalizer {
      */
     private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException,
         ClassNotFoundException {
+        env.debug("Copying %s to %s", key, targetPackage);
         final MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -476,7 +516,7 @@ public class Normalizer {
             // we're doing most of this by hand; we only read the original class to hijack signature, ctor exceptions,
             // etc.:
 
-            reader.accept(new ClassVisitor(Opcodes.ASM4) {
+            reader.accept(new ClassVisitor(Opcodes.ASM5) {
                 Type supertype;
 
                 @Override

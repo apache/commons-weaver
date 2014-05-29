@@ -50,7 +50,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
      */
     InlineNestedPrivilegedCalls(final Privilizer privilizer, final Map<Method, String> privilegedMethods,
         final ClassVisitor next) {
-        super(Opcodes.ASM4);
+        super(Opcodes.ASM5);
         this.privilizer = privilizer;
         this.privilegedMethods = privilegedMethods;
         this.next = next;
@@ -60,7 +60,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
     public void visitEnd() {
         super.visitEnd();
 
-        accept(new ClassVisitor(Opcodes.ASM4, next) {
+        accept(new ClassVisitor(Opcodes.ASM5, next) {
             @Override
             public MethodVisitor visitMethod(final int access, final String name, final String desc,
                 final String signature, final String[] exceptions) {
@@ -69,10 +69,10 @@ class InlineNestedPrivilegedCalls extends ClassNode {
                 if (!privilegedMethods.containsValue(name)) {
                     return orig;
                 }
-                return new MethodVisitor(Opcodes.ASM4, orig) {
+                return new MethodVisitor(Opcodes.ASM5, orig) {
                     @Override
                     public void visitMethodInsn(final int opcode, final String owner, final String name,
-                        final String desc) {
+                        final String desc, final boolean itf) {
                         String useName = name;
                         if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
                             final Method methd = new Method(name, desc);
@@ -82,7 +82,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
                                     useName);
                             }
                         }
-                        super.visitMethodInsn(opcode, owner, useName, desc);
+                        super.visitMethodInsn(opcode, owner, useName, desc, itf);
                     }
                 };
             }

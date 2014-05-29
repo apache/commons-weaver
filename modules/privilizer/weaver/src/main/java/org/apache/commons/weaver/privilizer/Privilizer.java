@@ -57,7 +57,7 @@ public class Privilizer {
         }
 
         protected PrivilizerClassVisitor(final ClassVisitor cv) { //NOPMD
-            super(Opcodes.ASM4, cv);
+            super(Opcodes.ASM5, cv);
         }
 
         protected Privilizer privilizer() {
@@ -74,11 +74,54 @@ public class Privilizer {
     }
 
     /**
+     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader
+     */
+    private final class CustomClassWriter extends ClassWriter {
+        CustomClassWriter(int flags) {
+            super(flags);
+        }
+
+        CustomClassWriter(ClassReader classReader, int flags) {
+            super(classReader, flags);
+        }
+
+        @Override
+        protected String getCommonSuperClass(String type1, String type2) {
+            Class<?> c;
+            Class<?> d;
+            try {
+                c = Class.forName(type1.replace('/', '.'), false, env.classLoader);
+                d = Class.forName(type2.replace('/', '.'), false, env.classLoader);
+            } catch (Exception e) {
+                throw new RuntimeException(e.toString());
+            }
+            if (c.isAssignableFrom(d)) {
+                return type1;
+            }
+            if (d.isAssignableFrom(c)) {
+                return type2;
+            }
+            if (c.isInterface() || d.isInterface()) {
+                return "java/lang/Object";
+            }
+            do {
+                c = c.getSuperclass();
+            } while (!c.isAssignableFrom(d));
+            return c.getName().replace('.', '/');
+        }
+    }
+    
+    /**
      * Convenient {@link ClassVisitor} layer to write classfiles into the {@link WeaveEnvironment}.
      */
     class WriteClass extends PrivilizerClassVisitor {
-        WriteClass(final ClassWriter classWriter) {
-            super(classWriter);
+
+        WriteClass(final ClassReader classReader, int flags) {
+            super(new CustomClassWriter(classReader, flags));
+        }
+
+        WriteClass(int flags) {
+            super(new CustomClassWriter(flags));
         }
 
         @Override
@@ -186,7 +229,7 @@ public class Privilizer {
             final ClassReader classReader = new ClassReader(bytecode);
 
             ClassVisitor cvr;
-            cvr = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            cvr = new WriteClass(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             cvr = new PrivilizingVisitor(this, cvr);
             cvr = new BlueprintingVisitor(this, cvr, privilizing);
 
@@ -206,7 +249,7 @@ public class Privilizer {
             bytecode = env.getClassfile(type).getInputStream();
             final ClassReader classReader = new ClassReader(bytecode);
             ClassVisitor cv; //NOPMD
-            cv = new WriteClass(new ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            cv = new WriteClass(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             cv = new PrivilizingVisitor(this, cv);
 
             classReader.accept(cv, ClassReader.EXPAND_FRAMES);
@@ -233,7 +276,7 @@ public class Privilizer {
         }
         Validate.validState(StringUtils.isBlank(error), error);
 
-        final ClassVisitor checkInnerClasses = new ClassVisitor(Opcodes.ASM4, null) {
+        final ClassVisitor checkInnerClasses = new ClassVisitor(Opcodes.ASM5, null) {
             final Set<String> innerNames = new HashSet<String>();
 
             @Override

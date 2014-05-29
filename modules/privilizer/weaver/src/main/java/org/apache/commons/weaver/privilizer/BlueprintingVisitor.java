@@ -73,7 +73,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     BlueprintingVisitor(final Privilizer privilizer,
         final ClassVisitor cv, //NOPMD
         final Privilizing config) {
-        privilizer.super(new ClassNode(Opcodes.ASM4));
+        privilizer.super(new ClassNode(Opcodes.ASM5));
         this.next = cv;
 
         // load up blueprint methods:
@@ -119,7 +119,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     private ClassNode read(final String className) {
-        final ClassNode result = new ClassNode(Opcodes.ASM4);
+        final ClassNode result = new ClassNode(Opcodes.ASM5);
         InputStream bytecode = null;
         try {
             bytecode = privilizer().env.getClassfile(className).getInputStream();
@@ -171,7 +171,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         // non-public fields accessed
         final Set<FieldAccess> fieldAccesses = new LinkedHashSet<FieldAccess>();
 
-        source.accept(new MethodVisitor(Opcodes.ASM4) {
+        source.accept(new MethodVisitor(Opcodes.ASM5) {
             @Override
             public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
                 final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name);
@@ -262,21 +262,22 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private abstract class MethodInvocationHandler extends MethodVisitor {
         MethodInvocationHandler(final MethodVisitor mvr) {
-            super(Opcodes.ASM4, mvr);
+            super(Opcodes.ASM5, mvr);
         }
 
         @Override
-        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc) {
+        public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc,
+            final boolean itf) {
             if (opcode == Opcodes.INVOKESTATIC) {
                 final Method methd = new Method(name, desc);
                 final Pair<Type, Method> methodKey = Pair.of(Type.getObjectType(owner), methd);
                 if (shouldImport(methodKey)) {
                     final String importedName = importMethod(methodKey);
-                    super.visitMethodInsn(opcode, className, importedName, desc);
+                    super.visitMethodInsn(opcode, className, importedName, desc, itf);
                     return;
                 }
             }
-            super.visitMethodInsn(opcode, owner, name, desc);
+            super.visitMethodInsn(opcode, owner, name, desc, itf);
         }
 
         abstract boolean shouldImport(Pair<Type, Method> methodKey);
@@ -331,7 +332,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         AccessibleAdvisor(final MethodVisitor mvr, final int access, final String name, final String desc,
             final List<FieldAccess> fieldAccesses) {
-            super(ASM4, mvr, access, name, desc);
+            super(ASM5, mvr, access, name, desc);
             this.fieldAccesses = fieldAccesses;
         }
 

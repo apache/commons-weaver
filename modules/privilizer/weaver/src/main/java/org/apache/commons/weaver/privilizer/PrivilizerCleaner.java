@@ -60,7 +60,7 @@ public class PrivilizerCleaner implements Cleaner {
             try {
                 bytecode = privilizer.env.getClassfile(className).getInputStream();
                 final ClassReader classReader = new ClassReader(bytecode);
-                classReader.accept(new ClassVisitor(Opcodes.ASM4) {
+                classReader.accept(new ClassVisitor(Opcodes.ASM5) {
                     @Override
                     public void visit(final int version, final int access, final String name, final String signature,
                         final String superName, final String[] interfaces) {

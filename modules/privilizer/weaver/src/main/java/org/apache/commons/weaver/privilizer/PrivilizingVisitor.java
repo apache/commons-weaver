@@ -91,7 +91,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
         final MethodVisitor originalMethod = super.visitMethod(access, name, desc, signature, exceptions);
         final Method methd = new Method(name, desc);
 
-        return new GeneratorAdapter(Opcodes.ASM4, originalMethod, access, name, desc) {
+        return new GeneratorAdapter(Opcodes.ASM5, originalMethod, access, name, desc) {
 
             @Override
             public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
