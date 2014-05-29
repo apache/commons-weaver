@@ -19,7 +19,6 @@ under the License.
 
 # Apache Commons Weaver
 
-## What is this thing?
 Occasionally, as Java developers, we encounter a problem whose solution
 simply cannot be expressed in the Java language. Often, the Java annotation
 processing tools can be used to great effect, and they should not be
@@ -28,35 +27,31 @@ classes. Occasionally, however, our only recourse is to manipulate existing
 class files. It is these situations which Apache Commons Weaver was designed
 to address.
 
-Latest API documentation is [here](apidocs/index.html).
-
 Apache Commons Weaver consists of:
 
-## Core Framework
+- Core Framework
+- Weaver Modules
+- Maven Plugin
+- Antlib
+
+The Maven Plugin and Antlib are used for invoking Weaving facilities. Below you will 
+find a graph with a high level overview of Apache Commons Weaver project.
+
+![Apache Commons Weaver project](images/weaver.png)
+
+Latest API documentation is [here](apidocs/index.html).
+
+### Core Framework
 The [Commons Weaver Processor](commons-weaver-processor/index.html)
 defines a "weaver module" service provider interface (SPI) as well as
 the facilities that use the Java `ServiceLoader` to discover and invoke
 defined weaver modules for simple filesystem-based bytecode weaving.
 
-## Weaver Modules
+### Weaver Modules
 A number of [Weaver Modules](commons-weaver-modules-parent/index.html)
 are provided by the Commons Weaver project.
 Typically a weaver module may respect a set of configuration
 properties which should be documented along with that module.
-
-### What can these do for me?
-The canonical example is the [privilizer module](commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
-
-## Integration
-The weaver module(s) applicable to your codebase should be available
-on the classpath of whatever Java-based processing mechanism you select.
-Your responsibilities are to:
-
- - trigger weave processing in some way
- - make the desired weaver module(s) available for processing
- - (optionally) provide configuration properties for applicable modules
-
-There are two provided mechanisms for invoking Weaving facilities:
 
 ### Maven Plugin
 The [Commons Weaver plugin for Apache Maven][mvnplugin] aims to integrate
@@ -125,6 +120,125 @@ seen here:
 
 Multiple weaving targets (e.g. `main` vs. `test`) are of course woven
 using different `settings`.
+
+## Examples
+The canonical example is the [privilizer module](commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
+
+A simple example could be exposing annotated methods for a REST API. Let's suppose 
+you want to expose only classes annotated with @WebExposed to your Web REST API.
+
+      package example;
+
+      import java.lang.annotation.ElementType;
+      import java.lang.annotation.Retention;
+      import java.lang.annotation.RetentionPolicy;
+      import java.lang.annotation.Target;
+
+      /**
+       * Marks methods that interest our weaver module.
+       */
+      @Target(ElementType.METHOD)
+      @Retention(RetentionPolicy.CLASS)
+      public @interface WebExposed {
+
+      }
+
+And your POJO object annotated.
+
+      package example;
+
+      /**
+       * Represents a user in our system.
+       */
+      public class User implements {
+          
+          private String name;
+          private String surname;
+          private Integer age;
+
+          public User() {
+              super();
+          }
+
+          public User(String name, String surname, Integer age) {
+              super();
+              this.name = name;
+              this.surname = surname;
+              this.age = age;
+          }
+
+          @WebExposed
+          public String getName() {
+              return name;
+          }
+
+          public void setName(String name) {
+              this.name = name;
+          }
+
+          @WebExposed
+          public String getSurname() {
+              return surname;
+          }
+
+          public void setSurname(String surname) {
+              this.surname = surname;
+          }
+
+      }
+
+
+Now in order to scan your classpath and find the annotated methods normally you would 
+use Java Reflection API or something similar, but the good news is that Apache 
+Commons Weaver abstracts this for you. 
+
+      package example;
+
+      import java.io.File;
+      import java.lang.annotation.ElementType;
+      import java.util.Arrays;
+      import java.util.Properties;
+
+      import org.apache.commons.weaver.WeaveProcessor;
+      import org.apache.commons.weaver.model.AnnotatedElements;
+      import org.apache.commons.weaver.model.ScanRequest;
+      import org.apache.commons.weaver.model.ScanResult;
+      import org.apache.commons.weaver.model.Scanner;
+      import org.apache.commons.weaver.model.WeavableMethod;
+      import org.apache.commons.weaver.model.WeaveEnvironment;
+      import org.apache.commons.weaver.model.WeaveInterest;
+      import org.apache.commons.weaver.spi.Weaver;
+
+      public class MyWeaver implements Weaver {
+
+          @Override
+          public boolean process(WeaveEnvironment environment, Scanner scanner) {
+              // We want to find methods annotated with @WebExposed.
+              WeaveInterest findAnnotation = WeaveInterest.of(WebExposed.class, ElementType.METHOD);
+              ScanResult scanResult = scanner.scan(new ScanRequest().add(findAnnotation));
+              AnnotatedElements<WeavableMethod<?>> annotatedMethods = scanResult.getMethods();
+              for (WeavableMethod<?> method : annotatedMethods) {
+                  // The API code is out of the scope of this guide, but you can do other things here, 
+                  // like modifying your class
+                  System.out.println("Expose method " + method.getTarget().getName() + " in our REST API");
+              }
+              return true;
+          }
+          
+          public static void main(String[] args) {
+              // If you are using Maven, .. might resolve to your target directory
+              File targetDir = new File(MyWeaver.class.getResource("..").getFile());
+              //MyWeaver myWeaver = new MyWeaver();
+              WeaveProcessor weaveProcessor = new WeaveProcessor(Arrays.asList("test.MyWeaver", "test.User"), targetDir, new Properties());
+              weaveProcessor.weave();
+          }
+
+      }
+
+Before running the example above you need to tell the ServiceProvider about 
+your custom Weaver. This is done by adding a file to your _META-INF_ directory. 
+If you are using Maven, then creating <code>src/main/resources/META-INF/services/org.apache.commons.weaver.spi.Weaver</code> 
+with <pre>example.MyWeaver</pre> will instruct ServiceLoader to load your Weaver class.
 
 ## Custom Weaver Modules
 As discussed, some modules are provided for common cases, and the developers
