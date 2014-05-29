@@ -152,6 +152,13 @@ current configuration is incompatible with the results of an earlier "weaving."
          [EPL](http://eclipse.org/legal/epl-v10.html) which can be
          considered less permissive than the Apache license. Choice is
          A Good Thing.
+* *Q*: What is the relationship between Commons Weaver and ASM/Javassist/CGLIB?
+
+    *A*: Rather than being an _alternative_ to these technologies, Commons
+         Weaver can be thought of as providing a structured environment in
+         which these technologies can be put to use. I.e., the bytecode
+         modifications made by a given `Weaver` implementation would typically
+         be done with one of these (or comparable) libraries.
 
 [mvnplugin]: commons-weaver-maven-plugin/plugin-info.html
 [antlib]: commons-weaver-antlib-parent/commons-weaver-antlib/index.html
