@@ -23,6 +23,11 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
+    <release version="1.1" date="TBA" description="First maintenance release">
+      <action due-to="kinow" issue="WEAVER-1" type="add" />
+      <action due-to="mbenson" issue="WEAVER-2" type="update" />
+      <action due-to="mbenson" issue="WEAVER-3" type="update" />
+    </release>
     <release version="1.0" date="2014-03-16" description="Initial release" />
   </body>
 </document>
