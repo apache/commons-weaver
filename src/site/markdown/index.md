@@ -121,10 +121,25 @@ seen here:
 Multiple weaving targets (e.g. `main` vs. `test`) are of course woven
 using different `settings`.
 
+## Custom Weaver Modules
+As discussed, some modules are provided for common cases, and the developers
+welcome suggestions for useful modules, but there is no reason not to get
+started writing your own weaver module (assuming you are sure this is the right
+solution, or just want to do this for fun) now! When the processor framework
+invokes your custom `Weaver`, it will pass in a `Scanner` that can be used to
+find the classes you are interested in. Request the original bytecode from the
+`WeaveEnvironment` and make your changes (for this task you will save time and
+frustration using one of the available open source Java bytecode manipulation
+libraries). Save your changes back to the `WeaveEnvironment`. Rinse, repeat.
+Hint: if your `Weaver` uses configuration parameters to dictate its
+behavior, it can leave a scannable "footprint" in your woven classes. Then
+implement the `Cleaner` SPI to find and delete these in the case that the
+current configuration is incompatible with the results of an earlier "weaving."
+
 ## Examples
 The canonical example is the [privilizer module](commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
 
-A simple example could be exposing annotated methods for a REST API. Let's suppose 
+A simple example could be exposing annotated methods for a REST API. Suppose 
 you want to expose only classes annotated with @WebExposed to your Web REST API.
 
       package example;
@@ -239,21 +254,6 @@ Before running the example above you need to tell the ServiceProvider about
 your custom Weaver. This is done by adding a file to your _META-INF_ directory. 
 If you are using Maven, then creating <code>src/main/resources/META-INF/services/org.apache.commons.weaver.spi.Weaver</code> 
 with <pre>example.MyWeaver</pre> will instruct ServiceLoader to load your Weaver class.
-
-## Custom Weaver Modules
-As discussed, some modules are provided for common cases, and the developers
-welcome suggestions for useful modules, but there is no reason not to get
-started writing your own weaver module (assuming you are sure this is the right
-solution, or just want to do this for fun) now! When the processor framework
-invokes your custom `Weaver`, it will pass in a `Scanner` that can be used to
-find the classes you are interested in. Request the original bytecode from the
-`WeaveEnvironment` and make your changes (for this task you will save time and
-frustration using one of the available open source Java bytecode manipulation
-libraries). Save your changes back to the `WeaveEnvironment`. Rinse, repeat.
-Hint: if your `Weaver` uses configuration parameters to dictate its
-behavior, it can leave a scannable "footprint" in your woven classes. Then
-implement the `Cleaner` SPI to find and delete these in the case that the
-current configuration is incompatible with the results of an earlier "weaving."
 
 ##FAQ
 
