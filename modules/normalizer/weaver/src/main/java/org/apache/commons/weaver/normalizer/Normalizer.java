@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.activation.DataSource;
@@ -39,6 +40,7 @@ import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.weaver.model.ScanRequest;
@@ -68,6 +70,143 @@ public class Normalizer {
 
     private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
+    private static final class Inspector extends ClassVisitor {
+        private final class InspectConstructor extends MethodVisitor {
+            private InspectConstructor() {
+                super(Opcodes.ASM5);
+            }
+
+            @Override
+            public void visitMethodInsn(final int opcode, final String owner, final String name,
+                final String desc, final boolean itf) {
+                if (INIT.equals(name) && owner.equals(superName)) {
+                    key.setRight(desc);
+                } else {
+                    valid.setValue(false);
+                }
+            }
+
+            @Override
+            public void visitFieldInsn(final int opcode, final String owner, final String name,
+                final String desc) {
+                if ("this$0".equals(name) && opcode == Opcodes.PUTFIELD) {
+                    mustRewriteConstructor.setValue(true);
+                    return;
+                }
+                valid.setValue(false);
+            }
+        }
+
+        private final MutableBoolean mustRewriteConstructor = new MutableBoolean();
+        private final MutablePair<String, String> key = new MutablePair<String, String>();
+        private final MutableBoolean ignore = new MutableBoolean();
+        private final MutableBoolean valid = new MutableBoolean();
+
+        private String superName;
+
+        private Inspector() {
+            super(Opcodes.ASM5);
+        }
+
+        @Override
+        public void visit(final int version, final int access, final String name, final String signature,
+            final String superName, final String[] interfaces) {
+            super.visit(version, access, name, signature, superName, interfaces);
+            this.superName = superName;
+            final String left;
+            if (signature != null) {
+                left = signature;
+            } else if (ArrayUtils.getLength(interfaces) == 1) {
+                left = interfaces[0];
+            } else {
+                left = superName;
+            }
+            key.setLeft(left);
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
+            if (Type.getType(Marker.class).getDescriptor().equals(desc)) {
+                ignore.setValue(true);
+            }
+            return null;
+        }
+
+        @Override
+        public MethodVisitor visitMethod(final int access, final String name, final String desc,
+            final String signature, final String[] exceptions) {
+            if (INIT.equals(name)) {
+                return new InspectConstructor();
+            }
+            return null;
+        }
+
+        boolean mustRewriteConstructor() {
+            return mustRewriteConstructor.booleanValue();
+        }
+
+        Pair<String, String> key() {
+            return ImmutablePair.of(key.getLeft(), key.getRight());
+        }
+
+        boolean ignore() {
+            return ignore.booleanValue();
+        }
+
+        boolean valid() {
+            return valid.booleanValue();
+        }
+    }
+
+    private static final class Remap extends RemappingClassAdapter {
+        private final class RewriteConstructor extends MethodVisitor {
+            private RewriteConstructor(final MethodVisitor mv) {
+                super(Opcodes.ASM5, mv);
+            }
+
+            @Override
+            public void visitMethodInsn(final int opcode, final String owner, final String name,
+                final String desc, final boolean itf) {
+                String useDescriptor = desc;
+                if (INIT.equals(name)) {
+                    final ClassWrapper wrapper = entry.getValue().get(owner);
+                    if (wrapper != null && wrapper.mustRewriteConstructor) {
+                        // simply replace first argument type with OBJECT_TYPE:
+                        final Type[] args = Type.getArgumentTypes(desc);
+                        args[0] = OBJECT_TYPE;
+                        useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
+                    }
+                }
+                super.visitMethodInsn(opcode, owner, name, useDescriptor, itf);
+            }
+        }
+
+        private final Map<String, String> classMap;
+        private final Entry<String, Map<String, ClassWrapper>> entry;
+
+        private Remap(final ClassVisitor cv, final Remapper remapper, final Map<String, String> classMap,
+            final Map.Entry<String, Map<String, ClassWrapper>> entry) {
+            super(cv, remapper);
+            this.classMap = classMap;
+            this.entry = entry;
+        }
+
+        @Override
+        public void visitInnerClass(final String name, final String outerName, final String innerName,
+            final int access) {
+            if (!classMap.containsKey(name)) {
+                super.visitInnerClass(name, outerName, innerName, access);
+            }
+        }
+
+        @Override
+        public MethodVisitor visitMethod(final int access, final String name, final String desc,
+            final String signature, final String[] exceptions) {
+            final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+            return new RewriteConstructor(mv);
+        }
+    }
+
     /**
      * Marker annotation.
      */
@@ -86,40 +225,40 @@ public class Normalizer {
     }
 
     /**
-     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader
+     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader.
      */
     private final class CustomClassWriter extends ClassWriter {
-        CustomClassWriter(int flags) {
+        CustomClassWriter(final int flags) {
             super(flags);
         }
 
-        CustomClassWriter(ClassReader classReader, int flags) {
+        CustomClassWriter(final ClassReader classReader, final int flags) {
             super(classReader, flags);
         }
 
         @Override
-        protected String getCommonSuperClass(String type1, String type2) {
-            Class<?> c;
-            Class<?> d;
+        protected String getCommonSuperClass(final String type1, final String type2) {
+            Class<?> class1;
+            Class<?> class2;
             try {
-                c = Class.forName(type1.replace('/', '.'), false, env.classLoader);
-                d = Class.forName(type2.replace('/', '.'), false, env.classLoader);
+                class1 = Class.forName(type1.replace('/', '.'), false, env.classLoader);
+                class2 = Class.forName(type2.replace('/', '.'), false, env.classLoader);
             } catch (Exception e) {
                 throw new RuntimeException(e.toString());
             }
-            if (c.isAssignableFrom(d)) {
+            if (class1.isAssignableFrom(class2)) {
                 return type1;
             }
-            if (d.isAssignableFrom(c)) {
+            if (class2.isAssignableFrom(class1)) {
                 return type2;
             }
-            if (c.isInterface() || d.isInterface()) {
+            if (class1.isInterface() || class2.isInterface()) {
                 return "java/lang/Object";
             }
             do {
-                c = c.getSuperclass();
-            } while (!c.isAssignableFrom(d));
-            return c.getName().replace('.', '/');
+                class1 = class1.getSuperclass();
+            } while (!class1.isAssignableFrom(class2));
+            return class1.getName().replace('.', '/');
         }
     }
 
@@ -270,51 +409,11 @@ public class Normalizer {
             for (final String merged : entry.getValue().keySet()) {
                 classMap.put(merged, target);
             }
-            final Remapper remapper = new SimpleRemapper(classMap);
-
             InputStream enclosingBytecode = null;
             try {
                 enclosingBytecode = env.getClassfile(outer).getInputStream();
                 final ClassReader reader = new ClassReader(enclosingBytecode);
-
-                final ClassVisitor cv = // NOPMD
-                        new RemappingClassAdapter(new WriteClass(reader), remapper) {
-
-                    @Override
-                    public void visitInnerClass(final String name, final String outerName, final String innerName,
-                        final int access) {
-                        if (!classMap.containsKey(name)) {
-                            super.visitInnerClass(name, outerName, innerName, access);
-                        }
-                    }
-
-                    @Override
-                    public MethodVisitor visitMethod(final int access, final String name, final String desc,
-                        final String signature, final String[] exceptions) {
-                        final MethodVisitor mv = // NOPMD
-                                super.visitMethod(access, name, desc, signature, exceptions);
-                        return new MethodVisitor(Opcodes.ASM5, mv) {
-
-                            @Override
-                            public void visitMethodInsn(final int opcode, final String owner, final String name,
-                                final String desc, boolean itf) {
-                                String useDescriptor = desc;
-                                if (INIT.equals(name)) {
-                                    final ClassWrapper wrapper = entry.getValue().get(owner);
-                                    if (wrapper != null && wrapper.mustRewriteConstructor) {
-                                        // simply replace first argument type with OBJECT_TYPE:
-                                        final Type[] args = Type.getArgumentTypes(desc);
-                                        args[0] = OBJECT_TYPE;
-                                        useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
-                                    }
-                                }
-                                super.visitMethodInsn(opcode, owner, name, useDescriptor, itf);
-                            }
-                        };
-                    }
-                };
-
-                reader.accept(cv, 0);
+                reader.accept(new Remap(new WriteClass(reader), new SimpleRemapper(classMap), classMap, entry), 0);
             } finally {
                 IOUtils.closeQuietly(enclosingBytecode);
             }
@@ -392,83 +491,26 @@ public class Normalizer {
         final Map<Pair<String, String>, Set<ClassWrapper>> classMap =
             new LinkedHashMap<Pair<String, String>, Set<ClassWrapper>>();
         for (final Class<?> subtype : subtypes) {
-            final MutablePair<String, String> key = new MutablePair<String, String>();
-            final MutableBoolean ignore = new MutableBoolean(false);
-            final MutableBoolean valid = new MutableBoolean(true);
-            final MutableBoolean mustRewriteConstructor = new MutableBoolean();
             InputStream bytecode = null;
 
+            final Inspector inspector = new Inspector();
             try {
                 bytecode = env.getClassfile(subtype).getInputStream();
-                new ClassReader(bytecode).accept(new ClassVisitor(Opcodes.ASM5) {
-                    String superName;
-
-                    @Override
-                    public void visit(final int version, final int access, final String name, final String signature,
-                        final String superName, final String[] interfaces) {
-                        super.visit(version, access, name, signature, superName, interfaces);
-                        this.superName = superName;
-                        final String left;
-                        if (signature != null) {
-                            left = signature;
-                        } else if (ArrayUtils.getLength(interfaces) == 1) {
-                            left = interfaces[0];
-                        } else {
-                            left = superName;
-                        }
-                        key.setLeft(left);
-                    }
-
-                    @Override
-                    public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
-                        if (Type.getType(Marker.class).getDescriptor().equals(desc)) {
-                            ignore.setValue(true);
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public MethodVisitor visitMethod(final int access, final String name, final String desc,
-                        final String signature, final String[] exceptions) {
-                        if (INIT.equals(name)) {
-                            return new MethodVisitor(Opcodes.ASM5) {
-                                @Override
-                                public void visitMethodInsn(final int opcode, final String owner, final String name,
-                                    final String desc, final boolean itf) {
-                                    if (INIT.equals(name) && owner.equals(superName)) {
-                                        key.setRight(desc);
-                                    } else {
-                                        valid.setValue(false);
-                                    }
-                                }
-
-                                @Override
-                                public void visitFieldInsn(final int opcode, final String owner, final String name,
-                                    final String desc) {
-                                    if ("this$0".equals(name) && opcode == Opcodes.PUTFIELD) {
-                                        mustRewriteConstructor.setValue(true);
-                                        return;
-                                    }
-                                    valid.setValue(false);
-                                }
-                            };
-                        }
-                        return null;
-                    }
-                }, 0);
+                new ClassReader(bytecode).accept(inspector, 0);
             } finally {
                 IOUtils.closeQuietly(bytecode);
             }
-            if (ignore.booleanValue()) {
+            if (inspector.ignore()) {
                 continue;
             }
-            if (valid.booleanValue()) {
+            if (inspector.valid()) {
+                final Pair<String, String> key = inspector.key();
                 Set<ClassWrapper> set = classMap.get(key);
                 if (set == null) {
                     set = new LinkedHashSet<ClassWrapper>();
                     classMap.put(key, set);
                 }
-                set.add(new ClassWrapper(subtype, mustRewriteConstructor.booleanValue()));
+                set.add(new ClassWrapper(subtype, inspector.mustRewriteConstructor()));
             } else {
                 env.debug("%s is ineligible for normalization due to %s", subtype,
                     IneligibilityReason.TOO_BUSY_CONSTRUCTOR);

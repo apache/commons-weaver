@@ -74,53 +74,53 @@ public class Privilizer {
     }
 
     /**
-     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader
+     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader.
      */
     private final class CustomClassWriter extends ClassWriter {
-        CustomClassWriter(int flags) {
+        CustomClassWriter(final int flags) {
             super(flags);
         }
 
-        CustomClassWriter(ClassReader classReader, int flags) {
+        CustomClassWriter(final ClassReader classReader, final int flags) {
             super(classReader, flags);
         }
 
         @Override
-        protected String getCommonSuperClass(String type1, String type2) {
-            Class<?> c;
-            Class<?> d;
+        protected String getCommonSuperClass(final String type1, final String type2) {
+            Class<?> class1;
+            Class<?> class2;
             try {
-                c = Class.forName(type1.replace('/', '.'), false, env.classLoader);
-                d = Class.forName(type2.replace('/', '.'), false, env.classLoader);
+                class1 = Class.forName(type1.replace('/', '.'), false, env.classLoader);
+                class2 = Class.forName(type2.replace('/', '.'), false, env.classLoader);
             } catch (Exception e) {
                 throw new RuntimeException(e.toString());
             }
-            if (c.isAssignableFrom(d)) {
+            if (class1.isAssignableFrom(class2)) {
                 return type1;
             }
-            if (d.isAssignableFrom(c)) {
+            if (class2.isAssignableFrom(class1)) {
                 return type2;
             }
-            if (c.isInterface() || d.isInterface()) {
+            if (class1.isInterface() || class2.isInterface()) {
                 return "java/lang/Object";
             }
             do {
-                c = c.getSuperclass();
-            } while (!c.isAssignableFrom(d));
-            return c.getName().replace('.', '/');
+                class1 = class1.getSuperclass();
+            } while (!class1.isAssignableFrom(class2));
+            return class1.getName().replace('.', '/');
         }
     }
-    
+
     /**
      * Convenient {@link ClassVisitor} layer to write classfiles into the {@link WeaveEnvironment}.
      */
     class WriteClass extends PrivilizerClassVisitor {
 
-        WriteClass(final ClassReader classReader, int flags) {
+        WriteClass(final ClassReader classReader, final int flags) {
             super(new CustomClassWriter(classReader, flags));
         }
 
-        WriteClass(int flags) {
+        WriteClass(final int flags) {
             super(new CustomClassWriter(flags));
         }
 

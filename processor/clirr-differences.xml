@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<differences>
+  <difference>
+    <className>org/apache/commons/weaver/Finder$Visitor</className>
+    <differenceType>5000</differenceType>
+    <to>org/apache/xbean/asm5/ClassVisitor</to>
+  </difference>
+  <difference>
+    <className>org/apache/commons/weaver/Finder$Visitor</className>
+    <differenceType>5001</differenceType>
+    <to>org/apache/xbean/asm4/ClassVisitor</to>
+  </difference>
+  <difference>
+    <className>org/apache/commons/weaver/Finder$Visitor</className>
+    <differenceType>7006</differenceType>
+    <method>*</method>
+    <to>org.apache.xbean.asm5.*</to>
+  </difference>
+</differences>

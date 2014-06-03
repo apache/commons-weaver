@@ -601,6 +601,7 @@ under the License.
             <exclude>**/dependency-reduced-pom.xml</exclude>
             <exclude>**/.*</exclude>
             <exclude>**/.*/**</exclude>
+            <exclude>**/*.svg</exclude>
           </excludes>
         </configuration>
       </plugin>

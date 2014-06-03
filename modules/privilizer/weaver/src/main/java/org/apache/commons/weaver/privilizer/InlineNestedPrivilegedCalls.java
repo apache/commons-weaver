@@ -33,6 +33,47 @@ import org.objectweb.asm.tree.ClassNode;
  * complete; allowing us to use a tree model while yet building the high-level view as a stack of visitors.
  */
 class InlineNestedPrivilegedCalls extends ClassNode {
+    private final class VisitEnd extends ClassVisitor {
+        private final class VisitMethod extends MethodVisitor {
+            private final Method outer;
+
+            private VisitMethod(final MethodVisitor orig, final Method outer) {
+                super(Opcodes.ASM5, orig);
+                this.outer = outer;
+            }
+
+            @Override
+            public void visitMethodInsn(final int opcode, final String owner, final String name,
+                final String desc, final boolean itf) {
+                String useName = name;
+                if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
+                    final Method methd = new Method(name, desc);
+                    if (privilegedMethods.containsKey(methd)) {
+                        useName = privilegedMethods.get(methd);
+                        privilizer.env.debug("Inlining call from %s to %s as %s", outer, methd,
+                            useName);
+                    }
+                }
+                super.visitMethodInsn(opcode, owner, useName, desc, itf);
+            }
+        }
+
+        private VisitEnd() {
+            super(Opcodes.ASM5, next);
+        }
+
+        @Override
+        public MethodVisitor visitMethod(final int access, final String name, final String desc,
+            final String signature, final String[] exceptions) {
+            final Method outer = new Method(name, desc);
+            final MethodVisitor orig = super.visitMethod(access, name, desc, signature, exceptions);
+            if (!privilegedMethods.containsValue(name)) {
+                return orig;
+            }
+            return new VisitMethod(orig, outer);
+        }
+    }
+
     private final Privilizer privilizer;
 
     private final ClassVisitor next;
@@ -59,33 +100,6 @@ class InlineNestedPrivilegedCalls extends ClassNode {
     @Override
     public void visitEnd() {
         super.visitEnd();
-
-        accept(new ClassVisitor(Opcodes.ASM5, next) {
-            @Override
-            public MethodVisitor visitMethod(final int access, final String name, final String desc,
-                final String signature, final String[] exceptions) {
-                final Method outer = new Method(name, desc);
-                final MethodVisitor orig = super.visitMethod(access, name, desc, signature, exceptions);
-                if (!privilegedMethods.containsValue(name)) {
-                    return orig;
-                }
-                return new MethodVisitor(Opcodes.ASM5, orig) {
-                    @Override
-                    public void visitMethodInsn(final int opcode, final String owner, final String name,
-                        final String desc, final boolean itf) {
-                        String useName = name;
-                        if (owner.equals(InlineNestedPrivilegedCalls.this.name)) {
-                            final Method methd = new Method(name, desc);
-                            if (privilegedMethods.containsKey(methd)) {
-                                useName = privilegedMethods.get(methd);
-                                privilizer.env.debug("Inlining call from %s to %s as %s", outer, methd,
-                                    useName);
-                            }
-                        }
-                        super.visitMethodInsn(opcode, owner, useName, desc, itf);
-                    }
-                };
-            }
-        });
+        accept(new VisitEnd());
     }
 }
