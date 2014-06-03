@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<differences>
+  <difference>
+    <className>**/_*/**</className>
+    <differenceType>8001</differenceType>
+  </difference>
+</differences>

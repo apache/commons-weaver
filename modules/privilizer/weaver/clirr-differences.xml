@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<differences>
+  <difference>
+    <className>**/_*/**</className>
+    <differenceType>8001</differenceType>
+  </difference>
+  <difference>
+    <className>**/*</className>
+    <differenceType>6004</differenceType>
+    <field>*</field>
+    <from>org.apache.commons.weaver.privilizer._asm.*</from>
+    <to>org.objectweb.asm.*</to>
+  </difference>
+  <difference>
+    <className>org/apache/commons/weaver/privilizer/FieldAccess</className>
+    <differenceType>7005</differenceType>
+    <method>FieldAccess(int, org.apache.commons.weaver.privilizer._asm.Type, java.lang.String, org.apache.commons.weaver.privilizer._asm.Type)</method>
+    <!-- use regex to work around whitespace bugginess in clirr-maven-plugin -->
+    <to>%regex[FieldAccess\(int, +org\.objectweb\.asm\.Type, +java\.lang\.String, +org\.objectweb\.asm\.Type\)]</to>
+  </difference>
+  <difference>
+    <className>org/apache/commons/weaver/privilizer/Field</className>
+    <differenceType>7005</differenceType>
+    <method>Field(int, java.lang.String, org.apache.commons.weaver.privilizer._asm.Type)</method>
+    <!-- use regex to work around whitespace bugginess in clirr-maven-plugin -->
+    <to>%regex[Field\(int, +java\.lang\.String, +org\.objectweb\.asm\.Type\)]</to>
+  </difference>
+</differences>
