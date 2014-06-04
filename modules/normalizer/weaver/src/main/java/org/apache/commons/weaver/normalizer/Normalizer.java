@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.activation.DataSource;
@@ -97,10 +96,10 @@ public class Normalizer {
             }
         }
 
-        private final MutableBoolean mustRewriteConstructor = new MutableBoolean();
         private final MutablePair<String, String> key = new MutablePair<String, String>();
-        private final MutableBoolean ignore = new MutableBoolean();
-        private final MutableBoolean valid = new MutableBoolean();
+        private final MutableBoolean ignore = new MutableBoolean(false);
+        private final MutableBoolean valid = new MutableBoolean(true);
+        private final MutableBoolean mustRewriteConstructor = new MutableBoolean(false);
 
         private String superName;
 
@@ -135,14 +134,7 @@ public class Normalizer {
         @Override
         public MethodVisitor visitMethod(final int access, final String name, final String desc,
             final String signature, final String[] exceptions) {
-            if (INIT.equals(name)) {
-                return new InspectConstructor();
-            }
-            return null;
-        }
-
-        boolean mustRewriteConstructor() {
-            return mustRewriteConstructor.booleanValue();
+            return INIT.equals(name) ? new InspectConstructor() : null;
         }
 
         Pair<String, String> key() {
@@ -156,39 +148,41 @@ public class Normalizer {
         boolean valid() {
             return valid.booleanValue();
         }
+
+        boolean mustRewriteConstructor() {
+            return mustRewriteConstructor.booleanValue();
+        }
     }
 
     private static final class Remap extends RemappingClassAdapter {
         private final class RewriteConstructor extends MethodVisitor {
-            private RewriteConstructor(final MethodVisitor mv) {
-                super(Opcodes.ASM5, mv);
+            private RewriteConstructor(final MethodVisitor wrapped) {
+                super(Opcodes.ASM5, wrapped);
             }
 
             @Override
             public void visitMethodInsn(final int opcode, final String owner, final String name,
                 final String desc, final boolean itf) {
                 String useDescriptor = desc;
-                if (INIT.equals(name)) {
-                    final ClassWrapper wrapper = entry.getValue().get(owner);
-                    if (wrapper != null && wrapper.mustRewriteConstructor) {
-                        // simply replace first argument type with OBJECT_TYPE:
-                        final Type[] args = Type.getArgumentTypes(desc);
-                        args[0] = OBJECT_TYPE;
-                        useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
-                    }
+                final ClassWrapper wrapper = wrappers.get(owner);
+                if (wrapper != null && wrapper.mustRewriteConstructor) {
+                    // simply replace first argument type with OBJECT_TYPE:
+                    final Type[] args = Type.getArgumentTypes(desc);
+                    args[0] = OBJECT_TYPE;
+                    useDescriptor = new Method(INIT, Type.VOID_TYPE, args).getDescriptor();
                 }
                 super.visitMethodInsn(opcode, owner, name, useDescriptor, itf);
             }
         }
 
         private final Map<String, String> classMap;
-        private final Entry<String, Map<String, ClassWrapper>> entry;
+        private final Map<String, ClassWrapper> wrappers;
 
-        private Remap(final ClassVisitor cv, final Remapper remapper, final Map<String, String> classMap,
-            final Map.Entry<String, Map<String, ClassWrapper>> entry) {
-            super(cv, remapper);
+        private Remap(final ClassVisitor wrapped, final Remapper remapper, final Map<String, String> classMap,
+            final Map<String, ClassWrapper> wrappers) {
+            super(wrapped, remapper);
             this.classMap = classMap;
-            this.entry = entry;
+            this.wrappers = wrappers;
         }
 
         @Override
@@ -202,8 +196,8 @@ public class Normalizer {
         @Override
         public MethodVisitor visitMethod(final int access, final String name, final String desc,
             final String signature, final String[] exceptions) {
-            final MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-            return new RewriteConstructor(mv);
+            final MethodVisitor toWrap = super.visitMethod(access, name, desc, signature, exceptions);
+            return INIT.equals(name) ? new RewriteConstructor(toWrap) : toWrap;
         }
     }
 
@@ -409,11 +403,13 @@ public class Normalizer {
             for (final String merged : entry.getValue().keySet()) {
                 classMap.put(merged, target);
             }
+            final Remapper remapper = new SimpleRemapper(classMap);
+
             InputStream enclosingBytecode = null;
             try {
                 enclosingBytecode = env.getClassfile(outer).getInputStream();
                 final ClassReader reader = new ClassReader(enclosingBytecode);
-                reader.accept(new Remap(new WriteClass(reader), new SimpleRemapper(classMap), classMap, entry), 0);
+                reader.accept(new Remap(new WriteClass(reader), remapper, classMap, entry.getValue()), 0);
             } finally {
                 IOUtils.closeQuietly(enclosingBytecode);
             }
@@ -425,7 +421,6 @@ public class Normalizer {
                 }
             }
         }
-
     }
 
     /**
@@ -491,9 +486,8 @@ public class Normalizer {
         final Map<Pair<String, String>, Set<ClassWrapper>> classMap =
             new LinkedHashMap<Pair<String, String>, Set<ClassWrapper>>();
         for (final Class<?> subtype : subtypes) {
-            InputStream bytecode = null;
-
             final Inspector inspector = new Inspector();
+            InputStream bytecode = null;
             try {
                 bytecode = env.getClassfile(subtype).getInputStream();
                 new ClassReader(bytecode).accept(inspector, 0);
