@@ -62,6 +62,7 @@ under the License.
 
     <ant.version>1.9.3</ant.version>
     <checkstyle.version>2.11</checkstyle.version>
+    <build-tools.version>${project.version}</build-tools.version>
   </properties>
 
   <developers>
@@ -393,40 +394,12 @@ under the License.
           <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${project.version}</version>
+            <version>${build-tools.version}</version>
           </dependency>
         </dependencies>
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
         </configuration>
-      </plugin>
-      <!-- Unfortunately the much simpler
-           <prerequisites><maven>3.0</maven></prerequisites>  
-           is not inherited so we have to use the enforcer plugin
-      -->
-      <plugin>
-        <inherited>true</inherited>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-maven-3</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <!-- Problem with Maven 3.2.x filed as
-                     http://jira.codehaus.org/browse/MNG-5601
-                 -->
-                <requireMavenVersion>
-                  <version>[3.0.0,3.2.0)</version>
-                </requireMavenVersion>                
-              </rules>
-              <fail>true</fail>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -468,7 +441,7 @@ under the License.
           <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${project.version}</version>
+            <version>${build-tools.version}</version>
           </dependency>
         </dependencies>
         <configuration>
@@ -582,7 +555,7 @@ under the License.
           <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${project.version}</version>
+            <version>${build-tools.version}</version>
           </dependency>
         </dependencies>
         <configuration>

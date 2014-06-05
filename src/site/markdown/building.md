@@ -29,10 +29,12 @@ various modules visible to one another using the Maven reactor, detailed
 Without installing to your local Maven repository, however, certain items
 will always fail; e.g. `mvn clean` without `package`, `mvn dependency:list`,
 `mvn dependency:tree`, and probably others. In general, `mvn install` will
-avoid further surprises down the line. Additionally, there seems currently
-to be an issue with the recursive dependencies expressed in the Commons
-Weaver multimodule project structure when run with Maven 3.2.x; the project
-has been set to require Maven 3.0.0-3.1.x for the time being.
+avoid further surprises down the line.
+
+Additionally, many Maven multimodule build such as this one will be
+afflicted by [http://jira.codehaus.org/browse/MNG-5601](); to perform a build
+using Apache Maven >= 3.2.1, you can bypass this issue by specifying
+`-Dbuild-tools.version=1.0` at the command line.
 
 ### Testing with security enabled
 The Privilizer is the fundamental "guinea pig" weaver module.
