@@ -30,6 +30,15 @@
       <item name="Mailing lists" href="/mail-lists.html" />
       <item name="Issue Tracking" href="/issue-tracking.html" />
     </menu>
+    <menu name="Project Structure">
+      <item name="Core Framework" href="/commons-weaver-processor/index.html" />
+      <item name="Weaver Modules" href="/commons-weaver-modules-parent/index.html">
+        <item name="Privilizer" href="/commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html" />
+        <item name="Normalizer" href="/commons-weaver-modules-parent/commons-weaver-normalizer-parent/index.html" />
+      </item>
+      <item name="Maven Plugin" href="/commons-weaver-maven-plugin/plugin-info.html" />
+      <item name="Antlib" href="/commons-weaver-antlib-parent/commons-weaver-antlib/index.html" />
+    </menu>
     <menu name="Development">
       <item name="Team" href="/team-list.html" />
       <item name="SVN" href="/source-repository.html" />

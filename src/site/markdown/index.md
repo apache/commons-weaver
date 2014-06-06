@@ -29,10 +29,10 @@ to address.
 
 Apache Commons Weaver consists of:
 
-- Core Framework
-- Weaver Modules
-- Maven Plugin
-- Antlib
+- [Core Framework](#core)
+- [Weaver Modules](#weavers)
+- [Maven Plugin](#maven)
+- [Antlib](#antlib)
 
 The Maven Plugin and Antlib are used for invoking Weaving facilities. Below you will 
 find a graph with a high level overview of Apache Commons Weaver project.
@@ -41,19 +41,19 @@ find a graph with a high level overview of Apache Commons Weaver project.
 
 Latest API documentation is [here](apidocs/index.html).
 
-### Core Framework
+### <a name="core"></a> Core Framework
 The [Commons Weaver Processor](commons-weaver-processor/index.html)
 defines a "weaver module" service provider interface (SPI) as well as
 the facilities that use the Java `ServiceLoader` to discover and invoke
 defined weaver modules for simple filesystem-based bytecode weaving.
 
-### Weaver Modules
+### <a name="weavers"></a> Weaver Modules
 A number of [Weaver Modules](commons-weaver-modules-parent/index.html)
 are provided by the Commons Weaver project.
 Typically a weaver module may respect a set of configuration
 properties which should be documented along with that module.
 
-### Maven Plugin
+### <a name="maven"></a> Maven Plugin
 The [Commons Weaver plugin for Apache Maven][mvnplugin] aims to integrate
 Weaver as smoothly as possible for Maven users. Here is an example
 of configuring the `privilizer` module:
@@ -91,7 +91,7 @@ of configuring the `privilizer` module:
         </dependencies>
       </plugin>
 
-### Antlib
+### <a name="antlib"></a> Antlib
 The [Commons Weaver Antlib][antlib] provides tasks and types to
 facilitate the integration of Commons Weaver into your Apache Ant-based
 build process. Here the user will make the `commons-weaver-antlib` `jar`
