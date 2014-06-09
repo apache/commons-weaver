@@ -62,7 +62,6 @@ under the License.
 
     <ant.version>1.9.3</ant.version>
     <checkstyle.version>2.11</checkstyle.version>
-    <build-tools.version>${project.version}</build-tools.version>
   </properties>
 
   <developers>
@@ -388,21 +387,6 @@ under the License.
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${build-tools.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
@@ -432,22 +416,6 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${build-tools.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <rulesets>
-            <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
-          </rulesets>
         </configuration>
       </plugin>
       <plugin>
@@ -548,20 +516,6 @@ under the License.
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>commons-weaver-build-tools</artifactId>
-            <version>${build-tools.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -639,6 +593,63 @@ under the License.
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <aggregate>true</aggregate>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>quality</id>
+      <activation>
+        <property>
+          <name>!quality.skip</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${checkstyle.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>commons-weaver-build-tools</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>commons-weaver-build-tools</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <rulesets>
+                <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
+              </rulesets>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>commons-weaver-build-tools</artifactId>
+                <version>${project.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
             </configuration>
           </plugin>
         </plugins>

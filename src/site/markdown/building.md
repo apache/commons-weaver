@@ -34,7 +34,7 @@ avoid further surprises down the line.
 Additionally, many Maven multimodule build such as this one will be
 afflicted by <http://jira.codehaus.org/browse/MNG-5601>; to perform a build
 using Apache Maven >= 3.2.1, you can bypass this issue by specifying
-`-Dbuild-tools.version=1.0` at the command line.
+`-Dquality.skip=true` at the command line.
 
 ### Testing with security enabled
 The Privilizer is the fundamental "guinea pig" weaver module.
