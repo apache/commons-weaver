@@ -23,10 +23,10 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
-    <release version="1.1" date="2014-06-07" description="First maintenance release">
-      <action due-to="kinow" issue="WEAVER-1" type="add" />
-      <action due-to="mbenson" issue="WEAVER-2" type="update" />
-      <action due-to="mbenson" issue="WEAVER-3" type="update" />
+    <release version="1.1" date="2014-06-13" description="First maintenance release">
+      <action due-to="Bruno P. Kinoshita" issue="WEAVER-1" type="add">Enhance [weaver] documentation</action>
+      <action issue="WEAVER-2" type="update">Upgrade to ASM 5</action>
+      <action issue="WEAVER-3" type="update">Upgrade to latest xbean-finder (3.18)</action>
     </release>
     <release version="1.0" date="2014-03-16" description="Initial release" />
   </body>
