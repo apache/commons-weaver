@@ -22,16 +22,16 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-privilizer-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
 
   <artifactId>commons-weaver-privilizer-api</artifactId>
   <name>Apache Commons Weaver Privilizer API</name>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer/api</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer/api</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/privilizer/api</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC2/modules/privilizer/api</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC2/modules/privilizer/api</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.1_RC2/modules/privilizer/api</url>
   </scm>
 
   <build>
