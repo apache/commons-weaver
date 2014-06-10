@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-parent</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>commons-weaver-antlib-parent</artifactId>
@@ -30,9 +30,9 @@ under the License.
   <packaging>pom</packaging>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC2/ant</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC2/ant</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.1_RC2/ant</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/ant</url>
   </scm>
 
   <modules>
