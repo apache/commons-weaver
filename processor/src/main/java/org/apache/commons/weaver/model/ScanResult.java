@@ -37,6 +37,7 @@ import org.apache.commons.weaver.spi.Weaver;
  * <p>Encapsulates the result of scanning based on a {@link ScanRequest}. The
  * scan results are available in a structure corresponding to the Java class
  * hierarchy; i.e.:
+ * </p>
  * <pre>
  *   package
  *   |_class
@@ -46,7 +47,7 @@ import org.apache.commons.weaver.spi.Weaver;
  *     |_constructor
  *       |_constructor parameter
  * </pre>
- * </p><p>
+ * <p>
  * The tree of results can be iterated in this manner using
  * {@link #getPackages()}. However, if a given {@link Weaver} is known not to
  * handle packages but some other element, convenience methods are provided
