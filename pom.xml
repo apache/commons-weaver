@@ -27,14 +27,14 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Commons Weaver</name>
 
   <description>
     Apache Commons Weaver provides an easy way to enhance compiled Java
-    classes by generating ("weaving") bytecode into those classes.
+    classes by generating (&quot;weaving&quot;) bytecode into those classes.
   </description>
 
   <url>http://commons.apache.org/proper/commons-weaver</url>
