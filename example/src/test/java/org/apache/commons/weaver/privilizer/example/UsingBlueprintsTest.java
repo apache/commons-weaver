@@ -18,7 +18,7 @@
  */
 package org.apache.commons.weaver.privilizer.example;
 
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.lang3.StringUtils;
@@ -75,7 +75,7 @@ public class UsingBlueprintsTest {
 
     @Test
     public void testMoreGetTopStackElementClassName() {
-        assumeFalse(StringUtils.containsIgnoreCase(SystemUtils.JAVA_VENDOR, "ibm"));
+        assumeTrue(StringUtils.containsIgnoreCase(SystemUtils.JAVA_VENDOR, "oracle"));
         assertEquals(Utils.More.class.getName(), usingBlueprints.moreGetTopStackElementClassName());
     }
 
