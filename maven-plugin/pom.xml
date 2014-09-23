@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
   </parent>
 
   <artifactId>commons-weaver-maven-plugin</artifactId>
@@ -38,9 +38,9 @@ under the License.
   </properties>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/maven-plugin</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC3/maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC3/maven-plugin</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.1_RC3/maven-plugin</url>
   </scm>
 
   <dependencies>
