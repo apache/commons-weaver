@@ -27,14 +27,14 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <packaging>pom</packaging>
 
   <name>Apache Commons Weaver</name>
 
   <description>
     Apache Commons Weaver provides an easy way to enhance compiled Java
-    classes by generating (&quot;weaving&quot;) bytecode into those classes.
+    classes by generating ("weaving") bytecode into those classes.
   </description>
 
   <url>http://commons.apache.org/proper/commons-weaver</url>
@@ -80,9 +80,9 @@ under the License.
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC3</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.1_RC3</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.1_RC3</url>
   </scm>
 
   <distributionManagement>
