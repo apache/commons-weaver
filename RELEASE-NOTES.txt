@@ -13,6 +13,9 @@ Changes in this version include:
 New features:
 o WEAVER-1:    Enhance [weaver] documentation Thanks to Bruno P. Kinoshita.
 
+Fixed Bugs:
+o WEAVER-4:    Enable test on Oracle JVMs only
+
 Changes:
 o WEAVER-2:    Upgrade to ASM 5
 o WEAVER-3:    Upgrade to latest xbean-finder (3.18)
