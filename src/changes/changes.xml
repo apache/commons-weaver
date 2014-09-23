@@ -27,6 +27,7 @@
       <action due-to="Bruno P. Kinoshita" issue="WEAVER-1" type="add">Enhance [weaver] documentation</action>
       <action issue="WEAVER-2" type="update">Upgrade to ASM 5</action>
       <action issue="WEAVER-3" type="update">Upgrade to latest xbean-finder (3.18)</action>
+      <action issue="WEAVER-4" type="fix">Enable test on Oracle JVMs only</action>
     </release>
     <release version="1.0" date="2014-03-16" description="Initial release" />
   </body>
