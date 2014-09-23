@@ -23,7 +23,7 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
-    <release version="1.1" date="TBD" description="Requires Java 6 or greater.">
+    <release version="1.1" date="2014-09-30" description="Requires Java 6 or greater.">
       <action due-to="Bruno P. Kinoshita" issue="WEAVER-1" type="add">Enhance [weaver] documentation</action>
       <action issue="WEAVER-2" type="update">Upgrade to ASM 5</action>
       <action issue="WEAVER-3" type="update">Upgrade to latest xbean-finder (3.18)</action>
