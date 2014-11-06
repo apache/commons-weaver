@@ -165,7 +165,7 @@ And your POJO object annotated.
       /**
        * Represents a user in our system.
        */
-      public class User implements {
+      public class User {
           
           private String name;
           private String surname;
