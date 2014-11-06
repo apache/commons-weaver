@@ -266,7 +266,7 @@ with <pre>example.MyWeaver</pre> will instruct ServiceLoader to load your Weaver
          [EPL](http://eclipse.org/legal/epl-v10.html) which can be
          considered less permissive than the Apache license. Choice is
          A Good Thing.
-* *Q*: What is the relationship between Commons Weaver and ASM/Javassist/CGLIB?
+* *Q*: What is the relationship between Commons Weaver and Commons BCEL/ASM/Javassist/CGLIB?
 
     *A*: Rather than being an _alternative_ to these technologies, Commons
          Weaver can be thought of as providing a structured environment in
