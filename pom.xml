@@ -66,6 +66,12 @@ under the License.
 
   <developers>
     <developer>
+      <id>kinow</id>
+      <name>Bruno P. Kinoshita</name>
+      <email>kinow AT apache DOT org</email>
+      <organization>Apache</organization>
+    </developer>
+    <developer>
       <id>mbenson</id>
       <name>Matt Benson</name>
       <email>mbenson AT apache DOT org</email>
