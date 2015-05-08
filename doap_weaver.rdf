@@ -42,6 +42,8 @@
         <created>2014-09-30</created>
         <revision>1.1</revision>
       </Version>
+    </release>
+    <release>
       <Version>
         <name>commons-weaver</name>
         <created>2014-03-16</created>
