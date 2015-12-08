@@ -57,7 +57,7 @@ under the License.
     <commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>12315320</commons.jira.pid>
     <commons.site.path>commons-weaver</commons.site.path>
-    <asm.version>5.0.3</asm.version>
+    <asm.version>5.0.4</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
 
     <ant.version>1.9.3</ant.version>
@@ -417,6 +417,9 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
+          <additionalJOptions>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+          </additionalJOptions>
         </configuration>
       </plugin>
       <plugin>
