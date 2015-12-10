@@ -105,6 +105,13 @@ under the License.
             <configuration>
               <minimizeJar>true</minimizeJar>
               <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>org.apache.ant:*</exclude>
+                </excludes>
+              </artifactSet>
+
               <relocations>
                 <relocation>
                   <pattern>org.apache.commons.lang3.</pattern>
