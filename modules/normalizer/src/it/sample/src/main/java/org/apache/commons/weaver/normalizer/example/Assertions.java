@@ -65,5 +65,6 @@ public class Assertions {
         final Assertions assertions = new Assertions();
         assertions.testGenericType();
         assertions.testAlternateConstructors();
+        System.out.println("all clear");
     }
 }
