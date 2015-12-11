@@ -1,6 +1,5 @@
 <project name="commons-weaver-normalizer-sample-it-with-cw-antlib"
-         default="it" xmlns:au="antlib:org.apache.ant.antunit" 
-         xmlns:cw="antlib:org.apache.commons.weaver.ant">
+         default="it" xmlns:cw="antlib:org.apache.commons.weaver.ant">
 
   <property name="src.dir" location="${basedir}/src/main/java" />
   <property name="target.dir" location="${basedir}/target" />
