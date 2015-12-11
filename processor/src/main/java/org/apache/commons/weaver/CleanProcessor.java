@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Cleaner;
+import org.apache.commons.weaver.spi.Weaver;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.archive.FileArchive;
 
@@ -48,6 +49,12 @@ public class CleanProcessor {
 
     static {
         final List<Cleaner> cleaners = new ArrayList<Cleaner>();
+        final ClassLoader cleanerLoader = Cleaner.class.getClassLoader();
+        if (!Thread.currentThread().getContextClassLoader().equals(cleanerLoader)) {
+            for (final Cleaner cleaner : ServiceLoader.load(Cleaner.class, cleanerLoader)) {
+                cleaners.add(cleaner);
+            }
+        }
         for (final Cleaner cleaner : ServiceLoader.load(Cleaner.class)) {
             cleaners.add(cleaner);
         }
