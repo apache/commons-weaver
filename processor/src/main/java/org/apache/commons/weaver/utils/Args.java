@@ -28,10 +28,12 @@ public final class Args {
 
     /**
      * Compare two parameter type arrays.
-     * @param paramTypes1 lhs
-     * @param paramTypes2 rhs
-     * @return {@code int} as specified by
-     *         {@link java.util.Comparator#compare(Object, Object)}
+     * 
+     * @param paramTypes1
+     *            lhs
+     * @param paramTypes2
+     *            rhs
+     * @return {@code int} as specified by {@link java.util.Comparator#compare(Object, Object)}
      */
     public static int compare(final Class<?>[] paramTypes1, final Class<?>[] paramTypes2) {
         for (int param = 0; param < paramTypes1.length; param++) {
