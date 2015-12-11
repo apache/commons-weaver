@@ -60,7 +60,7 @@ under the License.
     <asm.version>5.0.4</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
 
-    <ant.version>1.9.3</ant.version>
+    <ant.version>1.9.4</ant.version>
     <checkstyle.version>2.11</checkstyle.version>
   </properties>
 
@@ -260,6 +260,11 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.8</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
