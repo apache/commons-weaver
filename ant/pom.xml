@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -21,13 +21,18 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.commons</groupId>
-    <artifactId>commons-weaver-parent</artifactId>
+    <artifactId>commons-weaver-antlib-parent</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>commons-weaver-antlib-parent</artifactId>
-  <name>Apache Commons Weaver Antlib Parent</name>
-  <packaging>pom</packaging>
+  <artifactId>commons-weaver-antlib</artifactId>
+  <name>Apache Commons Weaver Antlib</name>
+  <description>Apache Commons Weaver Ant task library</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <commons.osgi.import />
+  </properties>
 
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/ant</connection>
@@ -35,7 +40,145 @@ under the License.
     <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/ant</url>
   </scm>
 
-  <modules>
-    <module>lib</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-weaver-processor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${ant.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <!-- shade plugin creates but does not clean ${basedir}/dependency-reduced-pom.xml -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}</directory>
+              <includes>
+                <include>dependency-reduced-pom.xml</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-test-sources</id>
+            <phase />
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase />
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <id>shade</id>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>org.apache.ant:*</exclude>
+                </excludes>
+              </artifactSet>
+
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.commons.lang3.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._lang3.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons.io.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._io.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.xbean.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._xbean.</shadedPattern>
+                </relocation>
+              </relocations>
+              <filters>
+                <filter>
+                  <artifact>org.apache.commons:commons-lang3</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>commons-io:commons-io</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.xbean:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+         <configuration>
+          <rulesets>
+            <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
+          </rulesets>
+        </configuration>
+     </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstyle.version}</version>
+        <configuration>
+          <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <configuration>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
