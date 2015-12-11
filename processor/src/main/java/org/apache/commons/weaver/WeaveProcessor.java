@@ -49,8 +49,9 @@ public class WeaveProcessor {
 
     static {
         final List<Weaver> weavers = new ArrayList<Weaver>();
-        if (!Thread.currentThread().getContextClassLoader().equals(Weaver.class.getClassLoader())) {
-            for (final Weaver weaver : ServiceLoader.load(Weaver.class, Weaver.class.getClassLoader())) {
+        final ClassLoader weaverLoader = Weaver.class.getClassLoader();
+        if (!Thread.currentThread().getContextClassLoader().equals(weaverLoader)) {
+            for (final Weaver weaver : ServiceLoader.load(Weaver.class, weaverLoader)) {
                 weavers.add(weaver);
             }
         }
