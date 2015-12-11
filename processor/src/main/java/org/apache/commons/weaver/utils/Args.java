@@ -34,8 +34,7 @@ public final class Args {
      *         {@link java.util.Comparator#compare(Object, Object)}
      */
     public static int compare(final Class<?>[] paramTypes1, final Class<?>[] paramTypes2) {
-        final int param = 0;
-        while (param < paramTypes1.length) {
+        for (int param = 0; param < paramTypes1.length; param++) {
             if (param >= paramTypes2.length) {
                 return 1;
             }
