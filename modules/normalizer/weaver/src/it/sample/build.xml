@@ -1,0 +1,50 @@
+<project name="commons-weaver-normalizer-sample-it-with-cw-antlib"
+         default="it" xmlns:au="antlib:org.apache.ant.antunit" 
+         xmlns:cw="antlib:org.apache.commons.weaver.ant">
+
+  <property name="src.dir" location="${basedir}/src/main/java" />
+  <property name="target.dir" location="${basedir}/target" />
+  <property name="classes.dir" location="${target.dir}/classes" />
+  <property name="lib.dir" location="${basedir}/lib" />
+
+  <path id="compile.classpath">
+    <fileset dir="${lib.dir}" />
+  </path>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}"
+           classpathref="compile.classpath" includeantruntime="false" />
+  </target>
+
+  <target name="weave" depends="compile">
+    <cw:weave>
+      <cw:settings target="${classes.dir}" classpathref="compile.classpath">
+        <properties>
+          <normalizer.superTypes>
+            org.apache.commons.lang3.reflect.TypeLiteral,
+            org.apache.commons.weaver.normalizer.example.ContrivedWrapper
+          </normalizer.superTypes>
+          <normalizer.targetPackage>org.apache.commons.weaver.normalizer.example.normalized</normalizer.targetPackage>
+        </properties>
+      </cw:settings>
+    </cw:weave>
+  </target>
+
+  <target name="assertions" depends="weave">
+    <java classname="org.apache.commons.weaver.normalizer.example.Assertions"
+          failonerror="true">
+      <classpath>
+        <path refid="compile.classpath" />
+        <pathelement location="${classes.dir}" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="clean">
+    <delete dir="${target.dir}" />
+  </target>
+
+  <target name="it" depends="clean,assertions" />
+
+</project>

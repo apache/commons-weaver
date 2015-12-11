@@ -664,10 +664,9 @@ under the License.
   <modules>
     <module>build-tools</module>
     <module>processor</module>
-    <module>modules</module>
     <module>maven-plugin</module>
-    <module>example</module>
     <module>ant</module>
+    <module>modules</module>
     <module>dist</module>
   </modules>
 

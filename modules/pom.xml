@@ -30,10 +30,6 @@ under the License.
 
   <name>Apache Commons Weaver Modules aggregator project</name>
   <description>Hosts weaver modules.</description>
-  <modules>
-    <module>privilizer</module>
-    <module>normalizer</module>
-  </modules>
 
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules</connection>
@@ -41,13 +37,8 @@ under the License.
     <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules</url>
   </scm>
 
-  <dependencies>
-    <dependency>
-          <!-- we need this dependency for the reactor to correctly resolve the build order -->
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-weaver-maven-plugin</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>privilizer</module>
+    <module>normalizer</module>
+  </modules>
 </project>

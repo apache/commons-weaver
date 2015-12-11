@@ -89,14 +89,14 @@ under the License.
   </profiles>
   <build>
     <plugins>
-      <!-- shade plugin creates but does not clean ${basedir}/dependency-reduced-pom.xml -->
+      <!-- shade plugin creates but does not clean ${project.basedir}/dependency-reduced-pom.xml -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}</directory>
+              <directory>${project.basedir}</directory>
               <includes>
                 <include>dependency-reduced-pom.xml</include>
               </includes>
@@ -158,6 +158,116 @@ under the License.
                   </excludes>
                 </filter>
               </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-it</id>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <target>
+                <sync todir="${project.build.directory}/it/sample">
+                  <fileset dir="${project.basedir}/src/it/sample" />
+                </sync>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>antunit</id>
+            <phase>integration-test</phase>
+            <configuration>
+              <target>
+                <ant antfile="${project.build.directory}/it/sample/build.xml"
+                     usenativebasedir="true">
+                  <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+                  <property name="ant.build.javac.source" value="${maven.compiler.source}" />
+                  <property name="ant.build.javac.target" value="${maven.compiler.target}" />
+                </ant>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-launcher</artifactId>
+            <version>${ant.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-junit</artifactId>
+            <version>${ant.version}</version>
+          </dependency>
+          <!--dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+          </dependency-->
+          <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>commons-weaver-antlib</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant-antunit</artifactId>
+            <version>1.3</version>
+          </dependency>
+          <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>4.4.2</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.10</version>
+        <executions>
+          <execution>
+            <id>it-compile-deps</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>commons-lang3,junit,hamcrest-core</includeArtifactIds>
+
+              <outputDirectory>${project.build.directory}/it/sample/lib</outputDirectory>
+              <!--artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.commons</groupId>
+                  <artifactId>commons-lang3</artifactId>
+                  <version>3.4</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>junit</groupId>
+                  <artifactId>junit</artifactId>
+                  <version>4.11</version>
+                </artifactItem>
+              </artifactItems-->
             </configuration>
           </execution>
         </executions>

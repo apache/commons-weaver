@@ -18,22 +18,15 @@
  */
 package org.apache.commons.weaver.normalizer.example;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang3.Validate;
 
-import org.junit.Before;
-import org.junit.Test;
+/**
+ * Like a JUnit test, but invoking JUnit via Ant via Maven is too cumbersome
+ */
+public class Assertions {
+    private InstanceMembers instanceMembers = new InstanceMembers();
 
-public class NormalizerTest {
-    private InstanceMembers instanceMembers;
-
-    @Before
-    public void setup() {
-        instanceMembers = new InstanceMembers();
-    }
-
-    @Test
-    public void testGenericType() {
+    private void testGenericType() {
         final Class<?> stringLiteral = StaticMembers.STRING_TYPE.getClass();
         assertTrue(stringLiteral.isInstance(StaticMembers.STRING_TYPE2));
         assertFalse(stringLiteral.isInstance(StaticMembers.INTEGER_ITERABLE_TYPE));
@@ -45,8 +38,7 @@ public class NormalizerTest {
         assertTrue(integerIterable.isInstance(instanceMembers.integerIterableType));
     }
 
-    @Test
-    public void testAlternateConstructors() {
+    private void testAlternateConstructors() {
         final Class<?> objectWrapper = StaticMembers.WRAPPED_OBJECT.getClass();
         assertTrue(objectWrapper.isInstance(StaticMembers.WRAPPED_STRING));
         assertTrue(objectWrapper.isInstance(StaticMembers.WRAPPED_STRING2));
@@ -59,5 +51,19 @@ public class NormalizerTest {
         assertFalse(objectWrapper.isInstance(instanceMembers.wrappedInt));
         final Class<?> intWrapper = StaticMembers.WRAPPED_INT.getClass();
         assertTrue(intWrapper.isInstance(instanceMembers.wrappedInt));
+    }
+
+    private void assertTrue(boolean b) {
+        Validate.isTrue(b);
+    }
+
+    private void assertFalse(boolean b) {
+        Validate.isTrue(!b);
+    }
+
+    public static void main(String[] args) {
+        final Assertions assertions = new Assertions();
+        assertions.testGenericType();
+        assertions.testAlternateConstructors();
     }
 }
