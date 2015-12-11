@@ -26,13 +26,13 @@ grant
 
 // we don't care about the permissions of the testing infrastructure,
 // including maven;
-grant codeBase "file://${user.home}/.m2/repository/org/apache/maven/-"
+grant codeBase "file://${local-repo}/org/apache/maven/-"
 {
   permission java.security.AllPermission;
 };
 
 // junit;
-grant codeBase "file://${user.home}/.m2/repository/junit/-"
+grant codeBase "file://${local-repo}/junit/-"
 {
   permission java.security.AllPermission;
 };

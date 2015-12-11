@@ -37,6 +37,5 @@ under the License.
 
   <modules>
     <module>lib</module>
-    <module>test</module>
   </modules>
 </project>

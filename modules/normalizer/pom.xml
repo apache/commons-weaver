@@ -45,7 +45,6 @@ under the License.
 
   <modules>
     <module>weaver</module>
-    <module>example</module>
   </modules>
 </project>
 
