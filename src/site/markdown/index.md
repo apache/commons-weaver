@@ -275,6 +275,6 @@ with <pre>example.MyWeaver</pre> will instruct ServiceLoader to load your Weaver
          be implemented using one of these (or comparable) libraries.
 
 [mvnplugin]: commons-weaver-maven-plugin/plugin-info.html
-[antlib]: commons-weaver-antlib-parent/commons-weaver-antlib/index.html
+[antlib]: commons-weaver-antlib/index.html
 [antxt]: http://ant.apache.org/manual/using.html#external-tasks
 [antref]: http://ant.apache.org/manual/using.html#references
