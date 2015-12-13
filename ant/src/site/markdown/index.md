@@ -19,7 +19,7 @@ under the License.
 
 ## Apache Commons Weaver Antlib
 
-Provides an Antlib in the `antlib:org.apache.commons.weaver` namespace,
+Provides an Antlib in the `antlib:org.apache.commons.weaver.ant` namespace,
 consisting of the following tasks:
 
 ### clean
