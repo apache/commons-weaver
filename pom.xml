@@ -26,7 +26,7 @@ under the License.
     <version>34</version>
   </parent>
 
-  <artifactId>commons-weaver-parent</artifactId>
+  <artifactId>commons-weaver-base</artifactId>
   <version>1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -47,9 +47,6 @@ under the License.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
-
     <commons.componentid>weaver</commons.componentid>
     <commons.release.version>1.1</commons.release.version>
     <commons.release.name>commons-weaver-${commons.release.version}</commons.release.name>
@@ -59,9 +56,6 @@ under the License.
     <commons.site.path>commons-weaver</commons.site.path>
     <asm.version>5.0.4</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
-
-    <ant.version>1.9.4</ant.version>
-    <checkstyle.version>2.11</checkstyle.version>
   </properties>
 
   <developers>
@@ -99,333 +93,12 @@ under the License.
     </site>
   </distributionManagement>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-processor</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-processor</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-processor</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer-api</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer-api</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-privilizer</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-normalizer</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-normalizer</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-normalizer</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-maven-plugin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-maven-plugin</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-maven-plugin</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-antlib</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-antlib</artifactId>
-        <classifier>sources</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-weaver-antlib</artifactId>
-        <classifier>javadoc</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xbean</groupId>
-        <artifactId>xbean-finder-shaded</artifactId>
-        <version>4.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>3.3.2</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-commons</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-tree</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-util</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-analysis</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm-debug-all</artifactId>
-        <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.11</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>1.3.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.0.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>2.5.3</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-notices</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target xmlns:if="ant:if" xmlns:unless="ant:unless">
-                <presetdef name="truth">
-                  <condition value="true" else="false" />
-                </presetdef>
-
-                <macrodef name="seek">
-                  <attribute name="name" />
-                  <attribute name="addto" />
-                  <sequential>
-                    <union id="@{name}-ws" />
-                    <step dir="${user.dir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
-                  </sequential>
-                </macrodef>
-
-                <macrodef name="step">
-                  <attribute name="name" />
-                  <attribute name="dir" />
-                  <attribute name="addto" />
-                  <attribute name="ws" />
-                  <sequential>
-                    <local name="seenDir" />
-                    <truth property="seenDir">
-                      <resourcecount when="gt" count="0">
-                        <intersect id="intersection">
-                          <resources refid="@{ws}" />
-                          <file name="@{dir}" />
-                        </intersect>
-                      </resourcecount>
-                    </truth>
-                    <sequential unless:true="${seenDir}">
-                      <augment id="@{ws}">
-                        <file file="@{dir}" />
-                      </augment>
-                      <local name="exists" />
-                      <truth property="exists">
-                        <available file="@{dir}/@{name}" />
-                      </truth>
-
-                      <sequential if:true="${exists}">
-                        <augment id="@{addto}">
-                          <file file="@{dir}/@{name}" />
-                        </augment>
-                      </sequential>
-                      <sequential unless:true="${exists}">
-                        <local name="parent.dir" />
-                        <dirname property="parent.dir" file="@{dir}" />
-                        <step dir="${parent.dir}" name="@{name}" addto="@{addto}" ws="@{ws}" />
-                      </sequential>
-                    </sequential>
-                  </sequential>
-                </macrodef>
-
-                <truth property="pom-only">
-                  <equals arg1="${project.packaging}" arg2="pom" />
-                </truth>
-                <sequential unless:true="${pom-only}">
-                  <union id="notices" />
-                  <seek name="LICENSE.txt" addto="notices" />
-                  <seek name="NOTICE.txt" addto="notices" />
-
-                  <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
-                  <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
-                    <resources refid="notices" />
-                  </copy>
-
-                  <mkdir dir="${project.build.directory}/generated-test-resources/notices/META-INF" />
-                  <copy verbose="true" todir="${project.build.directory}/generated-test-resources/notices/META-INF">
-                    <resources refid="notices" />
-                  </copy>
-
-                  <mkdir dir="${project.build.directory}/apidocs/META-INF" />
-                  <copy verbose="true" todir="${project.build.directory}/apidocs/META-INF">
-                    <resources refid="notices" />
-                  </copy>
-                </sequential>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>${ant.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-test-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <skipIfEmpty>true</skipIfEmpty>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>create-javadoc-jar</id>
-            <goals>
-              <goal>javadoc</goal>
-              <goal>jar</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <additionalJOptions>
-            <additionalJOption>-Xdoclint:none</additionalJOption>
-          </additionalJOptions>
-        </configuration>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.3.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -459,24 +132,6 @@ under the License.
         </dependencies>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>attach-test-sources</id>
-            <goals>
-              <goal>test-jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <inherited>false</inherited>
@@ -491,56 +146,11 @@ under the License.
           </excludes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-source-notices</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/generated-resources/notices</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-test-notices</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>add-test-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/generated-test-resources/notices</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
   <reporting>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <configuration>
-          <aggregate>true</aggregate>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
@@ -579,17 +189,6 @@ under the License.
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>create-source-jar</id>
-                <!-- suppress execution specified by parent profile -->
-                <phase />
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
@@ -607,67 +206,11 @@ under the License.
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>quality</id>
-      <activation>
-        <property>
-          <name>!quality.skip</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>${checkstyle.version}</version>
-            <dependencies>
-              <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>commons-weaver-build-tools</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-pmd-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>commons-weaver-build-tools</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <rulesets>
-                <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
-              </rulesets>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>commons-weaver-build-tools</artifactId>
-                <version>${project.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <excludeFilterFile>/org/apache/commons/weaver/findbugs-exclude-filter.xml</excludeFilterFile>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 
   <modules>
     <module>build-tools</module>
+    <module>parent</module>
     <module>processor</module>
     <module>maven-plugin</module>
     <module>ant</module>
