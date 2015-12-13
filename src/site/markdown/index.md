@@ -42,13 +42,13 @@ find a graph with a high level overview of Apache Commons Weaver project.
 Latest API documentation is [here](apidocs/index.html).
 
 ### <a name="core"></a> Core Framework
-The [Commons Weaver Processor](commons-weaver-processor/index.html)
+The [Commons Weaver Processor](commons-weaver-parent/commons-weaver-processor/index.html)
 defines a "weaver module" service provider interface (SPI) as well as
 the facilities that use the Java `ServiceLoader` to discover and invoke
 defined weaver modules for simple filesystem-based bytecode weaving.
 
 ### <a name="weavers"></a> Weaver Modules
-A number of [Weaver Modules](commons-weaver-modules-parent/index.html)
+A number of [Weaver Modules](commons-weaver-parent/commons-weaver-modules-parent/index.html)
 are provided by the Commons Weaver project.
 Typically a weaver module may respect a set of configuration
 properties which should be documented along with that module.
@@ -137,7 +137,7 @@ implement the `Cleaner` SPI to find and delete these in the case that the
 current configuration is incompatible with the results of an earlier "weaving."
 
 ## Examples
-The canonical example is the [privilizer module](commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
+The canonical example is the [privilizer module](commons-weaver-parent/commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html).
 
 A simple example could be exposing annotated methods for a REST API. Suppose 
 you want to expose only classes annotated with @WebExposed to your Web REST API.
@@ -274,7 +274,7 @@ with <pre>example.MyWeaver</pre> will instruct ServiceLoader to load your Weaver
          modifications made by a given `Weaver` implementation would typically
          be implemented using one of these (or comparable) libraries.
 
-[mvnplugin]: commons-weaver-maven-plugin/plugin-info.html
-[antlib]: commons-weaver-antlib/index.html
+[mvnplugin]: commons-weaver-parent/commons-weaver-maven-plugin/plugin-info.html
+[antlib]: commons-weaver-parent/commons-weaver-antlib/index.html
 [antxt]: http://ant.apache.org/manual/using.html#external-tasks
 [antref]: http://ant.apache.org/manual/using.html#references
