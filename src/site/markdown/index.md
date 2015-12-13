@@ -240,14 +240,6 @@ Commons Weaver abstracts this for you.
               return true;
           }
           
-          public static void main(String[] args) {
-              // If you are using Maven, .. might resolve to your target directory
-              File targetDir = new File(MyWeaver.class.getResource("..").getFile());
-              //MyWeaver myWeaver = new MyWeaver();
-              WeaveProcessor weaveProcessor = new WeaveProcessor(Arrays.asList("test.MyWeaver", "test.User"), targetDir, new Properties());
-              weaveProcessor.weave();
-          }
-
       }
 
 Before running the example above you need to tell the ServiceProvider about 
