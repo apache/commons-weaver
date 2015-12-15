@@ -108,6 +108,7 @@ public class Normalizer {
         }
 
         @Override
+        @SuppressWarnings("PMD.UseVarargs") //overridden method
         public void visit(final int version, final int access, final String name, final String signature,
             final String superName, final String[] interfaces) {
             super.visit(version, access, name, signature, superName, interfaces);
@@ -132,6 +133,7 @@ public class Normalizer {
         }
 
         @Override
+        @SuppressWarnings("PMD.UseVarargs") //overridden method
         public MethodVisitor visitMethod(final int access, final String name, final String desc,
             final String signature, final String[] exceptions) {
             return INIT.equals(name) ? new InspectConstructor() : null;
@@ -194,6 +196,7 @@ public class Normalizer {
         }
 
         @Override
+        @SuppressWarnings("PMD.UseVarargs") //overridden method
         public MethodVisitor visitMethod(final int access, final String name, final String desc,
             final String signature, final String[] exceptions) {
             final MethodVisitor toWrap = super.visitMethod(access, name, desc, signature, exceptions);
@@ -268,6 +271,7 @@ public class Normalizer {
         }
 
         @Override
+        @SuppressWarnings("PMD.UseVarargs") //overridden method
         public void visit(final int version, final int access, final String name, final String signature,
             final String superName, final String[] intrfces) {
             super.visit(version, access, name, signature, superName, intrfces);
@@ -556,6 +560,7 @@ public class Normalizer {
                 Type supertype;
 
                 @Override
+                @SuppressWarnings("PMD.UseVarargs") //overridden method
                 public void visit(final int version, final int access, final String name, final String signature,
                     final String superName, final String[] interfaces) {
                     supertype = Type.getObjectType(superName);
@@ -565,6 +570,7 @@ public class Normalizer {
                 }
 
                 @Override
+                @SuppressWarnings("PMD.UseVarargs") //overridden method
                 public MethodVisitor visitMethod(final int access, final String name, final String desc,
                     final String signature, final String[] exceptions) {
                     if (INIT.equals(name)) {
@@ -629,6 +635,7 @@ public class Normalizer {
      * @return {@link Type}[]
      * @see Type#getObjectType(String)
      */
+    @SuppressWarnings("PMD.UseVarargs") //varargs not needed here
     private static Type[] toObjectTypes(final String[] types) {
         if (types == null) {
             return null;

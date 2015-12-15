@@ -237,6 +237,7 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         @Override
+        @SuppressWarnings("PMD.UseVarargs") // overridden method
         public MethodVisitor visitMethod(final int access, final String name, final String desc,
             final String signature, final String[] exceptions) {
             final MethodVisitor toWrap = wrapped.visitMethod(access, name, desc, signature, exceptions);
@@ -317,6 +318,7 @@ class Finder extends AnnotationFinder implements Scanner {
             this(target, classfileAnnotations.toArray(new Annotation[classfileAnnotations.size()]));
         }
 
+        @SuppressWarnings("PMD.UseVarargs") // varargs not necessary here
         IncludesClassfile(final T target, final Annotation[] classfileAnnotations) {
             super();
             this.target = target;

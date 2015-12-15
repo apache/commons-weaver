@@ -363,9 +363,6 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
-          <additionalJOptions>
-            <additionalJOption>-Xdoclint:none</additionalJOption>
-          </additionalJOptions>
         </configuration>
       </plugin>
       <plugin>
@@ -496,6 +493,7 @@ under the License.
               <rulesets>
                 <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
               </rulesets>
+              <skipEmptyReport>false</skipEmptyReport>
             </configuration>
           </plugin>
           <plugin>
@@ -515,6 +513,24 @@ under the License.
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>java8</id>
+      <activation>
+        <jdk>[1.8,2.0)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <additionalJOptions>
+                <additionalJOption>-Xdoclint:none</additionalJOption>
+              </additionalJOptions>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
-
 </project>
