@@ -85,6 +85,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     @Override
+    @SuppressWarnings("PMD.UseVarargs") //overridden method
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
         final String[] exceptions) {
         annotate();
