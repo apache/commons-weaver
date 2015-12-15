@@ -35,6 +35,7 @@ public final class Args {
      *            rhs
      * @return {@code int} as specified by {@link java.util.Comparator#compare(Object, Object)}
      */
+    @SuppressWarnings("PMD.UseVarargs") // not needed for comparing one array to another
     public static int compare(final Class<?>[] paramTypes1, final Class<?>[] paramTypes2) {
         for (int param = 0; param < paramTypes1.length; param++) {
             if (param >= paramTypes2.length) {

@@ -47,6 +47,7 @@ public final class Annotations {
         final InvocationHandler invocationHandler = new InvocationHandler() {
 
             @Override
+            @SuppressWarnings("PMD.UseVarargs") // overridden method
             public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
                 if (method.getDeclaringClass().equals(annotationType)) {
                     if (elements.containsKey(method.getName())) {

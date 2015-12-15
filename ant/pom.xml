@@ -162,6 +162,7 @@ under the License.
           <rulesets>
             <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
           </rulesets>
+          <skipEmptyReport>false</skipEmptyReport>
         </configuration>
      </plugin>
       <plugin>

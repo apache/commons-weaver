@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Cleaner;
-import org.apache.commons.weaver.spi.Weaver;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.archive.FileArchive;
 

@@ -19,7 +19,7 @@
 package org.apache.commons.weaver.model;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.RetentionPolicy; //NOPMD used in javadoc
 import java.lang.reflect.AnnotatedElement;
 
 /**

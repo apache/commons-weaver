@@ -60,7 +60,9 @@ limitations under the License.
   </rule>
   <rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
     <properties>
-      <property name="exceptionList" value="unchecked,rawtypes" />
+      <!-- suppress on @SuppressWarnings: -->
+      <property name="violationSuppressXPath"
+                value="//Literal[ancestor::Annotation/*/Name[@Image='SuppressWarnings']]" />
     </properties>
   </rule>
 
