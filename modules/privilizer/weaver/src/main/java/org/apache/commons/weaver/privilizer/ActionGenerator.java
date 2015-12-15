@@ -104,6 +104,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         return buf.append("_ACTION").toString();
     }
 
+    @SuppressWarnings("PMD.UseVarargs") //not needed
     private static Field[] fields(final Type[] args) {
         final Field[] result = new Field[args.length];
 

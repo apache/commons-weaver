@@ -62,6 +62,7 @@ public class PrivilizerCleaner implements Cleaner {
                 final ClassReader classReader = new ClassReader(bytecode);
                 classReader.accept(new ClassVisitor(Opcodes.ASM5) {
                     @Override
+                    @SuppressWarnings("PMD.UseVarargs") //overridden method
                     public void visit(final int version, final int access, final String name, final String signature,
                         final String superName, final String[] interfaces) {
                         toDelete.add(name);

@@ -133,6 +133,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     @Override
+    @SuppressWarnings("PMD.UseVarargs") //overridden method
     public void visit(final int version, final int access, final String name, final String signature,
         final String superName, final String[] interfaces) {
         Validate.isTrue(!blueprintTypes.contains(Type.getObjectType(name)),
@@ -141,6 +142,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     @Override
+    @SuppressWarnings("PMD.UseVarargs") //overridden method
     public MethodVisitor visitMethod(final int access, final String name, final String desc, final String signature,
         final String[] exceptions) {
         final MethodVisitor toWrap = super.visitMethod(access, name, desc, signature, exceptions);
@@ -219,6 +221,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                         bytecode = privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream();
                         new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
                             @Override
+                            @SuppressWarnings("PMD.UseVarargs") //overridden method
                             public void visit(final int version, final int access, final String name,
                                 final String signature, final String superName, final String[] interfaces) {
                                 super.visit(version, access, name, signature, superName, interfaces);
