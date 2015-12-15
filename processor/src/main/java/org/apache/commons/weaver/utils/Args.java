@@ -28,7 +28,7 @@ public final class Args {
 
     /**
      * Compare two parameter type arrays.
-     * 
+     *
      * @param paramTypes1
      *            lhs
      * @param paramTypes2
