@@ -23,6 +23,12 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
+    <release version="1.2" date="2015-12-30" description="Requires Java 6 or greater.">
+      <action issue="WEAVER-5" type="fix">Incomplete sorting code causes infinite loop</action>
+      <action issue="WEAVER-6" type="update">Convert example modules into proper integration tests</action>
+      <action issue="WEAVER-7" type="update">Support Weaver classloader in addition to context ClassLoader</action>
+      <action issue="WEAVER-8" type="add">Add a dependency mechanism for ordering Weavers, Cleaners amongst themselves</action>
+    </release>
     <release version="1.1" date="2014-09-30" description="Requires Java 6 or greater.">
       <action due-to="Bruno P. Kinoshita" issue="WEAVER-1" type="add">Enhance [weaver] documentation</action>
       <action issue="WEAVER-2" type="update">Upgrade to ASM 5</action>
