@@ -35,6 +35,7 @@ import org.apache.commons.weaver.utils.Providers;
  * Base implementor of a {@link WeaveLifecycle} stage.
  *
  * @param <P> managed {@link WeaveLifecycleProvider} type
+ * @since 1.2
  */
 class ProcessorBase<P extends WeaveLifecycleProvider<?>> {
 
