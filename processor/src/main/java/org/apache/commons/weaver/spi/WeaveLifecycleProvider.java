@@ -21,7 +21,7 @@ package org.apache.commons.weaver.spi;
 import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken;
 
 /**
- * Marker interface for commmons-weaver processes.
+ * Marker interface for commons-weaver lifecycle providers.
  * @since 1.2
  */
 public interface WeaveLifecycleProvider<S extends WeaveLifecycleToken> {
