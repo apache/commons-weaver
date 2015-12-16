@@ -30,7 +30,7 @@ import org.apache.commons.weaver.model.WeaveEnvironment;
 public interface Cleaner extends WeaveLifecycleProvider<Clean> {
     /**
      * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
-     * 
+     *
      * @param environment to use
      * @param scanner to use
      * @return whether any work was done.

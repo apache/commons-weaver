@@ -21,8 +21,17 @@ package org.apache.commons.weaver.lifecycle;
 
 /**
  * Defines the parts of the weave lifecycle.
+ *
  * @since 1.2
  */
 public enum WeaveLifecycle {
-    CLEAN, WEAVE;
+    /**
+     * Depicts the 'clean' stage of the lifecycle.
+     */
+    CLEAN,
+
+    /**
+     * Depicts the 'weave' stage of the lifecycle.
+     */
+    WEAVE;
 }

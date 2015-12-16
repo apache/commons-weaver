@@ -46,7 +46,7 @@ public final class Providers {
 
     private static class SortWorker<P extends WeaveLifecycleProvider<?>> {
         /**
-         * Implement {@link Providers#sort(Iterable)}
+         * Implement {@link Providers#sort(Iterable)}.
          *
          * @param providers to sort
          * @return {@link Iterable} of {@code P}
@@ -61,7 +61,7 @@ public final class Providers {
             final Map<Class<? extends P>, State> stateMap = new HashMap<Class<? extends P>, Providers.State>();
             final Deque<Class<? extends P>> visiting = new ArrayDeque<Class<? extends P>>();
 
-            for (Class<? extends P> type : dependencyMap.keySet()) {
+            for (final Class<? extends P> type : dependencyMap.keySet()) {
                 final State state = stateMap.get(type);
 
                 if (state == null) {
@@ -90,7 +90,7 @@ public final class Providers {
             stateMap.put(root, State.VISITING);
             visiting.push(root);
 
-            for (Class<? extends P> dependency : dependencyMap.get(root)) {
+            for (final Class<? extends P> dependency : dependencyMap.get(root)) {
                 final State state = stateMap.get(dependency);
                 if (state == State.VISITED) {
                     continue;
@@ -163,12 +163,12 @@ public final class Providers {
                     }
                 });
 
-            for (WeaveLifecycleProvider<?> provider : providers) {
+            for (final WeaveLifecycleProvider<?> provider : providers) {
                 @SuppressWarnings("unchecked")
                 final Class<? extends P> type = (Class<? extends P>) provider.getClass();
                 Collections.addAll(result.get(type), consumedBy(type));
 
-                for (Class<? extends P> dependent : producedBy(type)) {
+                for (final Class<? extends P> dependent : producedBy(type)) {
                     result.get(dependent).add(type);
                 }
             }
@@ -186,8 +186,8 @@ public final class Providers {
 
             final Set<P> result = new LinkedHashSet<P>();
 
-            for (Class<? extends P> type : order) {
-                for (P provider : providers) {
+            for (final Class<? extends P> type : order) {
+                for (final P provider : providers) {
                     if (type.isInstance(provider)) {
                         result.add(provider);
                     }
@@ -204,9 +204,7 @@ public final class Providers {
     /**
      * Sort the specified providers with respect to declared {@link Consumes} and {@link Produces} annotations.
      *
-     * @param
-     *            <P>
-     *            the {@link WeaveLifecycleProvider} type
+     * @param <P> the {@link WeaveLifecycleProvider} type
      * @param providers to sort
      * @return {@link Iterable} of {@code P}
      */
