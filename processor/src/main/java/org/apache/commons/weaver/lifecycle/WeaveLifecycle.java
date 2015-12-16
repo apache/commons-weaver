@@ -16,24 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.weaver.spi;
 
-import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
-import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken.Clean;
-import org.apache.commons.weaver.model.Scanner;
-import org.apache.commons.weaver.model.WeaveEnvironment;
+package org.apache.commons.weaver.lifecycle;
 
 /**
- * SPI to provide a means for a weaver module to remove woven classes during incremental builds, if necessary.
- * Implements the {@code CLEAN} stage of the {@link WeaveLifecycle}.
+ * Defines the parts of the weave lifecycle.
+ * @since 1.2
  */
-public interface Cleaner extends WeaveLifecycleProvider<Clean> {
-    /**
-     * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
-     * 
-     * @param environment to use
-     * @param scanner to use
-     * @return whether any work was done.
-     */
-    boolean clean(WeaveEnvironment environment, Scanner scanner);
+public enum WeaveLifecycle {
+    CLEAN, WEAVE;
 }

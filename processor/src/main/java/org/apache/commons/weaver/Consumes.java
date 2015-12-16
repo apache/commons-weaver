@@ -16,24 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.weaver.spi;
+package org.apache.commons.weaver;
 
-import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
-import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken.Clean;
-import org.apache.commons.weaver.model.Scanner;
-import org.apache.commons.weaver.model.WeaveEnvironment;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 
 /**
- * SPI to provide a means for a weaver module to remove woven classes during incremental builds, if necessary.
- * Implements the {@code CLEAN} stage of the {@link WeaveLifecycle}.
+ * Mark a {@link WeaveLifecycleProvider} as consuming the output of additional
+ * {@link WeaveLifecycleProvider}es of the same broad type.
  */
-public interface Cleaner extends WeaveLifecycleProvider<Clean> {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+public @interface Consumes {
     /**
-     * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
-     * 
-     * @param environment to use
-     * @param scanner to use
-     * @return whether any work was done.
+     * The consumed types.
+     * @return Class[]
      */
-    boolean clean(WeaveEnvironment environment, Scanner scanner);
+    Class<? extends WeaveLifecycleProvider<?>>[] value();
 }

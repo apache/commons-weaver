@@ -20,8 +20,6 @@ package org.apache.commons.weaver;
 
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -29,51 +27,27 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.archive.FileArchive;
 
 /**
- * This class discovers and invokes available {@link Cleaner} plugins.
+ * Implements {@link WeaveLifecycle#CLEAN}.
  */
-public class CleanProcessor {
-    private static final Logger LOG = Logger.getLogger(CleanProcessor.class.getName());
+public class CleanProcessor extends ProcessorBase<Cleaner> {
 
     /**
-     * List of picked up cleaner plugins.
+     * Create a new {@link CleanProcessor} instance using the {@link ServiceLoader} mechanism.
+     *
+     * @param classpath not {@code null}
+     * @param target not {@code null}
+     * @param configuration not {@code null}
      */
-    private static final List<Cleaner> CLEANERS;
-
-    static {
-        final List<Cleaner> cleaners = new ArrayList<Cleaner>();
-        final ClassLoader cleanerLoader = Cleaner.class.getClassLoader();
-        if (!Thread.currentThread().getContextClassLoader().equals(cleanerLoader)) {
-            for (final Cleaner cleaner : ServiceLoader.load(Cleaner.class, cleanerLoader)) {
-                cleaners.add(cleaner);
-            }
-        }
-        for (final Cleaner cleaner : ServiceLoader.load(Cleaner.class)) {
-            cleaners.add(cleaner);
-        }
-        CLEANERS = Collections.unmodifiableList(cleaners);
+    public CleanProcessor(final List<String> classpath, final File target, final Properties configuration) {
+        this(classpath, target, configuration, getServiceInstances(Cleaner.class));
     }
-
-    /**
-     * The classpath which will be used to look up cross references during cleaning.
-     */
-    private final List<String> classpath;
-
-    /**
-     * The actual path to be woven, replacing any affected classes.
-     */
-    private final File target;
-
-    /**
-     * Properties for configuring discovered plugin modules.
-     */
-    private final Properties configuration;
 
     /**
      * Create a new {@link CleanProcessor} instance.
@@ -81,13 +55,11 @@ public class CleanProcessor {
      * @param classpath not {@code null}
      * @param target not {@code null}
      * @param configuration not {@code null}
+     * @param providers not (@code null}
      */
-    public CleanProcessor(final List<String> classpath, final File target, final Properties configuration) {
-        super();
-        this.classpath = Validate.notNull(classpath, "classpath");
-        this.target = Validate.notNull(target, "target");
-        Validate.isTrue(!target.exists() || target.isDirectory(), "%s is not a directory", target);
-        this.configuration = Validate.notNull(configuration, "configuration");
+    public CleanProcessor(final List<String> classpath, final File target, final Properties configuration,
+        final Iterable<Cleaner> providers) {
+        super(classpath, target, configuration, providers);
     }
 
     /**
@@ -95,17 +67,16 @@ public class CleanProcessor {
      */
     public void clean() {
         if (!target.exists()) {
-            LOG.warning("Target directory " + target + " does not exist; nothing to do!");
+            log.warning("Target directory " + target + " does not exist; nothing to do!");
         }
         final Set<String> finderClasspath = new LinkedHashSet<String>();
         finderClasspath.add(target.getAbsolutePath());
         finderClasspath.addAll(classpath);
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        for (final Cleaner cleaner : CLEANERS) {
-            final WeaveEnvironment env =
-                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(cleaner.getClass()
-                    .getName()));
+        for (final Cleaner cleaner : providers) {
+            final WeaveEnvironment env = new LocalWeaveEnvironment(target, classLoader, configuration,
+                Logger.getLogger(cleaner.getClass().getName()));
             cleaner.clean(env, finder);
         }
     }
