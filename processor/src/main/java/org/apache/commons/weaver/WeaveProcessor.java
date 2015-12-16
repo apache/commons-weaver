@@ -20,8 +20,6 @@ package org.apache.commons.weaver;
 
 import java.io.File;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
@@ -29,52 +27,27 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Weaver;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.archive.FileArchive;
 
 /**
- * This class discovers and invokes available {@link Weaver} plugins.
+ * Implements {@link WeaveLifecycle#WEAVE}.
  */
-public class WeaveProcessor {
-
-    private static final Logger LOG = Logger.getLogger(WeaveProcessor.class.getName());
+public class WeaveProcessor extends ProcessorBase<Weaver> {
 
     /**
-     * List of picked up weaver plugins.
+     * Create a new {@link WeaveProcessor} instance using the {@link ServiceLoader} mechanism.
+     *
+     * @param classpath not {@code null}
+     * @param target not {@code null}
+     * @param configuration not {@code null}
      */
-    private static final List<Weaver> WEAVERS;
-
-    static {
-        final List<Weaver> weavers = new ArrayList<Weaver>();
-        final ClassLoader weaverLoader = Weaver.class.getClassLoader();
-        if (!Thread.currentThread().getContextClassLoader().equals(weaverLoader)) {
-            for (final Weaver weaver : ServiceLoader.load(Weaver.class, weaverLoader)) {
-                weavers.add(weaver);
-            }
-        }
-        for (final Weaver weaver : ServiceLoader.load(Weaver.class)) {
-            weavers.add(weaver);
-        }
-        WEAVERS = Collections.unmodifiableList(weavers);
+    public WeaveProcessor(final List<String> classpath, final File target, final Properties configuration) {
+        super(classpath, target, configuration, getServiceInstances(Weaver.class));
     }
-
-    /**
-     * The classpath which will be used to look up cross references during weaving.
-     */
-    private final List<String> classpath;
-
-    /**
-     * The actual path to be woven, replacing any affected classes.
-     */
-    private final File target;
-
-    /**
-     * Properties for configuring discovered plugin modules.
-     */
-    private final Properties configuration;
 
     /**
      * Create a new {@link WeaveProcessor} instance.
@@ -82,13 +55,11 @@ public class WeaveProcessor {
      * @param classpath not {@code null}
      * @param target not {@code null}
      * @param configuration not {@code null}
+     * @param providers not (@code null}
      */
-    public WeaveProcessor(final List<String> classpath, final File target, final Properties configuration) {
-        super();
-        this.classpath = Validate.notNull(classpath, "classpath");
-        this.target = Validate.notNull(target, "target");
-        Validate.isTrue(!target.exists() || target.isDirectory(), "%s is not a directory", target);
-        this.configuration = Validate.notNull(configuration, "configuration");
+    public WeaveProcessor(final List<String> classpath, final File target, final Properties configuration,
+        final Iterable<Weaver> providers) {
+        super(classpath, target, configuration, providers);
     }
 
     /**
@@ -96,17 +67,16 @@ public class WeaveProcessor {
      */
     public void weave() {
         if (!target.exists()) {
-            LOG.warning("Target directory " + target + " does not exist; nothing to do!");
+            log.warning("Target directory " + target + " does not exist; nothing to do!");
         }
         final Set<String> finderClasspath = new LinkedHashSet<String>();
         finderClasspath.add(target.getAbsolutePath());
         finderClasspath.addAll(classpath);
         final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
         final Finder finder = new Finder(new FileArchive(classLoader, target));
-        for (final Weaver weaver : WEAVERS) {
-            final WeaveEnvironment env =
-                new LocalWeaveEnvironment(target, classLoader, configuration, Logger.getLogger(weaver.getClass()
-                    .getName()));
+        for (final Weaver weaver : providers) {
+            final WeaveEnvironment env = new LocalWeaveEnvironment(target, classLoader, configuration,
+                Logger.getLogger(weaver.getClass().getName()));
             weaver.process(env, finder);
         }
     }

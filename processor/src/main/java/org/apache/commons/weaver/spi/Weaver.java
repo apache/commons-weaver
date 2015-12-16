@@ -18,16 +18,19 @@
  */
 package org.apache.commons.weaver.spi;
 
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
+import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken.Weave;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveEnvironment;
 
 /**
- * A {@link Weaver} implementation performs the byte code enhancement in the
- * classes.
+ * A {@link Weaver} implementation implements the {@code WEAVE} stage of the {@link WeaveLifecycle} by performing the
+ * byte code enhancement in the classes.
  */
-public interface Weaver {
+public interface Weaver extends WeaveLifecycleProvider<Weave> {
     /**
      * Using the supplied {@link Scanner}, process a {@link WeaveEnvironment}.
+     * 
      * @param environment to use
      * @param scanner to use
      * @return whether any work was done.

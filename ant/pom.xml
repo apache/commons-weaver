@@ -49,7 +49,6 @@ under the License.
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
@@ -115,12 +114,16 @@ under the License.
 
               <relocations>
                 <relocation>
-                  <pattern>org.apache.commons.lang3.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.ant._lang3.</shadedPattern>
+                  <pattern>org.apache.commons.collections4.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._collections4.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
                   <shadedPattern>org.apache.commons.weaver.ant._io.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons.lang3.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.ant._lang3.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.xbean.</pattern>
@@ -129,13 +132,19 @@ under the License.
               </relocations>
               <filters>
                 <filter>
-                  <artifact>org.apache.commons:commons-lang3</artifact>
+                  <artifact>org.apache.commons:commons-collections4</artifact>
                   <excludes>
                     <exclude>META-INF/**</exclude>
                   </excludes>
                 </filter>
                 <filter>
                   <artifact>commons-io:commons-io</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.commons:commons-lang3</artifact>
                   <excludes>
                     <exclude>META-INF/**</exclude>
                   </excludes>
