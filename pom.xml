@@ -48,9 +48,9 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <commons.componentid>weaver</commons.componentid>
-    <commons.release.version>1.1</commons.release.version>
+    <commons.release.version>1.2</commons.release.version>
     <commons.release.name>commons-weaver-${commons.release.version}</commons.release.name>
-    <commons.rc.version>RC3</commons.rc.version>
+    <commons.rc.version>RC1</commons.rc.version>
     <commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>12315320</commons.jira.pid>
     <commons.site.path>commons-weaver</commons.site.path>
