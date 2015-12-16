@@ -29,7 +29,7 @@ import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 
 /**
  * Mark a {@link WeaveLifecycleProvider} as creating output that is consumed by additional
- * {@link WeaveLifecycleProvider}es of the same broad type.
+ * {@link WeaveLifecycleProvider}s for the same lifecycle stage.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,7 +38,6 @@ import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 public @interface Produces {
     /**
      * The consuming types.
-     * @return Class[]
      */
     Class<? extends WeaveLifecycleProvider<?>>[] value();
 }

@@ -18,10 +18,12 @@
  */
 package org.apache.commons.weaver.spi;
 
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in javadoc
 import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken;
 
 /**
  * Marker interface for commons-weaver lifecycle providers.
+ * @param <S> indicates a stage of the {@link WeaveLifecycle}
  * @since 1.2
  */
 public interface WeaveLifecycleProvider<S extends WeaveLifecycleToken> {
