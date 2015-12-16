@@ -18,9 +18,7 @@
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
-
 <!--
-
   Checkstyle configuration that checks the sun coding conventions from:
 
     - the Java Language Specification at
@@ -43,9 +41,7 @@
   To completely disable a check, just comment it out or delete it from the file.
 
   Finally, it is worth reading the documentation.
-
 -->
-
 <module name="Checker">
     <!--
         If you set the basedir property below, then all reported file
@@ -54,7 +50,6 @@
 
         <property name="basedir" value="${basedir}" />
     -->
-
     <!-- Checks that each Java package has a Javadoc file used for commenting. -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage       -->
     <module name="JavadocPackage" />
@@ -76,7 +71,6 @@
     </module>
 
     <module name="TreeWalker">
-
         <property name="cacheFile" value="${checkstyle.cache.file}" />
 
         <!-- Checks for Javadoc comments.                     -->
@@ -92,7 +86,6 @@
             <property name="scope" value="protected" />
         </module>
         <module name="JavadocStyle" />
-
 
         <!-- Checks for Naming Conventions.                  -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->
@@ -115,7 +108,6 @@
             <property name="processJavadoc" value="true" />
         </module>
 
-
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
         <module name="LineLength">
@@ -123,7 +115,6 @@
         </module>
         <module name="MethodLength" />
         <module name="ParameterNumber" />
-
 
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
@@ -139,12 +130,10 @@
         <module name="WhitespaceAfter" />
         <module name="WhitespaceAround" />
 
-
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
         <module name="ModifierOrder" />
         <module name="RedundantModifier" />
-
 
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
@@ -154,7 +143,6 @@
         <module name="LeftCurly" />
         <module name="NeedBraces" />
         <module name="RightCurly" />
-
 
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
@@ -176,13 +164,10 @@
         <module name="HideUtilityClassConstructor" />
         <module name="InterfaceIsType" />
 
-
         <!-- Miscellaneous other checks.                   -->
         <!-- See http://checkstyle.sf.net/config_misc.html -->
         <module name="ArrayTypeStyle" />
         <module name="TodoComment" />
         <module name="UpperEll" />
-
     </module>
-
 </module>
