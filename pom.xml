@@ -299,6 +299,14 @@ under the License.
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 
@@ -321,20 +329,6 @@ under the License.
                 <phase />
               </execution>
             </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>site</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <aggregate>true</aggregate>
-            </configuration>
           </plugin>
         </plugins>
       </build>
