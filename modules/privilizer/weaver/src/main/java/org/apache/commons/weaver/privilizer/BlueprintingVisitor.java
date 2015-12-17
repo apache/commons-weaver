@@ -67,14 +67,14 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     /**
      * Create a new {@link BlueprintingVisitor}.
      * @param privilizer owner
-     * @param cv wrapped
+     * @param next wrapped
      * @param config annotation
      */
-    BlueprintingVisitor(final Privilizer privilizer,
-        final ClassVisitor cv, //NOPMD
+    BlueprintingVisitor(@SuppressWarnings("PMD.UnusedFormalParameter") final Privilizer privilizer, //false positive
+        final ClassVisitor next,
         final Privilizing config) {
         privilizer.super(new ClassNode(Opcodes.ASM5));
-        this.next = cv;
+        this.next = next;
 
         // load up blueprint methods:
         for (final Privilizing.CallTo callTo : config.value()) {
