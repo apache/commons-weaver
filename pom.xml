@@ -137,7 +137,7 @@ under the License.
                   <attribute name="addto" />
                   <sequential>
                     <union id="@{name}-ws" />
-                    <step dir="${user.dir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
+                    <step dir="${project.basedir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
                   </sequential>
                 </macrodef>
 
