@@ -1,0 +1,9 @@
+Apache Commons Weaver
+Copyright 2012-2015 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+Binary artifacts include portions of the ASM bytecode library:
+Copyright (c) 2000-2011 INRIA, France Telecom
+
