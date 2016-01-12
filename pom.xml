@@ -54,7 +54,6 @@ under the License.
     <commons.jira.id>WEAVER</commons.jira.id>
     <commons.jira.pid>12315320</commons.jira.pid>
     <commons.site.path>commons-weaver</commons.site.path>
-    <asm.version>5.0.4</asm.version>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
 
     <!-- most Java-related items are defined in parent/pom.xml;
@@ -63,6 +62,7 @@ under the License.
     <maven.compiler.target>1.6</maven.compiler.target>
 
     <ant.version>1.9.4</ant.version>
+    <asm.version>5.0.4</asm.version>
   </properties>
 
   <developers>
@@ -186,20 +186,28 @@ under the License.
                   <union id="notices" />
                   <seek name="LICENSE.txt" addto="notices" />
                   <seek name="NOTICE.txt" addto="notices" />
+                  <seek name="LICENSE-asm.txt" addto="notices" />
+
+                  <filterchain id="notice-filter">
+                    <expandproperties />
+                  </filterchain>
 
                   <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
                     <resources refid="notices" />
+                    <filterchain refid="notice-filter" />
                   </copy>
 
                   <mkdir dir="${project.build.directory}/generated-test-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-test-resources/notices/META-INF">
                     <resources refid="notices" />
+                    <filterchain refid="notice-filter" />
                   </copy>
 
                   <mkdir dir="${project.build.directory}/apidocs/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/apidocs/META-INF">
                     <resources refid="notices" />
+                    <filterchain refid="notice-filter" />
                   </copy>
                 </sequential>
               </target>
