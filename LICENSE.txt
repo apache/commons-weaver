@@ -201,3 +201,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
+------------
+This product bundles version ${asm.version} of the ASM bytecode library
+under the license provided here as LICENSE-asm.txt.
+

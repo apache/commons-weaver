@@ -24,8 +24,16 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/..</directory>
+      <includes>
+        <include>*.txt</include>
+      </includes>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/..</directory>
       <excludes>
         <exclude>${project.build.directory}/**</exclude>
+        <exclude>*.txt</exclude>
         <exclude>.*/**</exclude>
         <exclude>**/${project.build.directory}/**</exclude>
         <exclude>**/.*/**</exclude>
@@ -33,4 +41,11 @@
       </excludes>
     </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>${project.basedir}/../src/site/markdown/building.md</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>BUILDING.txt</destName>
+    </file>
+  </files>
 </assembly>

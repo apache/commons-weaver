@@ -33,10 +33,11 @@
     <fileSet>
       <directory>${project.basedir}/..</directory>
       <includes>
-        <include>LICENSE.txt</include>
+        <include>LICENSE*.txt</include>
         <include>NOTICE.txt</include>
         <include>RELEASE-NOTES.txt</include>
       </includes>
+      <filtered>true</filtered>
     </fileSet>
   </fileSets>
 </assembly>
