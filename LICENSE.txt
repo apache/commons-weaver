@@ -202,6 +202,6 @@
    limitations under the License.
 
 ------------
-This product bundles version ${asm.version} of the ASM bytecode library
-under the license provided here as LICENSE-asm.txt.
+This product bundles version 5.0.4 of the ASM bytecode library
+under the license provided here as LICENSE-asm5.0.4.txt.
 

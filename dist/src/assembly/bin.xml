@@ -37,7 +37,6 @@
         <include>NOTICE.txt</include>
         <include>RELEASE-NOTES.txt</include>
       </includes>
-      <filtered>true</filtered>
     </fileSet>
   </fileSets>
 </assembly>

@@ -186,28 +186,21 @@ under the License.
                   <union id="notices" />
                   <seek name="LICENSE.txt" addto="notices" />
                   <seek name="NOTICE.txt" addto="notices" />
-                  <seek name="LICENSE-asm.txt" addto="notices" />
-
-                  <filterchain id="notice-filter">
-                    <expandproperties />
-                  </filterchain>
+                  <seek name="LICENSE-asm${asm.version}.txt" addto="notices" />
 
                   <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
                     <resources refid="notices" />
-                    <filterchain refid="notice-filter" />
                   </copy>
 
                   <mkdir dir="${project.build.directory}/generated-test-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-test-resources/notices/META-INF">
                     <resources refid="notices" />
-                    <filterchain refid="notice-filter" />
                   </copy>
 
                   <mkdir dir="${project.build.directory}/apidocs/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/apidocs/META-INF">
                     <resources refid="notices" />
-                    <filterchain refid="notice-filter" />
                   </copy>
                 </sequential>
               </target>
