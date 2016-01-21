@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-weaver-base</artifactId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>commons-weaver-parent</artifactId>
@@ -40,9 +40,9 @@ under the License.
   </properties>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.2_RC2/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/tags/1.2_RC2/parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/tags/1.2_RC2/parent</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/parent</developerConnection>
+    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/parent</url>
   </scm>
 
   <dependencyManagement>
