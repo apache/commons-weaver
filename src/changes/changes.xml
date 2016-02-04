@@ -23,7 +23,7 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
-    <release version="1.2" date="2016-01-25" description="Requires Java 6 or greater.">
+    <release version="1.2" date="2016-02-02" description="Requires Java 6 or greater.">
       <action issue="WEAVER-5" type="fix">Incomplete sorting code causes infinite loop</action>
       <action issue="WEAVER-6" type="update">Convert example modules into proper integration tests</action>
       <action issue="WEAVER-7" type="update">Support Weaver classloader in addition to context ClassLoader</action>
