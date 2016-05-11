@@ -77,4 +77,13 @@ public class ScanRequest {
         return Collections.unmodifiableSet(supertypes);
     }
 
+    /**
+     * Learn whether this {@link ScanRequest} has been constrained. An unconstrained {@link ScanRequest} will return all
+     * known types.
+     * @return {@code boolean}
+     * @since 1.3
+     */
+    public boolean isConstrained() {
+        return !interests.isEmpty() || !supertypes.isEmpty();
+    }
 }
