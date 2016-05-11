@@ -26,17 +26,22 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.test.WeaverTestBase;
 import org.apache.commons.weaver.test.beans.AbstractTestBean;
 import org.apache.commons.weaver.test.beans.ComplexAnnotations;
@@ -49,6 +54,7 @@ import org.apache.commons.weaver.test.beans.TestBeanWithMethodAnnotation;
 import org.apache.commons.weaver.utils.URLArray;
 import org.apache.xbean.finder.Annotated;
 import org.apache.xbean.finder.archive.FileArchive;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class FinderTest extends WeaverTestBase {
@@ -281,5 +287,29 @@ public class FinderTest extends WeaverTestBase {
         assertEquals(2, subclasses.size());
         assertTrue(subclasses.contains(TestBeanWithClassAnnotation.class));
         assertTrue(subclasses.contains(TestBeanWithMethodAnnotation.class));
+    }
+
+    @Test
+    public void testFindAllTypes() throws IOException {
+        addClassForScanning(TestBeanInterface.class);
+        addClassForScanning(AbstractTestBean.class);
+        addClassForScanning(TestBeanWithClassAnnotation.class);
+        addClassForScanning(TestBeanWithMethodAnnotation.class);
+
+        List<Annotated<Class<?>>> allClasses = finder().withAnnotations().getAllClasses();
+        assertThat(extract(allClasses), Matchers.<Class<?>> containsInAnyOrder(TestBeanInterface.class,
+            AbstractTestBean.class, TestBeanWithClassAnnotation.class, TestBeanWithMethodAnnotation.class));
+    }
+
+    private List<Class<?>> extract(List<Annotated<Class<?>>> input) {
+        Validate.noNullElements(input);
+        if (input.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<Class<?>> result = new ArrayList<Class<?>>(input.size());
+        for (Annotated<Class<?>> c : input) {
+            result.add(c.get());
+        }
+        return result;
     }
 }
