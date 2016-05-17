@@ -55,10 +55,10 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.commons.Remapper;
-import org.objectweb.asm.commons.RemappingClassAdapter;
 import org.objectweb.asm.commons.SimpleRemapper;
 
 /**
@@ -156,7 +156,7 @@ public class Normalizer {
         }
     }
 
-    private static final class Remap extends RemappingClassAdapter {
+    private static final class Remap extends ClassRemapper {
         private final class RewriteConstructor extends MethodVisitor {
             private RewriteConstructor(final MethodVisitor wrapped) {
                 super(Opcodes.ASM5, wrapped);
