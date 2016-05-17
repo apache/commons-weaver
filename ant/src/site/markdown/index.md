@@ -41,6 +41,7 @@ custom type:
  * `classpath` attribute - path string (incompatible with `classpathref`)
  * `classpathref` attribute - refid of an Ant **path**
  (incompatible with `classpath`)
+ * `includesystemclasspath` - specifies whether to include the system classpath
  * nested `propertyset` - Ant **PropertySet**
  * nested `properties` - specifies properties using the names and text values
  of nested elements (looks like Maven POM properties)
