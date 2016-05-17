@@ -235,27 +235,7 @@ public class Normalizer {
 
         @Override
         protected String getCommonSuperClass(final String type1, final String type2) {
-            Class<?> class1;
-            Class<?> class2;
-            try {
-                class1 = Class.forName(type1.replace('/', '.'), false, env.classLoader);
-                class2 = Class.forName(type2.replace('/', '.'), false, env.classLoader);
-            } catch (Exception e) {
-                throw new RuntimeException(e.toString());
-            }
-            if (class1.isAssignableFrom(class2)) {
-                return type1;
-            }
-            if (class2.isAssignableFrom(class1)) {
-                return type2;
-            }
-            if (class1.isInterface() || class2.isInterface()) {
-                return "java/lang/Object";
-            }
-            do {
-                class1 = class1.getSuperclass();
-            } while (!class1.isAssignableFrom(class2));
-            return class1.getName().replace('.', '/');
+            return "java/lang/Object";
         }
     }
 
