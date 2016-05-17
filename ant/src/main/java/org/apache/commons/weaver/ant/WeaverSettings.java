@@ -40,7 +40,6 @@ import org.apache.tools.ant.types.PropertySet.BuiltinPropertySetName;
  * <li>{@code target} attribute - {@link File}</li>
  * <li>{@code classpath} attribute - {@link Path} (incompatible with {@code classpathref})</li>
  * <li>{@code classpathref} attribute - {@link String} (incompatible with {@code classpath})</li>
- * <li>{@code includeSystemClasspath} attribute - {@code boolean}</li>
  * <li>nested {@code propertyset} - {@link PropertySet}</li>
  * <li>nested {@code properties} - {@link InlineProperties}</li>
  * </ul>
@@ -52,7 +51,6 @@ public class WeaverSettings extends DataType {
     private String classpathref;
     private PropertySet propertySet;
     private InlineProperties inlineProperties;
-    private boolean includeSystemClasspath;
 
     /**
      * Create a new {@link WeaverSettings} object.
@@ -108,8 +106,8 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Return the effective classpath as a {@link List} of {@link String}
-     * filesystem paths. If {@link #includeSystemClasspath}, system classpath will be appended.
+     * Return the effective classpath (system classpath + configured classpath) as a {@link List} of {@link String}
+     * filesystem paths.
      * @return List<String>
      */
     public List<String> getClasspathEntries() {
@@ -118,9 +116,7 @@ public class WeaverSettings extends DataType {
         if (classpath != null) {
             path.add(classpath);
         }
-        if (includeSystemClasspath) {
-            path.add(Path.systemClasspath);
-        }
+        path.add(Path.systemClasspath);
 
         return Arrays.asList(path.list());
     }
@@ -188,16 +184,6 @@ public class WeaverSettings extends DataType {
         propertySet = new PropertySet();
         propertySet.setProject(getProject());
         return propertySet;
-    }
-
-    /**
-     * Set whether to include the system classpath.
-     * @param includeSystemClasspath the includeSystemClasspath to set
-     * @since 1.3
-     * @see Path#systemClasspath
-     */
-    public void setIncludeSystemClasspath(boolean includeSystemClasspath) {
-        this.includeSystemClasspath = includeSystemClasspath;
     }
 
     /**
