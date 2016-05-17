@@ -19,19 +19,14 @@
 package org.apache.commons.weaver;
 
 import java.io.File;
-import java.net.URLClassLoader;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in javadoc
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Weaver;
-import org.apache.commons.weaver.utils.URLArray;
-import org.apache.xbean.finder.archive.FileArchive;
 
 /**
  * Implements {@link WeaveLifecycle#WEAVE}.
@@ -69,11 +64,6 @@ public class WeaveProcessor extends ProcessorBase<Weaver> {
         if (!target.exists()) {
             log.warning("Target directory " + target + " does not exist; nothing to do!");
         }
-        final Set<String> finderClasspath = new LinkedHashSet<String>();
-        finderClasspath.add(target.getAbsolutePath());
-        finderClasspath.addAll(classpath);
-        final ClassLoader classLoader = new URLClassLoader(URLArray.fromPaths(finderClasspath));
-        final Finder finder = new Finder(new FileArchive(classLoader, target));
         for (final Weaver weaver : providers) {
             final WeaveEnvironment env = new LocalWeaveEnvironment(target, classLoader, configuration,
                 Logger.getLogger(weaver.getClass().getName()));

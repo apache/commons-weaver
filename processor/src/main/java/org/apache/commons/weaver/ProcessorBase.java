@@ -19,17 +19,22 @@
 package org.apache.commons.weaver;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.lifecycle.WeaveLifecycle;
 import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 import org.apache.commons.weaver.utils.Providers;
+import org.apache.commons.weaver.utils.URLArray;
+import org.apache.xbean.finder.archive.FileArchive;
 
 /**
  * Base implementor of a {@link WeaveLifecycle} stage.
@@ -86,6 +91,16 @@ class ProcessorBase<P extends WeaveLifecycleProvider<?>> {
     protected final Iterable<P> providers;
 
     /**
+     * {@link ClassLoader} representing {@link #classpath}.
+     */
+    protected final ClassLoader classLoader;
+
+    /**
+     * {@link Finder} instance using for weaving.
+     */
+    protected final Finder finder;
+
+    /**
      * Create a new {@link ProcessorBase} instance.
      *
      * @param classpath not {@code null}
@@ -100,6 +115,14 @@ class ProcessorBase<P extends WeaveLifecycleProvider<?>> {
         Validate.isTrue(!target.exists() || target.isDirectory(), "%s is not a directory", target);
         this.configuration = Validate.notNull(configuration, "configuration");
         this.providers = Providers.sort(providers);
+        this.classLoader = createClassLoader();
+        this.finder = new Finder(new FileArchive(classLoader, target));
     }
 
+    private ClassLoader createClassLoader() {
+        final Set<String> finderClasspath = new LinkedHashSet<String>();
+        finderClasspath.add(target.getAbsolutePath());
+        finderClasspath.addAll(classpath);
+        return new URLClassLoader(URLArray.fromPaths(finderClasspath));
+    }
 }
