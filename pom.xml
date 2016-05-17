@@ -62,7 +62,7 @@ under the License.
     <maven.compiler.target>1.6</maven.compiler.target>
 
     <ant.version>1.9.4</ant.version>
-    <asm.version>5.1</asm.version>
+    <asm.version>5.0.4</asm.version>
   </properties>
 
   <developers>
