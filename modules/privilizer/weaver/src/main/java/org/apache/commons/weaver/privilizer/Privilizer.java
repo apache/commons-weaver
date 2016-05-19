@@ -74,9 +74,6 @@ public class Privilizer {
         }
     }
 
-    /**
-     * Necessary to resolve supertypes against WeaveEnvironment ClassLoader.
-     */
     private final class CustomClassWriter extends ClassWriter {
         CustomClassWriter(final int flags) {
             super(flags);
