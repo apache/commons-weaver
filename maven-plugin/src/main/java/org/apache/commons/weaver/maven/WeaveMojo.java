@@ -19,14 +19,17 @@
 package org.apache.commons.weaver.maven;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Goal to weave classes.
@@ -34,15 +37,10 @@ import org.apache.maven.project.MavenProject;
 @Mojo(
     name = "weave",
     defaultPhase = LifecyclePhase.PROCESS_CLASSES,
-    requiresDependencyCollection = ResolutionScope.COMPILE
+    requiresDependencyCollection = ResolutionScope.RUNTIME_PLUS_SYSTEM,
+    requiresDependencyResolution = ResolutionScope.RUNTIME_PLUS_SYSTEM
 )
 public class WeaveMojo extends AbstractWeaveMojo {
-
-    /**
-     * {@link MavenProject#getCompileClasspathElements()}.
-     */
-    @Parameter(readonly = true, required = true, defaultValue = "${project.compileClasspathElements}")
-    protected List<String> classpath;
 
     /**
      * {@link Build#getOutputDirectory()}.
@@ -54,8 +52,11 @@ public class WeaveMojo extends AbstractWeaveMojo {
      * {@inheritDoc}
      */
     @Override
-    protected List<String> getClasspath() {
-        return classpath;
+    protected List<String> getClasspath() throws DependencyResolutionRequiredException {
+        final Set<String> result = new LinkedHashSet<String>();
+        result.addAll(project.getCompileClasspathElements());
+        result.addAll(project.getRuntimeClasspathElements());
+        return new ArrayList<String>(result);
     }
 
     /**
