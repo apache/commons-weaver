@@ -23,64 +23,23 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.weaver.CleanProcessor;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Defines common properties.
+ * Implements weaver preparation.
  */
-public abstract class AbstractPrepareMojo extends AbstractMojo {
+public abstract class AbstractPrepareMojo extends AbstractCWMojo {
 
-    /**
-     * {@code verbose} parameter.
-     */
-    @Parameter(defaultValue = "false")
-    protected boolean verbose;
-
-    /**
-     * {@code weaver.config} parameter.
-     */
-    @Parameter(property = "weaver.config", required = false)
-    protected Properties weaverConfig;
-
-    /**
-     * Get the classpath for this prepare mojo.
-     * @return {@link List} of {@link String}
-     */
-    protected abstract List<String> getClasspath();
-
-    /**
-     * Get the target directory for this prepare mojo.
-     * @return {@link File}
-     */
-    protected abstract File getTarget();
-
-    /**
-     * Execute this mojo.
-     * @throws MojoExecutionException in the event of failure
-     */
     @Override
-    public void execute() throws MojoExecutionException {
-        if (!getTarget().isDirectory()) {
+    protected void doExecute(File target, List<String> classpath, Properties config) throws MojoExecutionException {
+        if (!target.isDirectory()) {
             return;
         }
-        final JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(getLog());
-        logRedirector.activate();
-
-        final List<String> classpath = getClasspath();
-        final File target = getTarget();
-        final Properties config = weaverConfig == null ? new Properties() : weaverConfig;
-
-        getLog().debug(String.format("classpath=%s%ntarget=%s%nconfig=%s", classpath, target, config));
-
         try {
             final CleanProcessor cleanProcessor = new CleanProcessor(classpath, target, config);
             cleanProcessor.clean();
         } catch (Exception e) {
             throw new MojoExecutionException("cleaning failed due to " + e.getMessage(), e);
-        } finally {
-            logRedirector.deactivate();
         }
     }
 
