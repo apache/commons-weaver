@@ -19,12 +19,7 @@
 package org.apache.commons.weaver.maven;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -47,17 +42,6 @@ public class WeaveMojo extends AbstractWeaveMojo {
      */
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.outputDirectory}")
     protected File target;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected List<String> getClasspath() throws DependencyResolutionRequiredException {
-        final Set<String> result = new LinkedHashSet<String>();
-        result.addAll(project.getCompileClasspathElements());
-        result.addAll(project.getRuntimeClasspathElements());
-        return new ArrayList<String>(result);
-    }
 
     /**
      * {@inheritDoc}
