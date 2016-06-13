@@ -19,22 +19,47 @@
 package org.apache.commons.weaver.maven;
 
 import java.io.File;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.RepositoryUtils;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
  * Defines common properties and high-level management common to all commons-weaver Maven goals.
  */
 abstract class AbstractCWMojo extends AbstractMojo {
+    /**
+     * Marks a mojo as requiring dependencies in {@link JavaScopes#TEST} scope.
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface TestScope {
+    }
 
     /**
      * {@code verbose} parameter.
@@ -51,21 +76,22 @@ abstract class AbstractCWMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}")
     protected MavenProject project;
 
-    /**
-     * Get the classpath for this prepare mojo.
-     * @return {@link List} of {@link String}
-     * @throws DependencyResolutionRequiredException
-     */
-    protected abstract List<String> getClasspath() throws DependencyResolutionRequiredException;
+    @Component
+    protected RepositorySystem repositorySystem;
+
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+    protected RepositorySystemSession repositorySystemSession;
 
     /**
      * Get the target directory for this prepare mojo.
+     * 
      * @return {@link File}
      */
     protected abstract File getTarget();
 
     /**
      * Execute this mojo.
+     * 
      * @throws MojoExecutionException in the event of failure
      */
     @Override
@@ -73,23 +99,16 @@ abstract class AbstractCWMojo extends AbstractMojo {
         final JavaLoggingToMojoLoggingRedirector logRedirector = new JavaLoggingToMojoLoggingRedirector(getLog());
         logRedirector.activate();
 
-        project.setArtifactFilter(new ArtifactFilter() {
-
-            @Override
-            public boolean include(Artifact artifact) {
-                return true;
-            }
-        });
         try {
             final List<String> classpath;
             try {
-                classpath = getClasspath();
-            } catch (DependencyResolutionRequiredException e) {
+                classpath = createClasspath();
+            } catch (DependencyResolutionException e) {
                 throw new MojoExecutionException("Error getting classpath artifacts", e);
             }
             final File target = getTarget();
             final Properties config = weaverConfig == null ? new Properties() : weaverConfig;
-            
+
             getLog().debug(String.format("classpath=%s%ntarget=%s%nconfig=%s", classpath, target, config));
 
             doExecute(target, classpath, config);
@@ -101,4 +120,33 @@ abstract class AbstractCWMojo extends AbstractMojo {
     protected abstract void doExecute(File target, List<String> classpath, Properties config)
         throws MojoExecutionException, MojoFailureException;
 
+    private List<String> createClasspath() throws DependencyResolutionException {
+        final CollectRequest collect = new CollectRequest();
+        collect.setRootArtifact(RepositoryUtils.toArtifact(project.getArtifact()));
+        collect.setRequestContext("project");
+        collect.setRepositories(project.getRemoteProjectRepositories());
+
+        for (Dependency dependency : project.getDependencies()) {
+            // guard against case where best-effort resolution for invalid models is requested:
+            if (StringUtils.isAnyBlank(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion())) {
+                continue;
+            }
+            collect.addDependency(
+                RepositoryUtils.toDependency(dependency, repositorySystemSession.getArtifactTypeRegistry()));
+        }
+        final DependencyResult dependencyResult =
+            repositorySystem.resolveDependencies(repositorySystemSession, new DependencyRequest()
+                .setFilter(new ScopeDependencyFilter(getExcludeScopes())).setCollectRequest(collect));
+
+        final Set<String> result = new LinkedHashSet<String>();
+        for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
+            result.add(artifactResult.getArtifact().getFile().getAbsolutePath());
+        }
+        return new ArrayList<String>(result);
+    }
+
+    private String[] getExcludeScopes() {
+        return getClass().isAnnotationPresent(TestScope.class) ? ArrayUtils.EMPTY_STRING_ARRAY
+            : new String[] { JavaScopes.TEST };
+    }
 }

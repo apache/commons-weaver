@@ -21,7 +21,7 @@ package org.apache.commons.weaver.maven;
 import java.io.File;
 import java.util.List;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.commons.weaver.maven.AbstractCWMojo.TestScope;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -38,6 +38,7 @@ import org.apache.maven.project.MavenProject;
     requiresDependencyCollection = ResolutionScope.TEST,
     requiresDependencyResolution = ResolutionScope.TEST
 )
+@TestScope
 public class TestWeaveMojo extends AbstractWeaveMojo {
 
     /**
@@ -51,14 +52,6 @@ public class TestWeaveMojo extends AbstractWeaveMojo {
      */
     @Parameter(readonly = true, required = true, defaultValue = "${project.build.testOutputDirectory}")
     protected File target;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected List<String> getClasspath() throws DependencyResolutionRequiredException {
-        return project.getTestClasspathElements();
-    }
 
     /**
      * {@inheritDoc}
