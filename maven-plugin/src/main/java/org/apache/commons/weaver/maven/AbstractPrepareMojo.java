@@ -31,7 +31,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 public abstract class AbstractPrepareMojo extends AbstractCWMojo {
 
     @Override
-    protected void doExecute(File target, List<String> classpath, Properties config) throws MojoExecutionException {
+    protected void doExecute(final File target, final List<String> classpath, final Properties config)
+        throws MojoExecutionException {
         if (!target.isDirectory()) {
             return;
         }

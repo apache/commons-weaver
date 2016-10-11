@@ -409,21 +409,22 @@ class Finder extends AnnotationFinder implements Scanner {
             CollectionUtils.filter(annotatedClasses, new Predicate<Annotated<Class<?>>>() {
 
                 @Override
-                public boolean evaluate(Annotated<Class<?>> annotatedClass) {
+                public boolean evaluate(final Annotated<Class<?>> annotatedClass) {
                     return annotatedClass.isAnnotationPresent(annotation);
                 }
             });
             return annotatedClasses;
         }
 
-        private List<Annotated<Class<?>>> annotate(Collection<? extends Info> infos) {
+        private List<Annotated<Class<?>>> annotate(final Collection<? extends Info> infos) {
             final List<Annotated<Class<?>>> result = new ArrayList<Annotated<Class<?>>>();
             for (final Info info : infos) {
                 if (info instanceof ClassInfo) {
                     final ClassInfo classInfo = (ClassInfo) info;
 
                     try {
-                        result.add(new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo)));
+                        result
+                            .add(new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo)));
                     } catch (final ClassNotFoundException e) {
                         continue;
                     }
@@ -712,21 +713,24 @@ class Finder extends AnnotationFinder implements Scanner {
                     }
                     break;
                 case FIELD:
-                    for (final Annotated<Field> fld : this.withAnnotations().findAnnotatedFields(interest.annotationType)) {
-                        result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
-                    }
-                    break;
+                        for (final Annotated<Field> fld : this.withAnnotations()
+                            .findAnnotatedFields(interest.annotationType)) {
+                            result.getWeavable(fld.get()).addAnnotations(fld.getAnnotations());
+                        }
+                        break;
                 case PARAMETER:
                     for (final Annotated<Parameter<Method>> parameter : this.withAnnotations()
                         .findAnnotatedMethodParameters(interest.annotationType)) {
-                        result.getWeavable(parameter.get().getDeclaringExecutable())
-                            .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
-                    }
+                            result.getWeavable(parameter.get().getDeclaringExecutable())
+                                .getWeavableParameter(parameter.get().getIndex())
+                                .addAnnotations(parameter.getAnnotations());
+                        }
                     for (final Annotated<Parameter<Constructor<?>>> parameter : this.withAnnotations()
                         .findAnnotatedConstructorParameters(interest.annotationType)) {
-                        result.getWeavable(parameter.get().getDeclaringExecutable())
-                            .getWeavableParameter(parameter.get().getIndex()).addAnnotations(parameter.getAnnotations());
-                    }
+                            result.getWeavable(parameter.get().getDeclaringExecutable())
+                                .getWeavableParameter(parameter.get().getIndex())
+                                .addAnnotations(parameter.getAnnotations());
+                        }
                     break;
                 default:
                     // should we log something?

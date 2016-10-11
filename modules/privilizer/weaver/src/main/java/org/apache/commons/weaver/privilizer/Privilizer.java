@@ -74,7 +74,7 @@ public class Privilizer {
         }
     }
 
-    private final class CustomClassWriter extends ClassWriter {
+    private static final class CustomClassWriter extends ClassWriter {
         CustomClassWriter(final int flags) {
             super(flags);
         }

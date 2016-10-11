@@ -51,6 +51,7 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
  * Defines common properties and high-level management common to all commons-weaver Maven goals.
+ * @since 1.3
  */
 abstract class AbstractCWMojo extends AbstractMojo {
     /**
@@ -84,14 +85,14 @@ abstract class AbstractCWMojo extends AbstractMojo {
 
     /**
      * Get the target directory for this prepare mojo.
-     * 
+     *
      * @return {@link File}
      */
     protected abstract File getTarget();
 
     /**
      * Execute this mojo.
-     * 
+     *
      * @throws MojoExecutionException in the event of failure
      */
     @Override
@@ -126,7 +127,7 @@ abstract class AbstractCWMojo extends AbstractMojo {
         collect.setRequestContext("project");
         collect.setRepositories(project.getRemoteProjectRepositories());
 
-        for (Dependency dependency : project.getDependencies()) {
+        for (final Dependency dependency : project.getDependencies()) {
             // guard against case where best-effort resolution for invalid models is requested:
             if (StringUtils.isAnyBlank(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion())) {
                 continue;
@@ -139,7 +140,7 @@ abstract class AbstractCWMojo extends AbstractMojo {
                 .setFilter(new ScopeDependencyFilter(getExcludeScopes())).setCollectRequest(collect));
 
         final Set<String> result = new LinkedHashSet<String>();
-        for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
+        for (final ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
             result.add(artifactResult.getArtifact().getFile().getAbsolutePath());
         }
         return new ArrayList<String>(result);

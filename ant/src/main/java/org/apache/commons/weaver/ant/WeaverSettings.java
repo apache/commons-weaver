@@ -196,7 +196,7 @@ public class WeaverSettings extends DataType {
      * @since 1.3
      * @see Path#systemClasspath
      */
-    public void setIncludeSystemClasspath(boolean includeSystemClasspath) {
+    public void setIncludeSystemClasspath(final boolean includeSystemClasspath) {
         this.includeSystemClasspath = includeSystemClasspath;
     }
 
