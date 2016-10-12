@@ -138,6 +138,9 @@ under the License.
                   <attribute name="name" />
                   <attribute name="addto" />
                   <sequential>
+                    <augment id="@{addto}-sought">
+                      <string value="@{name}" />
+                    </augment>
                     <union id="@{name}-ws" />
                     <step dir="${project.basedir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
                   </sequential>
@@ -186,9 +189,22 @@ under the License.
                 </truth>
                 <sequential unless:true="${pom-only}">
                   <union id="notices" />
+                  <union id="notices-sought" />
                   <seek name="LICENSE.txt" addto="notices" />
                   <seek name="NOTICE.txt" addto="notices" />
                   <seek name="LICENSE-asm${asm.version}.txt" addto="notices" />
+
+                  <resourcecount refid="notices-sought" property="notices.sought" />
+                  <condition property="found-all-notices">
+                    <resourcecount refid="notices" when="eq" count="${notices.sought}" />
+                  </condition>
+                  <sequential unless:set="found-all-notices">
+                    <echo>Notices sought:</echo>
+                    <pathconvert refid="notices-sought" pathsep="${line.separator}" />
+                    <echo>Notices found:</echo>
+                    <pathconvert refid="notices" pathsep="${line.separator}" />
+                    <fail message="Some notices not found." />
+                  </sequential>
 
                   <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
