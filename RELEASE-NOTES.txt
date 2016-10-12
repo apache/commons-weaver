@@ -1,7 +1,7 @@
-              Apache Commons Weaver 1.2
+              Apache Commons Weaver 1.3-SNAPSHOT
                   RELEASE NOTES
 
-The Apache Commons team is pleased to announce the release of Apache Commons Weaver 1.2
+The Apache Commons team is pleased to announce the release of Apache Commons Weaver 1.3-SNAPSHOT
 
 Apache Commons Weaver provides an easy way to enhance compiled Java
 classes by generating ("weaving") bytecode into those classes.
@@ -11,14 +11,15 @@ Requires Java 6 or greater.
 Changes in this version include:
 
 New features:
-o WEAVER-8:    Add a dependency mechanism for ordering Weavers, Cleaners amongst themselves
+o WEAVER-12:   Provide a mechanism for working with all classfiles found in the weave environment
 
 Fixed Bugs:
-o WEAVER-5:    Incomplete sorting code causes infinite loop
+o WEAVER-11:   bytecode generated with java 7 or 8 is different and can break on earlier versions
+o WEAVER-15:   m2e build encounters missing class
 
 Changes:
-o WEAVER-6:    Convert example modules into proper integration tests
-o WEAVER-7:    Support Weaver classloader in addition to context ClassLoader
+o WEAVER-13:   Make Ant tasks' system classpath inclusion optional
+o WEAVER-14:   upgrade modules to asm 5.1
 
 
 Historical list of changes: http://commons.apache.org/proper/commons-weaver/changes-report.html
