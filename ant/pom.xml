@@ -57,6 +57,22 @@ under the License.
     </dependency>
   </dependencies>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <configuration>
+            <parameter>
+              <excludes>
+                <!-- shaded in; not part of public API -->
+                <exclude>org.apache.commons.weaver.ant._collections4</exclude>
+              </excludes>
+            </parameter>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <!-- shade plugin creates but does not clean ${basedir}/dependency-reduced-pom.xml -->
       <plugin>

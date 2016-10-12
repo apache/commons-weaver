@@ -56,6 +56,8 @@ under the License.
     <commons.site.path>commons-weaver</commons.site.path>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
 
+    <commons.japicmp.version>0.9.1</commons.japicmp.version>
+
     <!-- most Java-related items are defined in parent/pom.xml;
          define these here for the animal-sniffer config of commons-parent: -->
     <maven.compiler.source>1.6</maven.compiler.source>
