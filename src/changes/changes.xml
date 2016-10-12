@@ -23,6 +23,13 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
+    <release version="1.3" date="2016-10-16" description="Requires Java 6 or greater.">
+      <action issue="WEAVER-11" type="fix">bytecode generated with java 7 or 8 is different and can break on earlier versions</action>
+      <action issue="WEAVER-12" type="add">Provide a mechanism for working with all classfiles found in the weave environment</action>
+      <action issue="WEAVER-13" type="update">Make Ant tasks' system classpath inclusion optional</action>
+      <action issue="WEAVER-14" type="update">upgrade modules to asm 5.1</action>
+      <action issue="WEAVER-15" type="fix">m2e build encounters missing class</action>
+    </release>
     <release version="1.2" date="2016-02-02" description="Requires Java 6 or greater.">
       <action issue="WEAVER-5" type="fix">Incomplete sorting code causes infinite loop</action>
       <action issue="WEAVER-6" type="update">Convert example modules into proper integration tests</action>
