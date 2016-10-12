@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project name="Commons Weaver">
+  <bannerRight>
+    <name>Commons Weaver</name>
+    <src>/images/weaver-logo-white.png</src>
+    <href>/index.html</href>
+  </bannerRight>
+  <body>
+    <menu name="Commons Weaver">
+      <item name="Overview" href="/index.html" />
+      <item name="Download" href="/download_weaver.cgi" />
+      <item name="Javadoc (${commons.release.version})"
+            href="javadocs/${commons.release.version}/index.html" />
+      <item name="Mailing lists" href="/mail-lists.html" />
+      <item name="Issue Tracking" href="/issue-tracking.html" />
+    </menu>
+    <menu name="Project Structure">
+      <item name="Core Framework" href="/commons-weaver-parent/commons-weaver-processor/index.html" />
+      <item name="Weaver Modules" href="/commons-weaver-parent/commons-weaver-modules-parent/index.html">
+        <item name="Privilizer" href="/commons-weaver-parent/commons-weaver-modules-parent/commons-weaver-privilizer-parent/index.html" />
+        <item name="Normalizer" href="/commons-weaver-parent/commons-weaver-modules-parent/commons-weaver-normalizer/index.html" />
+      </item>
+      <item name="Maven Plugin" href="/commons-weaver-parent/commons-weaver-maven-plugin/plugin-info.html" />
+      <item name="Antlib" href="/commons-weaver-parent/commons-weaver-antlib/index.html" />
+    </menu>
+    <menu name="Development">
+      <item name="Team" href="/team-list.html" />
+      <item name="SVN" href="/source-repository.html" />
+      <item name="Building" href="/building.html" />
+    </menu>
+  </body>
+</project>
