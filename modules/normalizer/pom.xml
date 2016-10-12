@@ -249,13 +249,6 @@ under the License.
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>clirr-maven-plugin</artifactId>
-        <configuration>
-          <ignoredDifferencesFile>clirr-differences.xml</ignoredDifferencesFile>
-        </configuration>
-      </plugin>
    </plugins>
   </build>
   <reporting>
@@ -276,13 +269,6 @@ under the License.
         <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
-        </configuration>
-      </plugin>
-       <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>clirr-maven-plugin</artifactId>
-        <configuration>
-          <ignoredDifferencesFile>clirr-differences.xml</ignoredDifferencesFile>
         </configuration>
       </plugin>
       <plugin>

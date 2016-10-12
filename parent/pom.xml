@@ -238,6 +238,15 @@ under the License.
           <artifactId>findbugs-maven-plugin</artifactId>
           <version>3.0.3</version>
         </plugin>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <configuration>
+            <parameter>
+              <ignoreMissingNewVersion />
+            </parameter>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>

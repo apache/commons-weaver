@@ -85,6 +85,43 @@ under the License.
     </dependency>
   </dependencies>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <configuration>
+            <parameter>
+              <!-- Maven plugin not intended for programmatic use -->
+              <accessModifier>public</accessModifier>
+              <excludes>
+                <!-- moved up to new superclass -->
+                <exclude>org.apache.commons.weaver.maven.AbstractPrepareMojo#execute()</exclude>
+                <!-- moved up to new superclass -->
+                <exclude>org.apache.commons.weaver.maven.AbstractWeaveMojo#execute()</exclude>
+              </excludes>
+              <postAnalysisScript>${project.basedir}/src/site/resources/japicmp-post-analysis.groovy</postAnalysisScript>
+            </parameter>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <configuration>
+            <excludes>HelpMojo.java</excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>HelpMojo.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
