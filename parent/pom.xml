@@ -244,6 +244,7 @@ under the License.
           <configuration>
             <parameter>
               <ignoreMissingNewVersion />
+	      <reportOnlyFilename>true</reportOnlyFilename>
             </parameter>
           </configuration>
         </plugin>
