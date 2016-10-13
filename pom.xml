@@ -118,6 +118,27 @@ under the License.
           </configuration>
         </plugin>
         <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludeSubProjects>false</excludeSubProjects>
+            <excludes>
+	      <!-- notice -->
+              <exclude>LICENSE-asm*.txt</exclude>
+	      <!-- generated -->
+              <exclude>**/target/**</exclude>
+              <exclude>**/dependency-reduced-pom.xml</exclude>
+	      <!-- hidden -->
+              <exclude>**/.*</exclude>
+              <exclude>**/.*/**</exclude>
+	      <!-- binary -->
+              <exclude>**/*.svg</exclude>
+	      <!-- empty -->
+              <exclude>**/src/site/resources/profile.japicmp</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.9</version>
@@ -274,16 +295,6 @@ under the License.
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <inherited>false</inherited>
-        <configuration>
-          <excludeSubProjects>false</excludeSubProjects>
-          <excludes>
-            <exclude>**/target/**</exclude>
-            <exclude>**/dependency-reduced-pom.xml</exclude>
-            <exclude>**/.*</exclude>
-            <exclude>**/.*/**</exclude>
-            <exclude>**/*.svg</exclude>
-          </excludes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -314,16 +325,6 @@ under the License.
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <inherited>false</inherited>
-        <configuration>
-          <excludeSubProjects>false</excludeSubProjects>
-          <excludes>
-            <exclude>**/target/**</exclude>
-            <exclude>**/dependency-reduced-pom.xml</exclude>
-            <exclude>**/.*</exclude>
-            <exclude>**/.*/**</exclude>
-            <exclude>**/*.svg</exclude>
-          </excludes>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
