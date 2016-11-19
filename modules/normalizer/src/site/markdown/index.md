@@ -43,4 +43,4 @@ The [NormalizerWeaver][normalizerWeaver] supports the following options:
 - `normalizer.targetPackage` : package to which merged types should be added.
 
 
-[normalizerWeaver]: ../../apidocs/org/apache/commons/weaver/normalizer/NormalizerWeaver.html
+[normalizerWeaver]: ../../../apidocs/org/apache/commons/weaver/normalizer/NormalizerWeaver.html
