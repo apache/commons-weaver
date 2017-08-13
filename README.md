@@ -44,6 +44,7 @@ Apache Commons Weaver
 ===================
 
 [![Build Status](https://travis-ci.org/apache/commons-weaver.svg?branch=trunk)](https://travis-ci.org/apache/commons-weaver)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/)
 
 Apache Commons Weaver provides an easy way to enhance compiled Java classes by generating ("weaving") bytecode into those classes.
 
