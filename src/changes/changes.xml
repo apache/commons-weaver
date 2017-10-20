@@ -23,6 +23,9 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
+    <release version="1.4" date="YYYY-MM-DD" description="Requires Java 6 or greater.">
+      <action issue="WEAVER-18" type="fix">Update Apache Commons IO from 2.5 to 2.6.</action>
+    </release>
     <release version="1.3" date="2016-10-18" description="Requires Java 6 or greater.">
       <action issue="WEAVER-11" type="fix">bytecode generated with java 7 or 8 is different and can break on earlier versions</action>
       <action issue="WEAVER-12" type="add">Provide a mechanism for working with all classfiles found in the weave environment</action>
