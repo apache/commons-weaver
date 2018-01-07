@@ -111,7 +111,7 @@ public class ScanResult {
 
         @Override
         public AnnotatedElements<CHILD> with(final Class<? extends Annotation> annotationType) {
-            return new AnnotatedWith<CHILD>(this, annotationType);
+            return new AnnotatedWith<>(this, annotationType);
         }
     }
 
@@ -167,13 +167,13 @@ public class ScanResult {
 
         @Override
         public AnnotatedElements<W> with(final Class<? extends Annotation> annotationType) {
-            return new AnnotatedWith<W>(this, annotationType);
+            return new AnnotatedWith<>(this, annotationType);
         }
 
     }
 
     private final ConcurrentNavigableMap<String, WeavablePackage> packages =
-        new ConcurrentSkipListMap<String, WeavablePackage>();
+        new ConcurrentSkipListMap<>();
 
     /**
      * Public for use by {@link WeaveProcessor}.
@@ -242,7 +242,7 @@ public class ScanResult {
 
             @Override
             public AnnotatedElements<WeavablePackage> with(final Class<? extends Annotation> annotationType) {
-                return new AnnotatedWith<WeavablePackage>(packages.values(), annotationType);
+                return new AnnotatedWith<>(packages.values(), annotationType);
             }
         };
     }
@@ -400,5 +400,4 @@ public class ScanResult {
             }
         };
     }
-
 }

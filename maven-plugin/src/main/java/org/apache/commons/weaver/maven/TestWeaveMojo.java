@@ -60,5 +60,4 @@ public class TestWeaveMojo extends AbstractWeaveMojo {
     protected File getTarget() {
         return target;
     }
-
 }

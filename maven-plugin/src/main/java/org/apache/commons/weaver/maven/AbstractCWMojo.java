@@ -23,11 +23,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +40,6 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
@@ -139,11 +136,8 @@ abstract class AbstractCWMojo extends AbstractMojo {
             repositorySystem.resolveDependencies(repositorySystemSession, new DependencyRequest()
                 .setFilter(new ScopeDependencyFilter(getExcludeScopes())).setCollectRequest(collect));
 
-        final Set<String> result = new LinkedHashSet<String>();
-        for (final ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
-            result.add(artifactResult.getArtifact().getFile().getAbsolutePath());
-        }
-        return new ArrayList<String>(result);
+        return dependencyResult.getArtifactResults().stream().map(ar -> ar.getArtifact().getFile().getAbsolutePath())
+            .distinct().collect(Collectors.toList());
     }
 
     private String[] getExcludeScopes() {

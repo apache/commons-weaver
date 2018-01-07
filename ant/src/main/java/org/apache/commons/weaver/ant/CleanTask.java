@@ -42,9 +42,7 @@ public class CleanTask extends AbstractWeaverTask {
     public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
-            final CleanProcessor cleanProcessor =
-                new CleanProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties());
-            cleanProcessor.clean();
+            new CleanProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties()).clean();
         } catch (final Exception e) {
             throw new BuildException(e);
         }

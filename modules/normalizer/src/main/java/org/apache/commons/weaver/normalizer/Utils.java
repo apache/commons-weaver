@@ -27,9 +27,6 @@ import org.apache.commons.lang3.Validate;
  * Normalization utilities.
  */
 final class Utils {
-    private Utils() {
-    }
-
     /**
      * Validate a package name.
      * @param pkg to validate
@@ -59,7 +56,6 @@ final class Utils {
             }
             Validate.isTrue(Character.isJavaIdentifierPart(chr), unexpected, chr, pos, result);
         }
-
         result = result.replace('.', '/');
         final int last = result.length() - 1;
         if (result.charAt(last) == '/') {
@@ -77,7 +73,7 @@ final class Utils {
      * @return {@link Set} of {@link Class}
      */
     static Set<Class<?>> parseTypes(final String types, final ClassLoader classLoader) {
-        final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+        final Set<Class<?>> result = new LinkedHashSet<>();
         for (final String token : StringUtils.splitByWholeSeparatorPreserveAllTokens(types, ",")) {
             try {
                 result.add(ClassUtils.getClass(classLoader, token.trim().replace('/', '.')));
@@ -86,5 +82,8 @@ final class Utils {
             }
         }
         return result;
+    }
+
+    private Utils() {
     }
 }

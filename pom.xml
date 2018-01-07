@@ -61,8 +61,8 @@ under the License.
 
     <!-- most Java-related items are defined in parent/pom.xml;
          define these here for the animal-sniffer config of commons-parent: -->
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
 
     <ant.version>1.9.4</ant.version>
     <asm.version>5.1</asm.version>
@@ -117,6 +117,11 @@ under the License.
           <configuration combine.self="override">
             <!-- disable passphrase setup from parent -->
           </configuration>
+        </plugin>
+        <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-shade-plugin</artifactId>
+	        <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>

@@ -49,7 +49,7 @@ public abstract class WeavableExecutable
      */
     protected WeavableExecutable(final TARGET target, final WeavableClass<T> parent) {
         super(target, parent);
-        final List<P> params = new ArrayList<P>();
+        final List<P> params = new ArrayList<>();
         final int paramCount = getParameterTypes().length;
         for (int i = 0; i < paramCount; i++) {
             params.add(createParameter(i));
@@ -94,5 +94,4 @@ public abstract class WeavableExecutable
     public Iterable<P> getParameters() {
         return parameters;
     }
-
 }

@@ -110,17 +110,12 @@ public class Privilizer {
             if (verify) {
                 verify(className, bytecode);
             }
-
             final DataSource classfile = env.getClassfile(className);
             env.debug("Writing class %s to resource %s", className, classfile.getName());
-            OutputStream outputStream = null;
-            try {
-                outputStream = classfile.getOutputStream();
+            try (OutputStream outputStream = classfile.getOutputStream()) {
                 IOUtils.write(bytecode, outputStream);
             } catch (final IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(outputStream);
             }
         }
     }
@@ -201,9 +196,7 @@ public class Privilizer {
     void blueprint(final Class<?> type, final Privilizing privilizing) {
         final Object[] args = { type.getName(), privilizing };
         env.debug("blueprinting class %s %s", args);
-        InputStream bytecode = null;
-        try {
-            bytecode = env.getClassfile(type).getInputStream();
+        try (InputStream bytecode = env.getClassfile(type).getInputStream()) {
             final ClassReader classReader = new ClassReader(bytecode);
 
             ClassVisitor cvr;
@@ -214,27 +207,21 @@ public class Privilizer {
             classReader.accept(cvr, ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(bytecode);
         }
     }
 
     void privilize(final Class<?> type) {
         final Object[] args = { type.getName() };
         env.debug("privilizing class %s", args);
-        InputStream bytecode = null;
-        try {
-            bytecode = env.getClassfile(type).getInputStream();
+        try (InputStream bytecode = env.getClassfile(type).getInputStream()) {
             final ClassReader classReader = new ClassReader(bytecode);
-            ClassVisitor cv; //NOPMD
+            ClassVisitor cv; // NOPMD
             cv = new WriteClass(classReader, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             cv = new PrivilizingVisitor(this, cv);
 
             classReader.accept(cv, ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(bytecode);
         }
     }
 
@@ -255,7 +242,7 @@ public class Privilizer {
         Validate.validState(StringUtils.isBlank(error), error);
 
         final ClassVisitor checkInnerClasses = new ClassVisitor(Opcodes.ASM5, null) {
-            final Set<String> innerNames = new HashSet<String>();
+            final Set<String> innerNames = new HashSet<>();
 
             @Override
             public void visitInnerClass(final String name, final String outerName, final String innerName,

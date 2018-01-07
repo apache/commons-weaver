@@ -51,5 +51,4 @@ public class TestPrepareMojo extends AbstractPrepareMojo {
     protected File getTarget() {
         return target;
     }
-
 }

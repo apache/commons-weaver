@@ -52,5 +52,4 @@ public class WeavableConstructor<T> extends
     protected WeavableConstructorParameter<T> createParameter(final int index) {
         return new WeavableConstructorParameter<T>(Integer.valueOf(index), this);
     }
-
 }

@@ -52,7 +52,7 @@ class ProcessorBase<P extends WeaveLifecycleProvider<?>> {
      */
     static <T> Iterable<T> getServiceInstances(final Class<T> type) {
         Validate.notNull(type);
-        final List<T> result = new ArrayList<T>();
+        final List<T> result = new ArrayList<>();
         final ClassLoader typeLoader = type.getClassLoader();
         if (!Thread.currentThread().getContextClassLoader().equals(typeLoader)) {
             for (final T t : ServiceLoader.load(type, typeLoader)) {
@@ -120,7 +120,7 @@ class ProcessorBase<P extends WeaveLifecycleProvider<?>> {
     }
 
     private ClassLoader createClassLoader() {
-        final Set<String> finderClasspath = new LinkedHashSet<String>();
+        final Set<String> finderClasspath = new LinkedHashSet<>();
         finderClasspath.add(target.getAbsolutePath());
         finderClasspath.addAll(classpath);
         return new URLClassLoader(URLArray.fromPaths(finderClasspath));

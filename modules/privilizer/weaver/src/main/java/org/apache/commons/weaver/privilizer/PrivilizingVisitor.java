@@ -42,7 +42,7 @@ import org.objectweb.asm.commons.StaticInitMerger;
  * ASM {@link ClassVisitor} to privilize {@link Privileged} methods.
  */
 class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
-    final Map<Method, String> privilegedMethods = new LinkedHashMap<Method, String>();
+    final Map<Method, String> privilegedMethods = new LinkedHashMap<>();
     boolean annotated;
     final Policy policy;
     final AccessLevel accessLevel;
@@ -148,7 +148,6 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 } else {
                     privilizer().env.debug("setting up unconditional privileged execution due to policy %s", policy);
                 }
-
                 // generate action:
                 final Type[] ctorArgs;
                 if (instanceMethod) {
@@ -190,7 +189,6 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                     // throw
                     throwException();
                 }
-
                 // end original method
                 endMethod();
 
@@ -199,7 +197,6 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 mv.visitCode();
             }
         };
-
     }
 
     @Override

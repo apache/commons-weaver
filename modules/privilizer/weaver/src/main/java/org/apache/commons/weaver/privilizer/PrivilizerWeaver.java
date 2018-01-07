@@ -38,7 +38,7 @@ public class PrivilizerWeaver implements Weaver {
     public boolean process(final WeaveEnvironment weaveEnvironment, final Scanner scanner) {
         final Privilizer privilizer = new Privilizer(weaveEnvironment);
 
-        final Set<Class<?>> privilizedTypes = new LinkedHashSet<Class<?>>();
+        final Set<Class<?>> privilizedTypes = new LinkedHashSet<>();
 
         // handle blueprints:
         for (final WeavableClass<?> type : scanner.scan(

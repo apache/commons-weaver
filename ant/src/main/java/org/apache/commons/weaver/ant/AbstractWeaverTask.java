@@ -66,5 +66,4 @@ public abstract class AbstractWeaverTask extends Task {
         settings.setRefid(new Reference(getProject(), refid));
         add(settings);
     }
-
 }

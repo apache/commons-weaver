@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import javax.activation.DataSource;
@@ -34,8 +35,6 @@ import org.apache.commons.weaver.spi.Weaver;
  * Encapsulates the environment in which a {@link Weaver} or {@link Cleaner} must operate.
  */
 public abstract class WeaveEnvironment {
-    private static final String CONTENT_TYPE = "application/octet-stream";
-
     private class Resource implements DataSource {
         private final String name;
 
@@ -79,6 +78,21 @@ public abstract class WeaveEnvironment {
         }
     }
 
+    private static final String CONTENT_TYPE = "application/octet-stream";
+
+    /**
+     * Convert a classname into a resource name.
+     * @param classname to convert
+     * @return String
+     */
+    protected static String getResourceName(final String classname) {
+        return classname.replace('.', '/') + ".class";
+    }
+
+    private static Supplier<String> supplier(String format, Object... args) {
+        return () -> String.format(format, args);
+    }
+
     /**
      * ClassLoader containing scannable and weavable classes.
      */
@@ -112,7 +126,7 @@ public abstract class WeaveEnvironment {
      * @see String#format(String, Object...)
      */
     public void debug(final String message, final Object... args) {
-        log.fine(String.format(message, args));
+        log.fine(supplier(message, args));
     }
 
     /**
@@ -122,7 +136,7 @@ public abstract class WeaveEnvironment {
      * @see String#format(String, Object...)
      */
     public void verbose(final String message, final Object... args) {
-        log.fine(String.format(message, args));
+        log.fine(supplier(message, args));
     }
 
     /**
@@ -132,7 +146,7 @@ public abstract class WeaveEnvironment {
      * @see String#format(String, Object...)
      */
     public void warn(final String message, final Object... args) {
-        log.warning(String.format(message, args));
+        log.warning(supplier(message, args));
     }
 
     /**
@@ -142,7 +156,7 @@ public abstract class WeaveEnvironment {
      * @see String#format(String, Object...)
      */
     public void info(final String message, final Object... args) {
-        log.info(String.format(message, args));
+        log.info(supplier(message, args));
     }
 
     /**
@@ -152,7 +166,7 @@ public abstract class WeaveEnvironment {
      * @see String#format(String, Object...)
      */
     public void error(final String message, final Object... args) {
-        log.severe(String.format(message, args));
+        log.severe(supplier(message, args));
     }
 
     /**
@@ -214,13 +228,4 @@ public abstract class WeaveEnvironment {
      * @throws IOException on error
      */
     protected abstract OutputStream getOutputStream(String resourceName) throws IOException;
-
-    /**
-     * Convert a classname into a resource name.
-     * @param classname to convert
-     * @return String
-     */
-    protected static String getResourceName(final String classname) {
-        return classname.replace('.', '/') + ".class";
-    }
 }

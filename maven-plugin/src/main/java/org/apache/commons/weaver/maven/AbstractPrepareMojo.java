@@ -37,11 +37,9 @@ public abstract class AbstractPrepareMojo extends AbstractCWMojo {
             return;
         }
         try {
-            final CleanProcessor cleanProcessor = new CleanProcessor(classpath, target, config);
-            cleanProcessor.clean();
+            new CleanProcessor(classpath, target, config).clean();
         } catch (Exception e) {
             throw new MojoExecutionException("cleaning failed due to " + e.getMessage(), e);
         }
     }
-
 }

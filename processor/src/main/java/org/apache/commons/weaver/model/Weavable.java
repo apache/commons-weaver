@@ -74,7 +74,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
         }
         synchronized (this) {
             if (annotations == null) {
-                annotations = new LinkedHashSet<Annotation>();
+                annotations = new LinkedHashSet<>();
             }
             boolean result = false;
             for (final Annotation ann : toAdd) {

@@ -18,7 +18,8 @@
  */
 package org.apache.commons.weaver.privilizer;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.objectweb.asm.Type;
@@ -60,7 +61,6 @@ public class Field {
      * @param obj to check for equality
      * @return whether equal
      */
-    @SuppressWarnings("deprecation")
     @Override
     public boolean equals(final Object obj) {
         if (obj == this) {
@@ -70,7 +70,7 @@ public class Field {
             return false;
         }
         final Field other = (Field) obj;
-        return StringUtils.equals(other.name, name) && ObjectUtils.equals(other.type, type);
+        return StringUtils.equals(other.name, name) && Objects.equals(other.type, type);
     }
 
     /**
@@ -79,10 +79,6 @@ public class Field {
      */
     @Override
     public int hashCode() {
-        int result = 57 << 2;
-        result |= name.hashCode();
-        result <<= 4;
-        result |= type.hashCode();
-        return result;
+        return Objects.hash(name, type);
     }
 }

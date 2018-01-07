@@ -42,9 +42,7 @@ public class WeaveTask extends AbstractWeaverTask {
     public void execute() {
         try {
             final WeaverSettings settings = Validate.notNull(getSettings(), "settings");
-            final WeaveProcessor weaveProcessor =
-                new WeaveProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties());
-            weaveProcessor.weave();
+            new WeaveProcessor(settings.getClasspathEntries(), settings.getTarget(), settings.getProperties()).weave();
         } catch (final Exception e) {
             throw new BuildException(e);
         }

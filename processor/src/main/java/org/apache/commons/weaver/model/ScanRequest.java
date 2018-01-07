@@ -35,8 +35,8 @@ import org.apache.commons.weaver.spi.Weaver;
  */
 public class ScanRequest {
 
-    private final List<WeaveInterest> interests = new ArrayList<WeaveInterest>();
-    private final Set<Class<?>> supertypes = new LinkedHashSet<Class<?>>();
+    private final List<WeaveInterest> interests = new ArrayList<>();
+    private final Set<Class<?>> supertypes = new LinkedHashSet<>();
 
     /**
      * Register a {@link WeaveInterest}.

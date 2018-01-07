@@ -51,5 +51,4 @@ public abstract class WeavableParameter
     protected int localCompareTo(final SELF obj) {
         return getTarget().compareTo(getTarget());
     }
-
 }

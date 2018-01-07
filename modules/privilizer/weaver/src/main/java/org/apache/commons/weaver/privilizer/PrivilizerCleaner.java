@@ -23,7 +23,6 @@ import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.weaver.model.ScanRequest;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeavableClass;
@@ -43,7 +42,7 @@ public class PrivilizerCleaner implements Cleaner {
     public boolean clean(final WeaveEnvironment environment, final Scanner scanner) {
         final Privilizer privilizer = new Privilizer(environment);
 
-        final List<String> toDelete = new ArrayList<String>();
+        final List<String> toDelete = new ArrayList<>();
 
         final ScanRequest scanRequest = new ScanRequest().add(WeaveInterest.of(Privilized.class, ElementType.TYPE));
 
@@ -56,13 +55,11 @@ public class PrivilizerCleaner implements Cleaner {
             final String className = weavableClass.getTarget().getName();
             environment.debug("Class %s privilized with %s; deleting.", className, privilizedPolicy);
 
-            InputStream bytecode = null;
-            try {
-                bytecode = privilizer.env.getClassfile(className).getInputStream();
+            try (InputStream bytecode = privilizer.env.getClassfile(className).getInputStream()) {
                 final ClassReader classReader = new ClassReader(bytecode);
                 classReader.accept(new ClassVisitor(Opcodes.ASM5) {
                     @Override
-                    @SuppressWarnings("PMD.UseVarargs") //overridden method
+                    @SuppressWarnings("PMD.UseVarargs") // overridden method
                     public void visit(final int version, final int access, final String name, final String signature,
                         final String superName, final String[] interfaces) {
                         toDelete.add(name);
@@ -78,8 +75,6 @@ public class PrivilizerCleaner implements Cleaner {
                 }, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
             } catch (final Exception e) {
                 throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(bytecode);
             }
         }
         boolean result = false;
