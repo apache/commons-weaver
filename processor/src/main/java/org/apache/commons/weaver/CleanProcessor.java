@@ -62,7 +62,7 @@ public class CleanProcessor extends ProcessorBase<Cleaner> {
      */
     public void clean() {
         if (!target.exists()) {
-            log.warning("Target directory " + target + " does not exist; nothing to do!");
+            log.warning(() -> String.format("Target directory %s does not exist; nothing to do!", target));
         }
         for (final Cleaner cleaner : providers) {
             final WeaveEnvironment env = new LocalWeaveEnvironment(target, classLoader, configuration,

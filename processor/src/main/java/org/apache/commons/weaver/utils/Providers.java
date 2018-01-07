@@ -28,8 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.Factory;
-import org.apache.commons.collections4.map.LazyMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.Consumes;
@@ -56,18 +54,18 @@ public final class Providers {
 
             final Map<Class<? extends P>, Set<Class<? extends P>>> dependencyMap = toDependencyMap(providers);
 
-            final Collection<Class<? extends P>> order = new LinkedHashSet<Class<? extends P>>();
+            final Collection<Class<? extends P>> order = new LinkedHashSet<>();
 
-            final Map<Class<? extends P>, State> stateMap = new HashMap<Class<? extends P>, Providers.State>();
-            final Deque<Class<? extends P>> visiting = new ArrayDeque<Class<? extends P>>();
+            final Map<Class<? extends P>, State> stateMap = new HashMap<>();
+            final Deque<Class<? extends P>> visiting = new ArrayDeque<>();
 
             for (final Class<? extends P> type : dependencyMap.keySet()) {
                 final State state = stateMap.get(type);
 
                 if (state == null) {
                     tsort(type, dependencyMap, stateMap, visiting, order);
-                } else if (state == State.VISITING) {
-                    throw new RuntimeException("Unexpected node in visiting state: " + type);
+                } else {
+                    Validate.validState(state != State.VISITING, "Unexpected node in visiting state: %s", type);
                 }
             }
             return imposeOrder(providers, order);
@@ -154,22 +152,15 @@ public final class Providers {
          */
         private Map<Class<? extends P>, Set<Class<? extends P>>> toDependencyMap(final Iterable<P> providers) {
 
-            final Map<Class<? extends P>, Set<Class<? extends P>>> result = LazyMap.lazyMap(
-                new HashMap<Class<? extends P>, Set<Class<? extends P>>>(), new Factory<Set<Class<? extends P>>>() {
-
-                    @Override
-                    public Set<Class<? extends P>> create() {
-                        return new HashSet<Class<? extends P>>();
-                    }
-                });
+            final Map<Class<? extends P>, Set<Class<? extends P>>> result = new HashMap<>();
 
             for (final WeaveLifecycleProvider<?> provider : providers) {
                 @SuppressWarnings("unchecked")
                 final Class<? extends P> type = (Class<? extends P>) provider.getClass();
-                Collections.addAll(result.get(type), consumedBy(type));
+                Collections.addAll(result.computeIfAbsent(type, k -> new HashSet<>()), consumedBy(type));
 
                 for (final Class<? extends P> dependent : producedBy(type)) {
-                    result.get(dependent).add(type);
+                    result.computeIfAbsent(dependent, k -> new HashSet<>()).add(type);
                 }
             }
             return result;
@@ -184,7 +175,7 @@ public final class Providers {
          */
         private Iterable<P> imposeOrder(final Iterable<P> providers, final Iterable<Class<? extends P>> order) {
 
-            final Set<P> result = new LinkedHashSet<P>();
+            final Set<P> result = new LinkedHashSet<>();
 
             for (final Class<? extends P> type : order) {
                 for (final P provider : providers) {
@@ -195,10 +186,6 @@ public final class Providers {
             }
             return Collections.unmodifiableSet(result);
         }
-
-    }
-
-    private Providers() {
     }
 
     /**
@@ -212,4 +199,6 @@ public final class Providers {
         return new SortWorker<P>().sort(providers);
     }
 
+    private Providers() {
+    }
 }

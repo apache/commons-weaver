@@ -50,5 +50,4 @@ public class WeaveMojo extends AbstractWeaveMojo {
     protected File getTarget() {
         return target;
     }
-
 }

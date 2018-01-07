@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.activation.DataSource;
 
@@ -96,7 +97,7 @@ public class Normalizer {
             }
         }
 
-        private final MutablePair<String, String> key = new MutablePair<String, String>();
+        private final MutablePair<String, String> key = new MutablePair<>();
         private final MutableBoolean ignore = new MutableBoolean(false);
         private final MutableBoolean valid = new MutableBoolean(true);
         private final MutableBoolean mustRewriteConstructor = new MutableBoolean(false);
@@ -262,14 +263,10 @@ public class Normalizer {
 
             final DataSource classfile = env.getClassfile(className);
             env.debug("Writing class %s to %s", className, classfile.getName());
-            OutputStream outputStream = null;
-            try {
-                outputStream = classfile.getOutputStream();
+            try (OutputStream outputStream = classfile.getOutputStream()) {
                 IOUtils.write(bytecode, outputStream);
             } catch (final IOException e) {
                 throw new RuntimeException(e);
-            } finally {
-                IOUtils.closeQuietly(outputStream);
             }
         }
     }
@@ -350,15 +347,10 @@ public class Normalizer {
      * @return {@link Map} of enclosing classname to {@link Map} of internal name to {@link ClassWrapper}
      */
     private Map<String, Map<String, ClassWrapper>> byEnclosingClass(final Set<ClassWrapper> sort) {
-        final Map<String, Map<String, ClassWrapper>> result = new HashMap<String, Map<String, ClassWrapper>>();
+        final Map<String, Map<String, ClassWrapper>> result = new HashMap<>();
         for (final ClassWrapper wrapper : sort) {
-            final String outer = wrapper.wrapped.getEnclosingClass().getName();
-            Map<String, ClassWrapper> map = result.get(outer);
-            if (map == null) {
-                map = new LinkedHashMap<String, Normalizer.ClassWrapper>();
-                result.put(outer, map);
-            }
-            map.put(wrapper.wrapped.getName().replace('.', '/'), wrapper);
+            result.computeIfAbsent(wrapper.wrapped.getEnclosingClass().getName(), k -> new LinkedHashMap<>())
+                .put(wrapper.wrapped.getName().replace('.', '/'), wrapper);
         }
         return result;
     }
@@ -380,19 +372,15 @@ public class Normalizer {
         for (final Map.Entry<String, Map<String, ClassWrapper>> entry : byEnclosingClass.entrySet()) {
             final String outer = entry.getKey();
             env.debug("Normalizing %s inner classes of %s", entry.getValue().size(), outer);
-            final Map<String, String> classMap = new HashMap<String, String>();
+            final Map<String, String> classMap = new HashMap<>();
             for (final String merged : entry.getValue().keySet()) {
                 classMap.put(merged, target);
             }
             final Remapper remapper = new SimpleRemapper(classMap);
 
-            InputStream enclosingBytecode = null;
-            try {
-                enclosingBytecode = env.getClassfile(outer).getInputStream();
+            try (InputStream enclosingBytecode = env.getClassfile(outer).getInputStream()) {
                 final ClassReader reader = new ClassReader(enclosingBytecode);
                 reader.accept(new Remap(new WriteClass(reader), remapper, classMap, entry.getValue()), 0);
-            } finally {
-                IOUtils.closeQuietly(enclosingBytecode);
             }
             for (final String merged : entry.getValue().keySet()) {
                 if (env.deleteClassfile(merged)) {
@@ -422,7 +410,7 @@ public class Normalizer {
      */
     private Set<Class<?>> getBroadlyEligibleSubclasses(final Class<?> supertype, final Scanner scanner) {
         final ScanResult scanResult = scanner.scan(new ScanRequest().addSupertypes(supertype));
-        final Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+        final Set<Class<?>> result = new LinkedHashSet<>();
         for (final WeavableClass<?> cls : scanResult.getClasses()) {
             final Class<?> subtype = cls.getTarget();
             final IneligibilityReason reason;
@@ -464,28 +452,18 @@ public class Normalizer {
      */
     private Map<Pair<String, String>, Set<ClassWrapper>> segregate(final Iterable<Class<?>> subtypes)
         throws IOException {
-        final Map<Pair<String, String>, Set<ClassWrapper>> classMap =
-            new LinkedHashMap<Pair<String, String>, Set<ClassWrapper>>();
+        final Map<Pair<String, String>, Set<ClassWrapper>> classMap = new LinkedHashMap<>();
         for (final Class<?> subtype : subtypes) {
             final Inspector inspector = new Inspector();
-            InputStream bytecode = null;
-            try {
-                bytecode = env.getClassfile(subtype).getInputStream();
+            try (InputStream bytecode = env.getClassfile(subtype).getInputStream()) {
                 new ClassReader(bytecode).accept(inspector, 0);
-            } finally {
-                IOUtils.closeQuietly(bytecode);
             }
             if (inspector.ignore()) {
                 continue;
             }
             if (inspector.valid()) {
-                final Pair<String, String> key = inspector.key();
-                Set<ClassWrapper> set = classMap.get(key);
-                if (set == null) {
-                    set = new LinkedHashSet<ClassWrapper>();
-                    classMap.put(key, set);
-                }
-                set.add(new ClassWrapper(subtype, inspector.mustRewriteConstructor()));
+                classMap.computeIfAbsent(inspector.key(), k -> new LinkedHashSet<>())
+                    .add(new ClassWrapper(subtype, inspector.mustRewriteConstructor()));
             } else {
                 env.debug("%s is ineligible for normalization due to %s", subtype,
                     IneligibilityReason.TOO_BUSY_CONSTRUCTOR);
@@ -522,10 +500,7 @@ public class Normalizer {
 
         env.debug("Copying class %s to %s", classWrapper.wrapped.getName(), result);
 
-        InputStream bytecode = null;
-
-        try {
-            bytecode = env.getClassfile(classWrapper.wrapped).getInputStream();
+        try (InputStream bytecode = env.getClassfile(classWrapper.wrapped).getInputStream()) {
             final ClassReader reader = new ClassReader(bytecode);
 
             final ClassVisitor writeClass = new WriteClass();
@@ -542,7 +517,6 @@ public class Normalizer {
                     final String superName, final String[] interfaces) {
                     supertype = Type.getObjectType(superName);
                     writeClass.visit(version, Opcodes.ACC_PUBLIC, result, signature, superName, interfaces);
-
                     visitAnnotation(Type.getType(Marker.class).getDescriptor(), false);
                 }
 
@@ -600,8 +574,6 @@ public class Normalizer {
                     writeClass.visitEnd();
                 }
             }, 0);
-        } finally {
-            IOUtils.closeQuietly(bytecode);
         }
         return result;
     }
@@ -614,13 +586,6 @@ public class Normalizer {
      */
     @SuppressWarnings("PMD.UseVarargs") //varargs not needed here
     private static Type[] toObjectTypes(final String[] types) {
-        if (types == null) {
-            return null;
-        }
-        final Type[] result = new Type[types.length];
-        for (int i = 0; i < types.length; i++) {
-            result[i] = Type.getObjectType(types[i]);
-        }
-        return result;
+        return types == null ? null : Stream.of(types).map(Type::getObjectType).toArray(Type[]::new);
     }
 }

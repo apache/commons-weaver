@@ -58,6 +58,6 @@ public class WeavableMethod<T> extends WeavableExecutable<WeavableMethod<T>, Met
      */
     @Override
     protected WeavableMethodParameter<T> createParameter(final int index) {
-        return new WeavableMethodParameter<T>(Integer.valueOf(index), this);
+        return new WeavableMethodParameter<>(Integer.valueOf(index), this);
     }
 }

@@ -121,7 +121,6 @@ public class WeaverSettings extends DataType {
         if (includeSystemClasspath) {
             path.add(Path.systemClasspath);
         }
-
         return Arrays.asList(path.list());
     }
 
@@ -227,5 +226,4 @@ public class WeaverSettings extends DataType {
     private WeaverSettings getRef() {
         return getCheckedRef(WeaverSettings.class, "settings");
     }
-
 }

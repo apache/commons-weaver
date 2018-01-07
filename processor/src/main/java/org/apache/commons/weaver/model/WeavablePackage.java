@@ -27,8 +27,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class WeavablePackage extends Weavable<WeavablePackage, Package> {
 
-    private final ConcurrentNavigableMap<String, WeavableClass<?>> clazzes =
-        new ConcurrentSkipListMap<String, WeavableClass<?>>();
+    private final ConcurrentNavigableMap<String, WeavableClass<?>> clazzes = new ConcurrentSkipListMap<>();
 
     /**
      * Create a new {@link WeavablePackage} instance.
@@ -51,7 +50,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
             final WeavableClass<T> result = (WeavableClass<T>) clazzes.get(key);
             return result;
         }
-        final WeavableClass<T> result = new WeavableClass<T>(cls, this);
+        final WeavableClass<T> result = new WeavableClass<>(cls, this);
         @SuppressWarnings("unchecked")
         final WeavableClass<T> faster = (WeavableClass<T>) clazzes.putIfAbsent(key, result);
         return faster == null ? result : faster;
@@ -74,5 +73,4 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
     public int compareTo(final WeavablePackage arg0) {
         return getTarget().getName().compareTo(arg0.getTarget().getName());
     }
-
 }

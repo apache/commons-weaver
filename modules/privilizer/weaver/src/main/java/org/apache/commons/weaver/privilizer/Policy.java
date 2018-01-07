@@ -75,5 +75,4 @@ public enum Policy {
     public boolean isConditional() {
         return this == ON_INIT || this == DYNAMIC;
     }
-
 }

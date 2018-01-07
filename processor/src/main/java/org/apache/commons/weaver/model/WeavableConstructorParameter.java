@@ -36,5 +36,4 @@ public class WeavableConstructorParameter<T> extends
     public WeavableConstructorParameter(final Integer target, final WeavableConstructor<T> parent) {
         super(target, parent);
     }
-
 }

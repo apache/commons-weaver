@@ -21,47 +21,20 @@ package org.apache.commons.weaver.utils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * {@link URL} Array utilities.
  */
 public final class URLArray {
-    private URLArray() {
-    }
-
     /**
      * Convert an {@link Iterable} of filesystem paths.
      * @param files to convert
      * @return URL[]
      */
     public static URL[] fromPaths(final Iterable<String> files) {
-        return fromFiles(new Iterable<File>() {
-
-            @Override
-            public Iterator<File> iterator() {
-                final Iterator<String> path = files.iterator();
-                return new Iterator<File>() {
-
-                    @Override
-                    public boolean hasNext() {
-                        return path.hasNext();
-                    }
-
-                    @Override
-                    public File next() {
-                        final String element = path.next();
-                        return element == null ? null : new File(element);
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
-            }
-        });
+        return fromFiles(() -> stream(files).map(e -> e == null ? null : new File(e)).iterator());
     }
 
     /**
@@ -70,19 +43,32 @@ public final class URLArray {
      * @return URL[]
      */
     public static URL[] fromFiles(final Iterable<File> files) {
-        final ArrayList<URL> result = new ArrayList<URL>();
-        for (final File file : files) {
-            if (file == null) {
-                result.add(null);
-                continue;
+        return fromFiles(stream(files));
+    }
+
+    private static URL[] fromFiles(final Stream<File> files) {
+        return files.map(f -> {
+            if (f == null) {
+                return null;
             }
             try {
-                result.add(file.toURI().toURL());
+                return f.toURI().toURL();
             } catch (final MalformedURLException e) {
                 // this shouldn't happen
                 throw new RuntimeException(e);
             }
+        }).toArray(URL[]::new);
+    }
+
+    private static <T> Stream<T> stream(Iterable<T> iterable) {
+        if (iterable instanceof Collection<?>) {
+            return ((Collection<T>) iterable).stream();
         }
-        return result.toArray(new URL[result.size()]);
+        final Stream.Builder<T> b = Stream.builder();
+        iterable.forEach(b);
+        return b.build();
+    }
+
+    private URLArray() {
     }
 }

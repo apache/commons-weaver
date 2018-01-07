@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,7 +37,7 @@ import org.apache.maven.plugin.logging.Log;
  * This class redirects calls to java.util Logging to Mojo logging.
  */
 public class JavaLoggingToMojoLoggingRedirector {
-    private final List<Handler> removedHandlers = new ArrayList<Handler>();
+    private final List<Handler> removedHandlers = new ArrayList<>();
 
     /**
      * The Maven mojo logger to delegate messages to.
@@ -68,12 +69,10 @@ public class JavaLoggingToMojoLoggingRedirector {
             if (removedHandlers.isEmpty()) {
                 throw new MojoExecutionException("could not remove any handler. aborting.");
             }
-
             // add our own
             activeHandler = new JDKLogHandler();
             activeHandler.setLevel(Level.ALL);
             rootLogger.setLevel(Level.ALL);
-
             rootLogger.addHandler(activeHandler);
         } catch (Exception exc) {
             throw new MojoExecutionException("failed to activate the jul logging redirector", exc);
@@ -87,15 +86,11 @@ public class JavaLoggingToMojoLoggingRedirector {
     public void deactivate() {
         final Logger rootLogger = LogManager.getLogManager().getLogger("");
         // remove old handlers
-        for (final Handler handler : rootLogger.getHandlers()) {
-            if (handler == activeHandler) {
-                rootLogger.removeHandler(handler);
-            }
+        
+        if (Stream.of(rootLogger.getHandlers()).anyMatch(h -> h == activeHandler)) {
+            rootLogger.removeHandler(activeHandler);
         }
-
-        for (final Handler oldHandler : removedHandlers) {
-            rootLogger.addHandler(oldHandler);
-        }
+        removedHandlers.forEach(rootLogger::addHandler);
     }
 
     private class JDKLogHandler extends Handler {
@@ -133,7 +128,6 @@ public class JavaLoggingToMojoLoggingRedirector {
 
         private String getMessage(final LogRecord record) {
             final ResourceBundle bundle = record.getResourceBundle();
-            final Object[] params = record.getParameters();
             final String message;
             if (bundle != null && bundle.containsKey(record.getMessage())) {
                 // todo: cannot enforce Locale.ENGLISH here
@@ -141,6 +135,7 @@ public class JavaLoggingToMojoLoggingRedirector {
             } else {
                 message = record.getMessage();
             }
+            final Object[] params = record.getParameters();
             if (ArrayUtils.isNotEmpty(params)) {
                 return new MessageFormat(message).format(params);
             }
@@ -156,7 +151,5 @@ public class JavaLoggingToMojoLoggingRedirector {
         public void close() {
             // nothing to do
         }
-
     }
-
 }

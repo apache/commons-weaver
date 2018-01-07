@@ -62,7 +62,7 @@ public class WeaveProcessor extends ProcessorBase<Weaver> {
      */
     public void weave() {
         if (!target.exists()) {
-            log.warning("Target directory " + target + " does not exist; nothing to do!");
+            log.warning(() -> String.format("Target directory %s does not exist; nothing to do!", target));
         }
         for (final Weaver weaver : providers) {
             final WeaveEnvironment env = new LocalWeaveEnvironment(target, classLoader, configuration,

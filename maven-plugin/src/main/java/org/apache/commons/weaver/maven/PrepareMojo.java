@@ -49,5 +49,4 @@ public class PrepareMojo extends AbstractPrepareMojo {
     protected File getTarget() {
         return target;
     }
-
 }

@@ -157,8 +157,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final SignatureVisitor actionImplemented = type.visitInterface();
         actionImplemented.visitClassType(actionInterface.getInternalName());
         final SignatureVisitor visitTypeArgument = actionImplemented.visitTypeArgument('=');
-        final SignatureReader result = new SignatureReader(privilizer().wrap(methd.getReturnType()).getDescriptor());
-        result.accept(visitTypeArgument);
+        new SignatureReader(privilizer().wrap(methd.getReturnType()).getDescriptor()).accept(visitTypeArgument);
         actionImplemented.visitEnd();
 
         final String signature = type.toString();
@@ -194,7 +193,6 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
             mgen.loadArg(arg++);
             mgen.putField(action, field.name, field.type);
         }
-
         mgen.returnValue();
         final Label end = mgen.mark();
 
@@ -219,16 +217,12 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
             mgen.loadThis();
             mgen.getField(action, field.name, field.type);
         }
-
         mgen.invokeStatic(owner.target, helper);
 
         if (methd.getReturnType().getSort() < Type.ARRAY) {
             mgen.valueOf(methd.getReturnType());
         }
-
         mgen.returnValue();
-
         mgen.endMethod();
     }
-
 }

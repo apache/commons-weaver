@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -54,27 +53,27 @@ import org.objectweb.asm.tree.MethodNode;
  */
 class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
-    private final Set<Type> blueprintTypes = new HashSet<Type>();
-    private final Map<Pair<Type, Method>, MethodNode> blueprintRegistry = new HashMap<Pair<Type, Method>, MethodNode>();
+    private final Set<Type> blueprintTypes = new HashSet<>();
+    private final Map<Pair<Type, Method>, MethodNode> blueprintRegistry = new HashMap<>();
 
-    private final Map<Pair<Type, Method>, String> importedMethods = new HashMap<Pair<Type, Method>, String>();
+    private final Map<Pair<Type, Method>, String> importedMethods = new HashMap<>();
 
-    private final Map<Type, Map<Method, MethodNode>> methodCache = new HashMap<Type, Map<Method, MethodNode>>();
-    private final Map<Pair<Type, String>, FieldAccess> fieldAccessMap = new HashMap<Pair<Type, String>, FieldAccess>();
+    private final Map<Type, Map<Method, MethodNode>> methodCache = new HashMap<>();
+    private final Map<Pair<Type, String>, FieldAccess> fieldAccessMap = new HashMap<>();
 
-    private final ClassVisitor next;
+    private final ClassVisitor nextVisitor;
 
     /**
      * Create a new {@link BlueprintingVisitor}.
      * @param privilizer owner
-     * @param next wrapped
+     * @param nextVisitor wrapped
      * @param config annotation
      */
     BlueprintingVisitor(@SuppressWarnings("PMD.UnusedFormalParameter") final Privilizer privilizer, //false positive
-        final ClassVisitor next,
+        final ClassVisitor nextVisitor,
         final Privilizing config) {
         privilizer.super(new ClassNode(Opcodes.ASM5));
-        this.next = next;
+        this.nextVisitor = nextVisitor;
 
         // load up blueprint methods:
         for (final Privilizing.CallTo callTo : config.value()) {
@@ -104,9 +103,8 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             return methodCache.get(type);
         }
         final ClassNode classNode = read(type.getClassName());
-        final Map<Method, MethodNode> result = new HashMap<Method, MethodNode>();
+        final Map<Method, MethodNode> result = new HashMap<>();
 
-        @SuppressWarnings("unchecked")
         final List<MethodNode> methods = classNode.methods;
 
         for (final MethodNode methodNode : methods) {
@@ -120,14 +118,10 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private ClassNode read(final String className) {
         final ClassNode result = new ClassNode(Opcodes.ASM5);
-        InputStream bytecode = null;
-        try {
-            bytecode = privilizer().env.getClassfile(className).getInputStream();
+        try (InputStream bytecode = privilizer().env.getClassfile(className).getInputStream();) {
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(bytecode);
         }
         return result;
     }
@@ -168,10 +162,10 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         final MethodNode source = getMethods(key.getLeft()).get(key.getRight());
 
         @SuppressWarnings("unchecked")
-        final String[] exceptions = (String[]) source.exceptions.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        final String[] exceptions = ((List<String>) source.exceptions).toArray(ArrayUtils.EMPTY_STRING_ARRAY);
 
         // non-public fields accessed
-        final Set<FieldAccess> fieldAccesses = new LinkedHashSet<FieldAccess>();
+        final Set<FieldAccess> fieldAccesses = new LinkedHashSet<>();
 
         source.accept(new MethodVisitor(Opcodes.ASM5) {
             @Override
@@ -192,17 +186,14 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         MethodVisitor mv = new NestedMethodInvocationHandler(withAccessibleAdvice, key.getLeft()); //NOPMD
 
         if (!fieldAccesses.isEmpty()) {
-            // accessesNonPublicFields = true;
-            mv = new AccessibleAdvisor(mv, access, result, source.desc, new ArrayList<FieldAccess>(fieldAccesses));
+            mv = new AccessibleAdvisor(mv, access, result, source.desc, new ArrayList<>(fieldAccesses));
         }
-
         source.accept(mv);
 
         // private can only be called by other privileged methods, so no need to mark as privileged
         if (!Modifier.isPrivate(source.access)) {
             withAccessibleAdvice.visitAnnotation(Type.getType(Privileged.class).getDescriptor(), false).visitEnd();
         }
-
         withAccessibleAdvice.accept(this.cv);
 
         return result;
@@ -212,16 +203,15 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         final Pair<Type, String> key = Pair.of(owner, name);
         if (!fieldAccessMap.containsKey(key)) {
             try {
-                final MutableObject<Type> next = new MutableObject<Type>(owner);
-                final Deque<Type> stk = new ArrayDeque<Type>();
+                final MutableObject<Type> next = new MutableObject<>(owner);
+                final Deque<Type> stk = new ArrayDeque<>();
                 while (next.getValue() != null) {
                     stk.push(next.getValue());
-                    InputStream bytecode = null;
-                    try {
-                        bytecode = privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream();
+                    try (InputStream bytecode =
+                        privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream()) {
                         new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
                             @Override
-                            @SuppressWarnings("PMD.UseVarargs") //overridden method
+                            @SuppressWarnings("PMD.UseVarargs") // overridden method
                             public void visit(final int version, final int access, final String name,
                                 final String signature, final String superName, final String[] interfaces) {
                                 super.visit(version, access, name, signature, superName, interfaces);
@@ -242,8 +232,6 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
                                 return null;
                             }
                         }, ClassReader.SKIP_CODE);
-                    } finally {
-                        IOUtils.closeQuietly(bytecode);
                     }
                     if (fieldAccessMap.containsKey(key)) {
                         break;
@@ -260,7 +248,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     @Override
     public void visitEnd() {
         super.visitEnd();
-        ((ClassNode) cv).accept(next);
+        ((ClassNode) cv).accept(nextVisitor);
     }
 
     private abstract class MethodInvocationHandler extends MethodVisitor {

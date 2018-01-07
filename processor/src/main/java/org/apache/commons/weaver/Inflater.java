@@ -19,9 +19,10 @@
 package org.apache.commons.weaver;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.WeavableClass;
@@ -43,7 +44,7 @@ import org.apache.xbean.finder.Parameter;
  * Adds all classfile annotations to a ScanResult.
  */
 class Inflater {
-    private class InfoMatcher {
+    private class InfoMatcher implements Predicate<Info> {
         final Class<? extends Info> type;
 
         InfoMatcher(final Class<? extends Info> type) {
@@ -51,10 +52,9 @@ class Inflater {
             this.type = type;
         }
 
-        boolean test(final Info info) {
+        public boolean test(final Info info) {
             return type.isInstance(info);
         }
-
     }
 
     private class MethodMatcher extends InfoMatcher {
@@ -66,7 +66,7 @@ class Inflater {
         }
 
         @Override
-        boolean test(final Info info) {
+        public boolean test(final Info info) {
             return super.test(info) && ((MethodInfo) info).isConstructor() == isCtor;
         }
     }
@@ -80,7 +80,7 @@ class Inflater {
         }
 
         @Override
-        boolean test(final Info info) {
+        public boolean test(final Info info) {
             return super.test(info) && ((ParameterInfo) info).getDeclaringMethod().isConstructor() == isCtor;
         }
     }
@@ -107,94 +107,82 @@ class Inflater {
 
     static <I extends Info> Map<I, List<Annotation>> subMap(final Map<Info, List<Annotation>> source,
         final InfoMatcher matcher) {
-        final HashMap<I, List<Annotation>> result = new HashMap<I, List<Annotation>>();
-        for (final Map.Entry<Info, List<Annotation>> entry : source.entrySet()) {
-            if (matcher.test(entry.getKey())) {
-                @SuppressWarnings("unchecked")
-                final I key = (I) entry.getKey();
-                result.put(key, entry.getValue());
-            }
-        }
+        @SuppressWarnings("unchecked")
+        final Map<I, List<Annotation>> result = source.entrySet().stream().filter(e -> matcher.test(e.getKey()))
+            .collect(Collectors.toMap(t -> (I) t.getKey(), Map.Entry::getValue));
+
         return result;
     }
 
     ScanResult inflate(final ScanResult scanResult) {
         for (final WeavablePackage pkg : scanResult.getPackages()) {
-            for (final Map.Entry<PackageInfo, List<Annotation>> entry : packageAnnotations.entrySet()) {
-                if (entry.getKey().getName().equals(pkg.getTarget().getName())) {
-                    pkg.addAnnotations(entry.getValue());
+            packageAnnotations.forEach((k, v) -> {
+                if (k.getName().equals(pkg.getTarget().getName())) {
+                    pkg.addAnnotations(v);
                 }
-            }
+            });
             for (final WeavableClass<?> cls : pkg.getClasses()) {
-                for (final Map.Entry<ClassInfo, List<Annotation>> entry : classAnnotations.entrySet()) {
-                    if (entry.getKey().getName().equals(cls.getTarget().getName())) {
-                        cls.addAnnotations(entry.getValue());
+                classAnnotations.forEach((k, v) -> {
+                    if (k.getName().equals(cls.getTarget().getName())) {
+                        cls.addAnnotations(v);
                     }
-                }
+                });
                 for (final WeavableField<?> fld : cls.getFields()) {
-                    for (final Map.Entry<FieldInfo, List<Annotation>> entry : fieldAnnotations.entrySet()) {
+                    fieldAnnotations.forEach((k, v) -> {
                         try {
-                            if (entry.getKey().get().equals(fld.getTarget())) {
-                                fld.addAnnotations(entry.getValue());
+                            if (k.get().equals(fld.getTarget())) {
+                                fld.addAnnotations(v);
                             }
                         } catch (final ClassNotFoundException cnfe) {
-                            continue;
                         }
-                    }
+                    });
                 }
                 for (final WeavableConstructor<?> ctor : cls.getConstructors()) {
-                    for (final Map.Entry<MethodInfo, List<Annotation>> entry : ctorAnnotations.entrySet()) {
+                    ctorAnnotations.forEach((k, v) -> {
                         try {
-                            if (entry.getKey().get().equals(ctor.getTarget())) {
-                                ctor.addAnnotations(entry.getValue());
+                            if (k.get().equals(ctor.getTarget())) {
+                                ctor.addAnnotations(v);
                             }
                         } catch (final ClassNotFoundException cnfe) {
-                            continue;
                         }
-                    }
+                    });
                     for (final WeavableConstructorParameter<?> param : ctor.getParameters()) {
-                        for (final Map.Entry<ParameterInfo, List<Annotation>> entry : ctorParameterAnnotations
-                            .entrySet()) {
+                        ctorParameterAnnotations.forEach((k, v) -> {
                             try {
-                                final Parameter<?> parameter = entry.getKey().get();
+                                final Parameter<?> parameter = k.get();
                                 if (parameter.getDeclaringExecutable().equals(ctor.getTarget())
                                     && param.getTarget().intValue() == parameter.getIndex()) {
-                                    param.addAnnotations(entry.getValue());
+                                    param.addAnnotations(v);
                                 }
                             } catch (final ClassNotFoundException cnfe) {
-                                continue;
                             }
-                        }
+                        });
                     }
                 }
                 for (final WeavableMethod<?> methd : cls.getMethods()) {
-                    for (final Map.Entry<MethodInfo, List<Annotation>> entry : methodAnnotations.entrySet()) {
+                    methodAnnotations.forEach((k, v) -> {
                         try {
-                            if (entry.getKey().get().equals(methd.getTarget())) {
-                                methd.addAnnotations(entry.getValue());
+                            if (k.get().equals(methd.getTarget())) {
+                                methd.addAnnotations(v);
                             }
                         } catch (final ClassNotFoundException cnfe) {
-                            continue;
                         }
-                    }
+                    });
                     for (final WeavableMethodParameter<?> param : methd.getParameters()) {
-                        for (final Map.Entry<ParameterInfo, List<Annotation>> entry : methodParameterAnnotations
-                            .entrySet()) {
+                        methodParameterAnnotations.forEach((k, v) -> {
                             try {
-                                final Parameter<?> parameter = entry.getKey().get();
+                                final Parameter<?> parameter = k.get();
                                 if (parameter.getDeclaringExecutable().equals(methd.getTarget())
                                     && param.getTarget().intValue() == parameter.getIndex()) {
-                                    param.addAnnotations(entry.getValue());
+                                    param.addAnnotations(v);
                                 }
                             } catch (final ClassNotFoundException cnfe) {
-                                continue;
                             }
-                        }
+                        });
                     }
                 }
             }
         }
         return scanResult;
     }
-
 }

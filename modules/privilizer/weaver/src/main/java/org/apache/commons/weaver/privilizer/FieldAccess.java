@@ -67,5 +67,4 @@ public class FieldAccess extends Field {
         final int result = super.hashCode() << 4;
         return result | owner.hashCode();
     }
-
 }

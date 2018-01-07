@@ -1,1 +1,1 @@
-src/site/markdown/building.md
+link src/site/markdown/building.md

@@ -35,5 +35,4 @@ public class NormalizerWeaver implements Weaver {
     public boolean process(final WeaveEnvironment environment, final Scanner scanner) {
         return new Normalizer(environment).normalize(scanner);
     }
-
 }
