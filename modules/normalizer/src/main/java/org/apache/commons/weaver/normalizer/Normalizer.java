@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 
 import javax.activation.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.Conversion;
@@ -264,7 +263,7 @@ public class Normalizer {
             final DataSource classfile = env.getClassfile(className);
             env.debug("Writing class %s to %s", className, classfile.getName());
             try (OutputStream outputStream = classfile.getOutputStream()) {
-                IOUtils.write(bytecode, outputStream);
+                outputStream.write(bytecode);
             } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
