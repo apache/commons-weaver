@@ -160,16 +160,6 @@ under the License.
         <version>3.4</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-collections4</artifactId>
-        <version>4.1</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
         <version>${asm.version}</version>
@@ -244,7 +234,7 @@ under the License.
           <configuration>
             <parameter>
               <ignoreMissingNewVersion />
-	      <reportOnlyFilename>true</reportOnlyFilename>
+              <reportOnlyFilename>true</reportOnlyFilename>
             </parameter>
           </configuration>
         </plugin>
