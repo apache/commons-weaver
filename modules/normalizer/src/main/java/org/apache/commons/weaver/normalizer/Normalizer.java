@@ -72,7 +72,7 @@ public class Normalizer {
     private static final class Inspector extends ClassVisitor {
         private final class InspectConstructor extends MethodVisitor {
             private InspectConstructor() {
-                super(Opcodes.ASM5);
+                super(ASM_VERSION);
             }
 
             @Override
@@ -104,7 +104,7 @@ public class Normalizer {
         private String superName;
 
         private Inspector() {
-            super(Opcodes.ASM5);
+            super(ASM_VERSION);
         }
 
         @Override
@@ -159,7 +159,7 @@ public class Normalizer {
     private static final class Remap extends ClassRemapper {
         private final class RewriteConstructor extends MethodVisitor {
             private RewriteConstructor(final MethodVisitor wrapped) {
-                super(Opcodes.ASM5, wrapped);
+                super(ASM_VERSION, wrapped);
             }
 
             @Override
@@ -240,11 +240,11 @@ public class Normalizer {
         private String className;
 
         WriteClass() {
-            super(Opcodes.ASM5, new CustomClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
+            super(ASM_VERSION, new CustomClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS));
         }
 
         WriteClass(final ClassReader reader) {
-            super(Opcodes.ASM5, new CustomClassWriter(reader, 0));
+            super(ASM_VERSION, new CustomClassWriter(reader, 0));
         }
 
         @Override
@@ -290,6 +290,7 @@ public class Normalizer {
      */
     public static final String CONFIG_TARGET_PACKAGE = CONFIG_WEAVER + "targetPackage";
 
+    private static final int ASM_VERSION = Opcodes.ASM5;
     private static final Charset UTF8 = Charset.forName(CharEncoding.UTF_8);
 
     private final WeaveEnvironment env;
@@ -507,7 +508,7 @@ public class Normalizer {
             // we're doing most of this by hand; we only read the original class to hijack signature, ctor exceptions,
             // etc.:
 
-            reader.accept(new ClassVisitor(Opcodes.ASM5) {
+            reader.accept(new ClassVisitor(ASM_VERSION) {
                 Type supertype;
 
                 @Override

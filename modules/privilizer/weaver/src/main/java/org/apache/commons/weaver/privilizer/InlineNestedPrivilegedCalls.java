@@ -38,7 +38,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
             private final Method outer;
 
             private VisitMethod(final MethodVisitor orig, final Method outer) {
-                super(Opcodes.ASM5, orig);
+                super(Privilizer.ASM_VERSION, orig);
                 this.outer = outer;
             }
 
@@ -59,7 +59,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
         }
 
         private VisitEnd() {
-            super(Opcodes.ASM5, next);
+            super(Privilizer.ASM_VERSION, next);
         }
 
         @Override
@@ -92,7 +92,7 @@ class InlineNestedPrivilegedCalls extends ClassNode {
      */
     InlineNestedPrivilegedCalls(final Privilizer privilizer, final Map<Method, String> privilegedMethods,
         final ClassVisitor next) {
-        super(Opcodes.ASM5);
+        super(Privilizer.ASM_VERSION);
         this.privilizer = privilizer;
         this.privilegedMethods = privilegedMethods;
         this.next = next;

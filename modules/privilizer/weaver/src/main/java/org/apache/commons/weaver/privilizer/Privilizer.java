@@ -56,7 +56,7 @@ public class Privilizer {
         }
 
         protected PrivilizerClassVisitor(final ClassVisitor cv) { //NOPMD
-            super(Opcodes.ASM5, cv);
+            super(ASM_VERSION, cv);
         }
 
         protected Privilizer privilizer() {
@@ -144,6 +144,7 @@ public class Privilizer {
 
     private static final String GENERATE_NAME = "__privileged_%s";
 
+    static final int ASM_VERSION = Opcodes.ASM5;
     static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
     final WeaveEnvironment env;
@@ -240,7 +241,7 @@ public class Privilizer {
         }
         Validate.validState(StringUtils.isBlank(error), error);
 
-        final ClassVisitor checkInnerClasses = new ClassVisitor(Opcodes.ASM5, null) {
+        final ClassVisitor checkInnerClasses = new ClassVisitor(ASM_VERSION, null) {
             final Set<String> innerNames = new HashSet<>();
 
             @Override
