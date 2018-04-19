@@ -72,7 +72,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     BlueprintingVisitor(@SuppressWarnings("PMD.UnusedFormalParameter") final Privilizer privilizer, //false positive
         final ClassVisitor nextVisitor,
         final Privilizing config) {
-        privilizer.super(new ClassNode(Opcodes.ASM5));
+        privilizer.super(new ClassNode(Privilizer.ASM_VERSION));
         this.nextVisitor = nextVisitor;
 
         // load up blueprint methods:
@@ -117,7 +117,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     private ClassNode read(final String className) {
-        final ClassNode result = new ClassNode(Opcodes.ASM5);
+        final ClassNode result = new ClassNode(Privilizer.ASM_VERSION);
         try (InputStream bytecode = privilizer().env.getClassfile(className).getInputStream();) {
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
@@ -167,7 +167,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         // non-public fields accessed
         final Set<FieldAccess> fieldAccesses = new LinkedHashSet<>();
 
-        source.accept(new MethodVisitor(Opcodes.ASM5) {
+        source.accept(new MethodVisitor(Privilizer.ASM_VERSION) {
             @Override
             public void visitFieldInsn(final int opcode, final String owner, final String name, final String desc) {
                 final FieldAccess fieldAccess = fieldAccess(Type.getObjectType(owner), name);
@@ -253,7 +253,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
     private abstract class MethodInvocationHandler extends MethodVisitor {
         MethodInvocationHandler(final MethodVisitor mvr) {
-            super(Opcodes.ASM5, mvr);
+            super(Privilizer.ASM_VERSION, mvr);
         }
 
         @Override
@@ -323,7 +323,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         AccessibleAdvisor(final MethodVisitor mvr, final int access, final String name, final String desc,
             final List<FieldAccess> fieldAccesses) {
-            super(ASM5, mvr, access, name, desc);
+            super(Privilizer.ASM_VERSION, mvr, access, name, desc);
             this.fieldAccesses = fieldAccesses;
         }
 

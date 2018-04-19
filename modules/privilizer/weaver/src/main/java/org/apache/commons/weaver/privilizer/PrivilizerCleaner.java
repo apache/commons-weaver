@@ -57,7 +57,7 @@ public class PrivilizerCleaner implements Cleaner {
 
             try (InputStream bytecode = privilizer.env.getClassfile(className).getInputStream()) {
                 final ClassReader classReader = new ClassReader(bytecode);
-                classReader.accept(new ClassVisitor(Opcodes.ASM5) {
+                classReader.accept(new ClassVisitor(Privilizer.ASM_VERSION) {
                     @Override
                     @SuppressWarnings("PMD.UseVarargs") // overridden method
                     public void visit(final int version, final int access, final String name, final String signature,

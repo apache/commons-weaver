@@ -110,7 +110,7 @@ class Finder extends AnnotationFinder implements Scanner {
 
     private abstract class AnnotationCapturer extends AnnotationVisitor {
         public AnnotationCapturer(final AnnotationVisitor wrapped) {
-            super(Opcodes.ASM5, wrapped);
+            super(ASM_VERSION, wrapped);
         }
 
         /**
@@ -196,7 +196,7 @@ class Finder extends AnnotationFinder implements Scanner {
         private final InfoBuildingVisitor wrapped;
 
         public Visitor(final InfoBuildingVisitor wrapped) {
-            super(Opcodes.ASM5, wrapped);
+            super(ASM_VERSION, wrapped);
             this.wrapped = wrapped;
         }
 
@@ -223,7 +223,7 @@ class Finder extends AnnotationFinder implements Scanner {
                 return toWrap;
             }
             final FieldInfo fieldInfo = testFieldInfo;
-            return new FieldVisitor(Opcodes.ASM5, toWrap) {
+            return new FieldVisitor(ASM_VERSION, toWrap) {
                 @Override
                 public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
@@ -258,7 +258,7 @@ class Finder extends AnnotationFinder implements Scanner {
                 return toWrap;
             }
             final MethodInfo methodInfo = testMethodInfo;
-            return new MethodVisitor(Opcodes.ASM5, toWrap) {
+            return new MethodVisitor(ASM_VERSION, toWrap) {
                 @Override
                 public AnnotationVisitor visitAnnotation(final String desc, final boolean visible) {
                     final AnnotationVisitor toWrap = super.visitAnnotation(desc, visible);
@@ -494,6 +494,7 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
+    private static final int ASM_VERSION = Opcodes.ASM5;
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
 
     private static final String INIT = "<init>";
