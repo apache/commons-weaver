@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 import javax.activation.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -291,7 +290,6 @@ public class Normalizer {
     public static final String CONFIG_TARGET_PACKAGE = CONFIG_WEAVER + "targetPackage";
 
     private static final int ASM_VERSION = Opcodes.ASM5;
-    private static final Charset UTF8 = Charset.forName(CharEncoding.UTF_8);
 
     private final WeaveEnvironment env;
 
@@ -491,8 +489,8 @@ public class Normalizer {
         } catch (final NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        md5.update(key.getLeft().getBytes(UTF8));
-        md5.update(key.getRight().getBytes(UTF8));
+        md5.update(key.getLeft().getBytes(StandardCharsets.UTF_8));
+        md5.update(key.getRight().getBytes(StandardCharsets.UTF_8));
 
         final long digest = Conversion.byteArrayToLong(md5.digest(), 0, 0L, 0, Long.SIZE / Byte.SIZE);
 
@@ -525,7 +523,6 @@ public class Normalizer {
                 public MethodVisitor visitMethod(final int access, final String name, final String desc,
                     final String signature, final String[] exceptions) {
                     if (INIT.equals(name)) {
-
                         final Method staticCtor = new Method(INIT, key.getRight());
                         final Type[] argumentTypes = staticCtor.getArgumentTypes();
                         final Type[] exceptionTypes = toObjectTypes(exceptions);
@@ -551,7 +548,7 @@ public class Normalizer {
                          */
                         {
                             final Method instanceCtor =
-                                new Method(INIT, Type.VOID_TYPE, ArrayUtils.add(argumentTypes, 0, OBJECT_TYPE));
+                                new Method(INIT, Type.VOID_TYPE, ArrayUtils.insert(0, argumentTypes, OBJECT_TYPE));
                             final GeneratorAdapter mgen =
                                 new GeneratorAdapter(Opcodes.ACC_PUBLIC, instanceCtor, signature, exceptionTypes,
                                     writeClass);
