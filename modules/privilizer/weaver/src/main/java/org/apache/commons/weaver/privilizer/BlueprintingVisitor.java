@@ -161,8 +161,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         final MethodNode source = getMethods(key.getLeft()).get(key.getRight());
 
-        @SuppressWarnings("unchecked")
-        final String[] exceptions = ((List<String>) source.exceptions).toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        final String[] exceptions = source.exceptions.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
 
         // non-public fields accessed
         final Set<FieldAccess> fieldAccesses = new LinkedHashSet<>();
