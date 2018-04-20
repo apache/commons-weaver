@@ -149,12 +149,8 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                     privilizer().env.debug("setting up unconditional privileged execution due to policy %s", policy);
                 }
                 // generate action:
-                final Type[] ctorArgs;
-                if (instanceMethod) {
-                    ctorArgs = ArrayUtils.add(methd.getArgumentTypes(), 0, target);
-                } else {
-                    ctorArgs = methd.getArgumentTypes();
-                }
+                final Type[] ctorArgs =
+                    instanceMethod ? ArrayUtils.insert(0, methd.getArgumentTypes(), target) : methd.getArgumentTypes();
                 final Type actionType = new ActionGenerator(access, methd, exceptions, PrivilizingVisitor.this).build();
                 newInstance(actionType);
                 dup();
