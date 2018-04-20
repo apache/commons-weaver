@@ -97,7 +97,6 @@ under the License.
                   <artifactSet>
                     <includes>
                       <include>org.apache.commons:commons-lang3</include>
-                      <include>commons-io:commons-io</include>
                       <include>org.ow2.asm:*</include>
                     </includes>
                   </artifactSet>
@@ -107,10 +106,6 @@ under the License.
                       <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
                     </relocation>
                     <relocation>
-                      <pattern>org.apache.commons.io.</pattern>
-                      <shadedPattern>org.apache.commons.weaver.privilizer._io.</shadedPattern>
-                    </relocation>
-                    <relocation>
                       <pattern>org.objectweb.asm.</pattern>
                       <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
                     </relocation>
@@ -118,12 +113,6 @@ under the License.
                   <filters>
                     <filter>
                       <artifact>org.apache.commons:commons-lang3</artifact>
-                      <excludes>
-                        <exclude>META-INF/**</exclude>
-                      </excludes>
-                    </filter>
-                    <filter>
-                      <artifact>commons-io:commons-io</artifact>
                       <excludes>
                         <exclude>META-INF/**</exclude>
                       </excludes>
