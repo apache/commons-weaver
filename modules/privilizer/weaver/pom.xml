@@ -47,99 +47,30 @@ under the License.
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-tree</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-analysis</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
   </dependencies>
-  <profiles>
-    <profile>
-      <id>basic</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-tree</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-util</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-analysis</artifactId>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>shade</id>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-                <configuration>
-                  <minimizeJar>true</minimizeJar>
-                  <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
-                  <artifactSet>
-                    <includes>
-                      <include>org.apache.commons:commons-lang3</include>
-                      <include>org.ow2.asm:*</include>
-                    </includes>
-                  </artifactSet>
-                  <relocations>
-                    <relocation>
-                      <pattern>org.apache.commons.lang3.</pattern>
-                      <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
-                    </relocation>
-                    <relocation>
-                      <pattern>org.objectweb.asm.</pattern>
-                      <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
-                    </relocation>
-                  </relocations>
-                  <filters>
-                    <filter>
-                      <artifact>org.apache.commons:commons-lang3</artifact>
-                      <excludes>
-                        <exclude>META-INF/**</exclude>
-                      </excludes>
-                    </filter>
-                    <filter>
-                      <artifact>org.ow2.asm:*</artifact>
-                      <excludes>
-                        <exclude>META-INF/**</exclude>
-                      </excludes>
-                    </filter>
-                  </filters>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>dev</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-debug-all</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 
   <build>
     <plugins>
@@ -197,6 +128,52 @@ under the License.
           </filesets>
         </configuration>
       </plugin>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-shade-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>shade</id>
+             <goals>
+               <goal>shade</goal>
+             </goals>
+             <configuration>
+               <minimizeJar>true</minimizeJar>
+               <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+               <artifactSet>
+                 <includes>
+                   <include>org.apache.commons:commons-lang3</include>
+                   <include>org.ow2.asm:*</include>
+                 </includes>
+               </artifactSet>
+               <relocations>
+                 <relocation>
+                   <pattern>org.apache.commons.lang3.</pattern>
+                   <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
+                 </relocation>
+                 <relocation>
+                   <pattern>org.objectweb.asm.</pattern>
+                   <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
+                 </relocation>
+               </relocations>
+               <filters>
+                 <filter>
+                   <artifact>org.apache.commons:commons-lang3</artifact>
+                   <excludes>
+                     <exclude>META-INF/**</exclude>
+                   </excludes>
+                 </filter>
+                 <filter>
+                   <artifact>org.ow2.asm:*</artifact>
+                   <excludes>
+                     <exclude>META-INF/**</exclude>
+                   </excludes>
+                 </filter>
+               </filters>
+             </configuration>
+           </execution>
+         </executions>
+       </plugin>
     </plugins>
   </build>
   <reporting>

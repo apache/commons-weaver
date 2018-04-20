@@ -49,6 +49,18 @@ under the License.
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-tree</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -65,37 +77,6 @@ under the License.
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <profiles>
-    <profile>
-      <id>basic</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-tree</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>dev</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.ow2.asm</groupId>
-          <artifactId>asm-debug-all</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
   <build>
     <plugins>
       <!-- shade plugin creates but does not clean ${project.basedir}/dependency-reduced-pom.xml -->
@@ -237,7 +218,6 @@ under the License.
             </goals>
             <configuration>
               <includeArtifactIds>commons-lang3</includeArtifactIds>
-
               <outputDirectory>${project.build.directory}/it/sample/lib</outputDirectory>
             </configuration>
           </execution>
