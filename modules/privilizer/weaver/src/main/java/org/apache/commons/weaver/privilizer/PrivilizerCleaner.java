@@ -31,7 +31,6 @@ import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
 
 /**
  * Removes classes privilized with a different policy.

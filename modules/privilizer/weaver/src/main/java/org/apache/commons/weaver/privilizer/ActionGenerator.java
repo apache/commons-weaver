@@ -86,7 +86,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         this.impl = new Method(implName, methd.getDescriptor());
         this.implIsStatic = Modifier.isStatic(access);
         final Type[] args =
-            implIsStatic ? methd.getArgumentTypes() : ArrayUtils.add(methd.getArgumentTypes(), 0, owner.target);
+            implIsStatic ? methd.getArgumentTypes() : ArrayUtils.insert(0, methd.getArgumentTypes(), owner.target);
         this.helper = new Method(privilizer().generateName("access$" + index), methd.getReturnType(), args);
         this.result = privilizer().wrap(methd.getReturnType());
         this.fields = fields(args);
