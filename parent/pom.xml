@@ -152,7 +152,7 @@ under the License.
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-finder-shaded</artifactId>
-        <version>4.5</version>
+        <version>4.8</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

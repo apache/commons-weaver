@@ -68,8 +68,15 @@ under the License.
           <artifactId>japicmp-maven-plugin</artifactId>
           <configuration>
             <parameter>
-              <!-- obsolete dependency -->
-              <ignoreMissingClassesByRegularExpressions>org\.apache\.commons\.collections4\..+</ignoreMissingClassesByRegularExpressions>
+              <excludes>
+                <!-- API changes with xbean-finder-shaded -->
+                <exclude>org.apache.commons.weaver.Finder$Visitor</exclude>
+              </excludes>
+              <ignoreMissingClassesByRegularExpressions>
+                <!-- obsolete dependencies -->
+                <ignoreMissingClassesByRegularExpression>org\.apache\.commons\.collections4\..+</ignoreMissingClassesByRegularExpression>
+                <ignoreMissingClassesByRegularExpression>org\.apache\.xbean\.asm5\..+</ignoreMissingClassesByRegularExpression>
+              </ignoreMissingClassesByRegularExpressions>
             </parameter>
           </configuration>
         </plugin>
