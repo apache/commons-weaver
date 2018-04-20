@@ -65,8 +65,12 @@ under the License.
           <configuration>
             <parameter>
               <excludes>
+                <!-- API changes with xbean-finder-shaded -->
+                <exclude>org.apache.commons.weaver.Finder$Visitor</exclude>
+
                 <!-- shaded in; not part of public API -->
                 <exclude>org.apache.commons.weaver.ant._collections4</exclude>
+                <exclude>org.apache.commons.weaver.ant._xbean</exclude>
               </excludes>
             </parameter>
           </configuration>

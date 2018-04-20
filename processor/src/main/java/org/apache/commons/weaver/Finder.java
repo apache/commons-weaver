@@ -48,13 +48,13 @@ import org.apache.commons.weaver.model.ScanResult;
 import org.apache.commons.weaver.model.Scanner;
 import org.apache.commons.weaver.model.WeaveInterest;
 import org.apache.commons.weaver.utils.Annotations;
-import org.apache.xbean.asm5.AnnotationVisitor;
-import org.apache.xbean.asm5.ClassReader;
-import org.apache.xbean.asm5.ClassVisitor;
-import org.apache.xbean.asm5.FieldVisitor;
-import org.apache.xbean.asm5.MethodVisitor;
-import org.apache.xbean.asm5.Opcodes;
-import org.apache.xbean.asm5.Type;
+import org.apache.xbean.asm6.AnnotationVisitor;
+import org.apache.xbean.asm6.ClassReader;
+import org.apache.xbean.asm6.ClassVisitor;
+import org.apache.xbean.asm6.FieldVisitor;
+import org.apache.xbean.asm6.MethodVisitor;
+import org.apache.xbean.asm6.Opcodes;
+import org.apache.xbean.asm6.Type;
 import org.apache.xbean.finder.Annotated;
 import org.apache.xbean.finder.AnnotationFinder;
 import org.apache.xbean.finder.Parameter;
@@ -494,7 +494,7 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
-    private static final int ASM_VERSION = Opcodes.ASM5;
+    private static final int ASM_VERSION = Opcodes.ASM6;
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
 
     private static final String INIT = "<init>";

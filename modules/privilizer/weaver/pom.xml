@@ -36,7 +36,6 @@ under the License.
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer/weaver</developerConnection>
     <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/privilizer/weaver</url>
   </scm>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
