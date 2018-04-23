@@ -73,7 +73,7 @@ public class Privilizer {
         }
     }
 
-    private static final class CustomClassWriter extends ClassWriter {
+    private final class CustomClassWriter extends ClassWriter {
         CustomClassWriter(final int flags) {
             super(flags);
         }
@@ -84,7 +84,34 @@ public class Privilizer {
 
         @Override
         protected String getCommonSuperClass(final String type1, final String type2) {
-            return "java/lang/Object";
+//            https://gitlab.ow2.org/asm/asm/merge_requests/166
+            ClassLoader classLoader = env.classLoader;
+            Class<?> class1;
+            try {
+                class1 = Class.forName(type1.replace('/', '.'), false, classLoader);
+            } catch (Exception e) {
+                throw new TypeNotPresentException(type1, e);
+            }
+            Class<?> class2;
+            try {
+                class2 = Class.forName(type2.replace('/', '.'), false, classLoader);
+            } catch (Exception e) {
+                throw new TypeNotPresentException(type2, e);
+            }
+            if (class1.isAssignableFrom(class2)) {
+                return type1;
+            }
+            if (class2.isAssignableFrom(class1)) {
+                return type2;
+            }
+            if (class1.isInterface() || class2.isInterface()) {
+                return "java/lang/Object";
+            } else {
+                do {
+                    class1 = class1.getSuperclass();
+                } while (!class1.isAssignableFrom(class2));
+                return class1.getName().replace('.', '/');
+            }
         }
     }
 
