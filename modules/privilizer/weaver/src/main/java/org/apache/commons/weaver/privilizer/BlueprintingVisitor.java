@@ -19,25 +19,29 @@
 package org.apache.commons.weaver.privilizer;
 
 import java.io.InputStream;
+import java.lang.invoke.LambdaMetafactory;
 import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -46,19 +50,40 @@ import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 /**
  * {@link ClassVisitor} to import so-called "blueprint methods".
  */
 class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
+    static class TypeInfo {
+        final int access;
+        final String superName;
+        final Map<String, FieldNode> fields;
+        final Map<Method, MethodNode> methods;
+
+        TypeInfo(int access, String superName, Map<String, FieldNode> fields, Map<Method, MethodNode> methods) {
+            super();
+            this.access = access;
+            this.superName = superName;
+            this.fields = fields;
+            this.methods = methods;
+        }
+    }
+
+    private static final Type LAMBDA_METAFACTORY = Type.getType(LambdaMetafactory.class);
+
+    private static Pair<Type, Method> methodKey(String owner, String name, String desc) {
+        return Pair.of(Type.getObjectType(owner), new Method(name, desc));
+    }
 
     private final Set<Type> blueprintTypes = new HashSet<>();
     private final Map<Pair<Type, Method>, MethodNode> blueprintRegistry = new HashMap<>();
 
     private final Map<Pair<Type, Method>, String> importedMethods = new HashMap<>();
 
-    private final Map<Type, Map<Method, MethodNode>> methodCache = new HashMap<>();
+    private final Map<Type, TypeInfo> typeInfoCache = new HashMap<>();
     private final Map<Pair<Type, String>, FieldAccess> fieldAccessMap = new HashMap<>();
 
     private final ClassVisitor nextVisitor;
@@ -79,46 +104,28 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         for (final Privilizing.CallTo callTo : config.value()) {
             final Type blueprintType = Type.getType(callTo.value());
             blueprintTypes.add(blueprintType);
-            for (final Map.Entry<Method, MethodNode> entry : getMethods(blueprintType).entrySet()) {
-                boolean found = false;
-                if (callTo.methods().length == 0) {
-                    found = true;
-                } else {
-                    for (final String name : callTo.methods()) {
-                        if (entry.getKey().getName().equals(name)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if (found) {
-                    blueprintRegistry.put(Pair.of(blueprintType, entry.getKey()), entry.getValue());
-                }
-            }
+
+            final Set<String> methodNames = new HashSet<>(Arrays.asList(callTo.methods()));
+
+            typeInfo(blueprintType).methods.entrySet().stream()
+                .filter(e -> methodNames.isEmpty() || methodNames.contains(e.getKey().getName()))
+                .forEach(e -> blueprintRegistry.put(Pair.of(blueprintType, e.getKey()), e.getValue()));
         }
     }
 
-    private Map<Method, MethodNode> getMethods(final Type type) {
-        if (methodCache.containsKey(type)) {
-            return methodCache.get(type);
-        }
-        final ClassNode classNode = read(type.getClassName());
-        final Map<Method, MethodNode> result = new HashMap<>();
+    private TypeInfo typeInfo(Type type) {
+        return typeInfoCache.computeIfAbsent(type, k -> {
+            final ClassNode cn = read(k.getClassName());
 
-        final List<MethodNode> methods = classNode.methods;
-
-        for (final MethodNode methodNode : methods) {
-            if (Modifier.isStatic(methodNode.access) && !"<clinit>".equals(methodNode.name)) {
-                result.put(new Method(methodNode.name, methodNode.desc), methodNode);
-            }
-        }
-        methodCache.put(type, result);
-        return result;
+            return new TypeInfo(cn.access, cn.superName,
+                cn.fields.stream().collect(Collectors.toMap(f -> f.name, Function.identity())),
+                cn.methods.stream().collect(Collectors.toMap(m -> new Method(m.name, m.desc), Function.identity())));
+        });
     }
 
     private ClassNode read(final String className) {
         final ClassNode result = new ClassNode(Privilizer.ASM_VERSION);
-        try (InputStream bytecode = privilizer().env.getClassfile(className).getInputStream();) {
+        try (InputStream bytecode = privilizer().env.getClassfile(className).getInputStream()) {
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
             throw new RuntimeException(e);
@@ -159,7 +166,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         privilizer().env.debug("importing %s#%s as %s", key.getLeft().getClassName(), key.getRight(), result);
         final int access = Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC + Opcodes.ACC_SYNTHETIC;
 
-        final MethodNode source = getMethods(key.getLeft()).get(key.getRight());
+        final MethodNode source = typeInfo(key.getLeft()).methods.get(key.getRight());
 
         final String[] exceptions = source.exceptions.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
 
@@ -182,7 +189,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             new MethodNode(access, result, source.desc, source.signature, exceptions);
 
         // spider own methods:
-        MethodVisitor mv = new NestedMethodInvocationHandler(withAccessibleAdvice, key.getLeft()); //NOPMD
+        MethodVisitor mv = new NestedMethodInvocationHandler(withAccessibleAdvice, key); //NOPMD
 
         if (!fieldAccesses.isEmpty()) {
             mv = new AccessibleAdvisor(mv, access, result, source.desc, new ArrayList<>(fieldAccesses));
@@ -199,49 +206,11 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
     }
 
     private FieldAccess fieldAccess(final Type owner, final String name) {
-        final Pair<Type, String> key = Pair.of(owner, name);
-        if (!fieldAccessMap.containsKey(key)) {
-            try {
-                final MutableObject<Type> next = new MutableObject<>(owner);
-                final Deque<Type> stk = new ArrayDeque<>();
-                while (next.getValue() != null) {
-                    stk.push(next.getValue());
-                    try (InputStream bytecode =
-                        privilizer().env.getClassfile(next.getValue().getInternalName()).getInputStream()) {
-                        new ClassReader(bytecode).accept(privilizer().new PrivilizerClassVisitor() {
-                            @Override
-                            @SuppressWarnings("PMD.UseVarargs") // overridden method
-                            public void visit(final int version, final int access, final String name,
-                                final String signature, final String superName, final String[] interfaces) {
-                                super.visit(version, access, name, signature, superName, interfaces);
-                                next.setValue(Type.getObjectType(superName));
-                            }
-
-                            @Override
-                            public FieldVisitor visitField(final int access, final String name, final String desc,
-                                final String signature, final Object value) {
-                                for (final Type type : stk) {
-                                    final Pair<Type, String> key = Pair.of(type, name);
-                                    // skip shadowed fields:
-                                    if (!fieldAccessMap.containsKey(key)) {
-                                        fieldAccessMap.put(key,
-                                            new FieldAccess(access, target, name, Type.getType(desc)));
-                                    }
-                                }
-                                return null;
-                            }
-                        }, ClassReader.SKIP_CODE);
-                    }
-                    if (fieldAccessMap.containsKey(key)) {
-                        break;
-                    }
-                }
-            } catch (final Exception e) {
-                throw new RuntimeException(e);
-            }
-            Validate.isTrue(fieldAccessMap.containsKey(key), "Could not locate %s.%s", owner.getClassName(), name);
-        }
-        return fieldAccessMap.get(key);
+        return fieldAccessMap.computeIfAbsent(Pair.of(owner, name), k -> {
+            final FieldNode fieldNode = typeInfo(k.getLeft()).fields.get(k.getRight());
+            Validate.validState(fieldNode != null, "Could not locate %s.%s", k.getLeft().getClassName(), k.getRight());
+            return new FieldAccess(fieldNode.access, k.getLeft(), fieldNode.name, Type.getType(fieldNode.desc));
+        });
     }
 
     @Override
@@ -259,26 +228,109 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc,
             final boolean itf) {
             if (opcode == Opcodes.INVOKESTATIC) {
-                final Method methd = new Method(name, desc);
-                final Pair<Type, Method> methodKey = Pair.of(Type.getObjectType(owner), methd);
+                final Pair<Type, Method> methodKey = methodKey(owner, name, desc);
                 if (shouldImport(methodKey)) {
                     final String importedName = importMethod(methodKey);
                     super.visitMethodInsn(opcode, className, importedName, desc, itf);
                     return;
                 }
             }
+            visitNonImportedMethodInsn(opcode, owner, name, desc, itf);
+        }
+
+        protected void visitNonImportedMethodInsn(final int opcode, final String owner, final String name,
+            final String desc, final boolean itf) {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
         }
 
+        @Override
+        public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle,
+            Object... bootstrapMethodArguments) {
+
+            if (isLambda(bootstrapMethodHandle)) {
+                Object[] args = bootstrapMethodArguments;
+
+                Handle handle = null;
+
+                for (int i = 0; i < args.length; i++) {
+                    if (bootstrapMethodArguments[i] instanceof Handle) {
+                        if (handle != null) {
+                            // we don't know what to do with multiple handles; skip the whole thing:
+                            args = bootstrapMethodArguments;
+                            break;
+                        }
+                        handle = (Handle) args[i];
+
+                        if (handle.getTag() == Opcodes.H_INVOKESTATIC) {
+                            final Pair<Type, Method> methodKey =
+                                methodKey(handle.getOwner(), handle.getName(), handle.getDesc());
+
+                            if (shouldImport(methodKey)) {
+                                final String importedName = importMethod(methodKey);
+                                args = bootstrapMethodArguments.clone();
+                                args[i] = new Handle(handle.getTag(), className, importedName, handle.getDesc(), false);
+                            }
+                        }
+                    }
+                }
+                if (handle != null) {
+                    if (args == bootstrapMethodArguments) {
+                        validateLambda(handle);
+                    } else {
+                        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, args);
+                        return;
+                    }
+                }
+            }
+            super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+        }
+
+        protected void validateLambda(Handle handle) {
+        }
+
         abstract boolean shouldImport(Pair<Type, Method> methodKey);
+
+        private boolean isLambda(Handle handle) {
+            return handle.getTag() == Opcodes.H_INVOKESTATIC
+                && LAMBDA_METAFACTORY.getInternalName().equals(handle.getOwner())
+                && "metafactory".equals(handle.getName());
+        }
     }
 
     class NestedMethodInvocationHandler extends MethodInvocationHandler {
+        final Pair<Type, Method> methodKey;
         final Type owner;
 
-        NestedMethodInvocationHandler(final MethodVisitor mvr, final Type owner) {
+        NestedMethodInvocationHandler(final MethodVisitor mvr, final Pair<Type,Method> methodKey) {
             super(mvr);
-            this.owner = owner;
+            this.methodKey = methodKey;
+            this.owner = methodKey.getLeft();
+        }
+
+        @Override
+        protected void visitNonImportedMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+            final Type ownerType = Type.getObjectType(owner);
+            final Method m = new Method(name, desc);
+
+            if (isAccessible(ownerType) && isAccessible(ownerType, m)) {
+                super.visitNonImportedMethodInsn(opcode, owner, name, desc, itf);
+            } else {
+                throw new IllegalStateException(String.format("Blueprint method %s.%s calls inaccessible method %s.%s",
+                    this.owner, methodKey.getRight(), owner, m));
+            }
+        }
+
+        @Override
+        protected void validateLambda(Handle handle) {
+            super.validateLambda(handle);
+            final Type ownerType = Type.getObjectType(handle.getOwner());
+            final Method m = new Method(handle.getName(), handle.getDesc());
+
+            if (!(isAccessible(ownerType) && isAccessible(ownerType, m))) {
+                throw new IllegalStateException(
+                    String.format("Blueprint method %s.%s utilizes inaccessible method reference %s::%s", owner,
+                        methodKey.getRight(), handle.getOwner(), m));
+            }
         }
 
         @Override
@@ -300,6 +352,36 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         private Class<?> load(final Type type) throws ClassNotFoundException {
             return privilizer().env.classLoader.loadClass(type.getClassName());
+        }
+
+        private boolean isAccessible(Type type) {
+            final TypeInfo typeInfo = typeInfo(type);
+            return isAccessible(type, typeInfo.access);
+        }
+
+        private boolean isAccessible(Type type, Method m) {
+            Type t = type;
+            while (t != null) {
+                final TypeInfo typeInfo = typeInfo(t);
+                final MethodNode methodNode = typeInfo.methods.get(m);
+                if (methodNode == null) {
+                    t = Optional.ofNullable(typeInfo.superName).map(Type::getObjectType).orElse(null);
+                    continue;
+                }
+                return isAccessible(type, methodNode.access);
+            }
+            throw new IllegalStateException(String.format("Cannot find method %s.%s", type, m));
+        }
+
+        private boolean isAccessible(Type type, int access) {
+            if (Modifier.isPublic(access)) {
+                return true;
+            }
+            if (Modifier.isProtected(access) || Modifier.isPrivate(access)) {
+                return false;
+            }
+            return Stream.of(target, type).map(Type::getInternalName).map(n -> StringUtils.substringBeforeLast(n, "/"))
+                    .distinct().count() == 1;
         }
     }
 
@@ -424,7 +506,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             invokeVirtual(fieldType, access);
 
             if (opcode == GETSTATIC) {
-                checkCast(privilizer().wrap(fieldAccess.type));
+                checkCast(Privilizer.wrap(fieldAccess.type));
                 if (fieldAccess.type.getSort() < Type.ARRAY) {
                     unbox(fieldAccess.type);
                 }

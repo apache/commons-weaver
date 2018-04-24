@@ -174,28 +174,7 @@ public class Privilizer {
     static final int ASM_VERSION = Opcodes.ASM5;
     static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
-    final WeaveEnvironment env;
-    final AccessLevel accessLevel;
-    final Policy policy;
-    final boolean verify;
-
-    /**
-     * Create a new {@link Privilizer}.
-     * @param env to use
-     */
-    public Privilizer(final WeaveEnvironment env) {
-        super();
-        this.env = env;
-        this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
-        this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));
-        verify = BooleanUtils.toBoolean(env.config.getProperty(CONFIG_VERIFY));
-    }
-
-    String generateName(final String simple) {
-        return String.format(GENERATE_NAME, simple);
-    }
-
-    Type wrap(final Type type) {
+    static Type wrap(final Type type) {
         switch (type.getSort()) {
         case Type.BOOLEAN:
             return Type.getType(Boolean.class);
@@ -218,6 +197,27 @@ public class Privilizer {
         default:
             return type;
         }
+    }
+
+    final WeaveEnvironment env;
+    final AccessLevel accessLevel;
+    final Policy policy;
+    final boolean verify;
+
+    /**
+     * Create a new {@link Privilizer}.
+     * @param env to use
+     */
+    public Privilizer(final WeaveEnvironment env) {
+        super();
+        this.env = env;
+        this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
+        this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));
+        verify = BooleanUtils.toBoolean(env.config.getProperty(CONFIG_VERIFY));
+    }
+
+    String generateName(final String simple) {
+        return String.format(GENERATE_NAME, simple);
     }
 
     void blueprint(final Class<?> type, final Privilizing privilizing) {
