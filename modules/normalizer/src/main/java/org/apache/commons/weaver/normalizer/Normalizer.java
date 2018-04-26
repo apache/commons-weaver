@@ -289,7 +289,7 @@ public class Normalizer {
      */
     public static final String CONFIG_TARGET_PACKAGE = CONFIG_WEAVER + "targetPackage";
 
-    private static final int ASM_VERSION = Opcodes.ASM5;
+    private static final int ASM_VERSION = Opcodes.ASM6;
 
     private final WeaveEnvironment env;
 

@@ -171,7 +171,7 @@ public class Privilizer {
 
     private static final String GENERATE_NAME = "__privileged_%s";
 
-    static final int ASM_VERSION = Opcodes.ASM5;
+    static final int ASM_VERSION = Opcodes.ASM6;
     static final Type[] EMPTY_TYPE_ARRAY = new Type[0];
 
     static Type wrap(final Type type) {
