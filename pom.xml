@@ -90,9 +90,9 @@ under the License.
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/</url>
+    <connection>scm:git:http://gitbox.apache.org/repos/asf/commons-weaver.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</developerConnection>
+    <url>http://gitbox.apache.org/repos/asf/commons-weaver.git</url>
   </scm>
 
   <distributionManagement>
