@@ -301,7 +301,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         final Pair<Type, Method> methodKey;
         final Type owner;
 
-        NestedMethodInvocationHandler(final MethodVisitor mvr, final Pair<Type,Method> methodKey) {
+        NestedMethodInvocationHandler(final MethodVisitor mvr, final Pair<Type, Method> methodKey) {
             super(mvr);
             this.methodKey = methodKey;
             this.owner = methodKey.getLeft();
