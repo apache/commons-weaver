@@ -55,21 +55,17 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <id>create-javadoc-jar</id>
             <phase />
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/*</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>
