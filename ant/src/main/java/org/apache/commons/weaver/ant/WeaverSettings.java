@@ -110,7 +110,7 @@ public class WeaverSettings extends DataType {
     /**
      * Return the effective classpath as a {@link List} of {@link String}
      * filesystem paths. If {@link #includeSystemClasspath}, system classpath will be appended.
-     * @return List<String>
+     * @return {@link List} of {@link String}
      */
     public List<String> getClasspathEntries() {
         final Path path = new Path(getProject());
@@ -201,7 +201,7 @@ public class WeaverSettings extends DataType {
 
     /**
      * Merge nested {@code propertyset} and {@code properties}; latter takes precedence.
-     * @return Properties
+     * @return {@link Properties}
      */
     public Properties getProperties() {
         if (isReference()) {
