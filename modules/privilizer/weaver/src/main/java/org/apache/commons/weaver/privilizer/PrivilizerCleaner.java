@@ -73,7 +73,7 @@ public class PrivilizerCleaner implements Cleaner {
                     }
                 }, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
             } catch (final Exception e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
         boolean result = false;

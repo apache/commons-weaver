@@ -99,7 +99,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
                 if (Type.getType(Privileged.class).getDescriptor().equals(desc)) {
                     final AccessLevel localAccessLevel = AccessLevel.of(access);
                     if (accessLevel.compareTo(localAccessLevel) > 0) {
-                        throw new RuntimeException(new IllegalAccessException("Method " + className + "#" + methd
+                        throw new IllegalStateException(new IllegalAccessException("Method " + className + "#" + methd
                             + " must have maximum access level '" + accessLevel + "' but is defined wider ('"
                             + localAccessLevel + "')"));
                     }

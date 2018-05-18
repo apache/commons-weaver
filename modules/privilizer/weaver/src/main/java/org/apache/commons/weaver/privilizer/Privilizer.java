@@ -84,34 +84,7 @@ public class Privilizer {
 
         @Override
         protected String getCommonSuperClass(final String type1, final String type2) {
-//            https://gitlab.ow2.org/asm/asm/merge_requests/166
-            ClassLoader classLoader = env.classLoader;
-            Class<?> class1;
-            try {
-                class1 = Class.forName(type1.replace('/', '.'), false, classLoader);
-            } catch (Exception e) {
-                throw new TypeNotPresentException(type1, e);
-            }
-            Class<?> class2;
-            try {
-                class2 = Class.forName(type2.replace('/', '.'), false, classLoader);
-            } catch (Exception e) {
-                throw new TypeNotPresentException(type2, e);
-            }
-            if (class1.isAssignableFrom(class2)) {
-                return type1;
-            }
-            if (class2.isAssignableFrom(class1)) {
-                return type2;
-            }
-            if (class1.isInterface() || class2.isInterface()) {
-                return "java/lang/Object";
-            } else {
-                do {
-                    class1 = class1.getSuperclass();
-                } while (!class1.isAssignableFrom(class2));
-                return class1.getName().replace('.', '/');
-            }
+            return env.getCommonSuperClass(type1, type2);
         }
     }
 
@@ -141,7 +114,7 @@ public class Privilizer {
             try (OutputStream outputStream = classfile.getOutputStream()) {
                 outputStream.write(bytecode);
             } catch (final IOException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
     }
@@ -233,7 +206,7 @@ public class Privilizer {
 
             classReader.accept(cvr, ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -248,7 +221,7 @@ public class Privilizer {
 
             classReader.accept(cv, ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

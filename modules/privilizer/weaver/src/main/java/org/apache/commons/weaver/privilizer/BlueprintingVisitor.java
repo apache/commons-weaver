@@ -128,7 +128,7 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
         try (InputStream bytecode = privilizer().env.getClassfile(className).getInputStream()) {
             new ClassReader(bytecode).accept(result, ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES);
         } catch (final Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         return result;
     }

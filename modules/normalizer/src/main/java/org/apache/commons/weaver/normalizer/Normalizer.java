@@ -220,7 +220,7 @@ public class Normalizer {
         }
     }
 
-    private static final class CustomClassWriter extends ClassWriter {
+    private final class CustomClassWriter extends ClassWriter {
         CustomClassWriter(final int flags) {
             super(flags);
         }
@@ -231,7 +231,7 @@ public class Normalizer {
 
         @Override
         protected String getCommonSuperClass(final String type1, final String type2) {
-            return "java/lang/Object";
+            return env.getCommonSuperClass(type1, type2);
         }
     }
 
@@ -264,7 +264,7 @@ public class Normalizer {
             try (OutputStream outputStream = classfile.getOutputStream()) {
                 outputStream.write(bytecode);
             } catch (final IOException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
     }
@@ -333,7 +333,7 @@ public class Normalizer {
             } catch (final RuntimeException e) {
                 throw e;
             } catch (final Exception e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
         return result;
@@ -358,10 +358,8 @@ public class Normalizer {
      * @param key {@link String} {@link Pair} indicating supertype and constructor signature
      * @param toMerge matching classes
      * @throws IOException on I/O error
-     * @throws ClassNotFoundException if class not found
      */
-    private void rewrite(final Pair<String, String> key, final Set<ClassWrapper> toMerge) throws IOException,
-        ClassNotFoundException {
+    private void rewrite(final Pair<String, String> key, final Set<ClassWrapper> toMerge) throws IOException {
         final String target = copy(key, toMerge.iterator().next());
         env.info("Merging %s identical %s implementations with constructor %s to type %s", toMerge.size(),
             key.getLeft(), key.getRight(), target);
@@ -478,16 +476,14 @@ public class Normalizer {
      * @param classWrapper
      * @return the generated classname.
      * @throws IOException
-     * @throws ClassNotFoundException
      */
-    private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException,
-        ClassNotFoundException {
+    private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException {
         env.debug("Copying %s to %s", key, targetPackage);
         final MessageDigest md5;
         try {
             md5 = MessageDigest.getInstance("MD5");
         } catch (final NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         md5.update(key.getLeft().getBytes(StandardCharsets.UTF_8));
         md5.update(key.getRight().getBytes(StandardCharsets.UTF_8));
@@ -500,7 +496,6 @@ public class Normalizer {
 
         try (InputStream bytecode = env.getClassfile(classWrapper.wrapped).getInputStream()) {
             final ClassReader reader = new ClassReader(bytecode);
-
             final ClassVisitor writeClass = new WriteClass();
 
             // we're doing most of this by hand; we only read the original class to hijack signature, ctor exceptions,

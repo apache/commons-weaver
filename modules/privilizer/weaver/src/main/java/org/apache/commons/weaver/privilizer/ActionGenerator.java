@@ -88,7 +88,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final Type[] args =
             implIsStatic ? methd.getArgumentTypes() : ArrayUtils.insert(0, methd.getArgumentTypes(), owner.target);
         this.helper = new Method(privilizer().generateName("access$" + index), methd.getReturnType(), args);
-        this.result = privilizer().wrap(methd.getReturnType());
+        this.result = Privilizer.wrap(methd.getReturnType());
         this.fields = fields(args);
         this.actionInterface = Type.getType(exc ? PrivilegedExceptionAction.class : PrivilegedAction.class);
     }
@@ -157,7 +157,7 @@ class ActionGenerator extends Privilizer.WriteClass implements Builder<Type> {
         final SignatureVisitor actionImplemented = type.visitInterface();
         actionImplemented.visitClassType(actionInterface.getInternalName());
         final SignatureVisitor visitTypeArgument = actionImplemented.visitTypeArgument('=');
-        new SignatureReader(privilizer().wrap(methd.getReturnType()).getDescriptor()).accept(visitTypeArgument);
+        new SignatureReader(Privilizer.wrap(methd.getReturnType()).getDescriptor()).accept(visitTypeArgument);
         actionImplemented.visitEnd();
 
         final String signature = type.toString();
