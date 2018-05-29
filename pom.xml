@@ -293,7 +293,7 @@ under the License.
           <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
-            <version>1.6</version>
+            <version>1.8</version>
           </dependency>
         </dependencies>
       </plugin>
