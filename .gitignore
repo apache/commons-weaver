@@ -1,0 +1,17 @@
+target/
+.classpath
+.project
+.settings
+.DS_Store
+dependency-reduced-pom.xml
+*.iml
+*.ipr
+*.iws
+*.swp
+.gitignore.swp
+docs/reference/src/main/docbook/en-US/version_info.xml
+.idea
+.forge_settings
+.factorypath
+
+
