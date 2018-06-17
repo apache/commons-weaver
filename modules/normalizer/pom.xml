@@ -109,7 +109,6 @@ under the License.
               <artifactSet>
                 <includes>
                   <include>org.apache.commons:commons-lang3</include>
-                  <include>commons-io:commons-io</include>
                   <include>org.ow2.asm:*</include>
                 </includes>
               </artifactSet>
@@ -117,10 +116,6 @@ under the License.
                 <relocation>
                   <pattern>org.apache.commons.lang3.</pattern>
                   <shadedPattern>org.apache.commons.weaver.normalizer._lang3.</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.commons.weaver.normalizer._io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objectweb.asm.</pattern>
