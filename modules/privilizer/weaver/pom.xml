@@ -174,6 +174,19 @@ under the License.
            </execution>
          </executions>
        </plugin>
+       <plugin>
+       	<groupId>com.github.siom79.japicmp</groupId>
+       	<artifactId>japicmp-maven-plugin</artifactId>
+       	<configuration>
+          <parameter>
+            <excludes>
+              <exclude>org.apache.commons.weaver.privilizer._asm</exclude>
+              <exclude>org.apache.commons.weaver.privilizer._io</exclude>
+              <exclude>org.apache.commons.weaver.privilizer._lang3</exclude>
+       	    </excludes>
+          </parameter>
+       	</configuration>
+       </plugin>
     </plugins>
   </build>
   <reporting>

@@ -151,6 +151,19 @@ under the License.
           </execution>
         </executions>
       </plugin>
+       <plugin>
+       	<groupId>com.github.siom79.japicmp</groupId>
+       	<artifactId>japicmp-maven-plugin</artifactId>
+       	<configuration>
+          <parameter>
+            <excludes>
+              <exclude>org.apache.commons.weaver.normalizer._asm</exclude>
+              <exclude>org.apache.commons.weaver.normalizer._io</exclude>
+              <exclude>org.apache.commons.weaver.normalizer._lang3</exclude>
+       	    </excludes>
+          </parameter>
+       	</configuration>
+       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
