@@ -73,6 +73,23 @@ under the License.
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <configuration>
+             <parameter>
+              <excludes>
+                <exclude>org.apache.commons.weaver.privilizer._asm</exclude>
+                <exclude>org.apache.commons.weaver.privilizer._io</exclude>
+                <exclude>org.apache.commons.weaver.privilizer._lang3</exclude>
+       	      </excludes>
+            </parameter>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
@@ -128,65 +145,52 @@ under the License.
           </filesets>
         </configuration>
       </plugin>
-       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-shade-plugin</artifactId>
-         <executions>
-           <execution>
-             <id>shade</id>
-             <goals>
-               <goal>shade</goal>
-             </goals>
-             <configuration>
-               <minimizeJar>true</minimizeJar>
-               <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
-               <artifactSet>
-                 <includes>
-                   <include>org.apache.commons:commons-lang3</include>
-                   <include>org.ow2.asm:*</include>
-                 </includes>
-               </artifactSet>
-               <relocations>
-                 <relocation>
-                   <pattern>org.apache.commons.lang3.</pattern>
-                   <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
-                 </relocation>
-                 <relocation>
-                   <pattern>org.objectweb.asm.</pattern>
-                   <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
-                 </relocation>
-               </relocations>
-               <filters>
-                 <filter>
-                   <artifact>org.apache.commons:commons-lang3</artifact>
-                   <excludes>
-                     <exclude>META-INF/**</exclude>
-                   </excludes>
-                 </filter>
-                 <filter>
-                   <artifact>org.ow2.asm:*</artifact>
-                   <excludes>
-                     <exclude>META-INF/**</exclude>
-                   </excludes>
-                 </filter>
-               </filters>
-             </configuration>
-           </execution>
-         </executions>
-       </plugin>
-       <plugin>
-       	<groupId>com.github.siom79.japicmp</groupId>
-       	<artifactId>japicmp-maven-plugin</artifactId>
-       	<configuration>
-          <parameter>
-            <excludes>
-              <exclude>org.apache.commons.weaver.privilizer._asm</exclude>
-              <exclude>org.apache.commons.weaver.privilizer._io</exclude>
-              <exclude>org.apache.commons.weaver.privilizer._lang3</exclude>
-       	    </excludes>
-          </parameter>
-       	</configuration>
-       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>shade</id>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+              <artifactSet>
+                <includes>
+                  <include>org.apache.commons:commons-lang3</include>
+                  <include>org.ow2.asm:*</include>
+                </includes>
+              </artifactSet>
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.commons.lang3.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.privilizer._lang3.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.objectweb.asm.</pattern>
+                  <shadedPattern>org.apache.commons.weaver.privilizer._asm.</shadedPattern>
+                </relocation>
+              </relocations>
+              <filters>
+                <filter>
+                  <artifact>org.apache.commons:commons-lang3</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.ow2.asm:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <reporting>
