@@ -1,25 +1,30 @@
-              Apache Commons Weaver 1.3
+              Apache Commons Weaver 1.4
                   RELEASE NOTES
 
-The Apache Commons team is pleased to announce the release of Apache Commons Weaver 1.3
+The Apache Commons team is pleased to announce the release of Apache Commons Weaver 1.4
 
 Apache Commons Weaver provides an easy way to enhance compiled Java
 classes by generating ("weaving") bytecode into those classes.
 
-Requires Java 6 or greater.
+Requires Java 8 or greater.
 
 Changes in this version include:
 
 New features:
-o WEAVER-12:   Provide a mechanism for working with all classfiles found in the weave environment
+o WEAVER-19:   Upgrade to Java 8.
+o WEAVER-24:   Blueprint method references.
 
 Fixed Bugs:
-o WEAVER-11:   bytecode generated with java 7 or 8 is different and can break on earlier versions
-o WEAVER-15:   m2e build encounters missing class
+o WEAVER-16:   NullPointerException when weaving class with no package.
+o WEAVER-17:   Maven plugin was packaged without its (generated) HelpMojo class.
+o WEAVER-23:   Privilizer Weaver computes Object for all variable types in catch context.
 
 Changes:
-o WEAVER-13:   Make Ant tasks' system classpath inclusion optional
-o WEAVER-14:   upgrade modules to asm 5.1
+o WEAVER-20:   Remove commons-io, commons-collections dependencies.
+o WEAVER-21:   Upgrade xbean-finder to v4.9.
+o WEAVER-22:   Upgrade modules to ASM 6.2.
+o WEAVER-25:   Reject blueprint methods that access entities that would be inaccessible.
+o WEAVER-26:   Upgrade to commons-parent v47.
 
 
 Historical list of changes: http://commons.apache.org/proper/commons-weaver/changes-report.html

@@ -24,14 +24,16 @@
   </properties>
   <body>
     <release version="1.4" date="YYYY-MM-DD" description="Requires Java 8 or greater.">
-      <action issue="WEAVER-19" type="update">Upgrade to Java 8.</action>
+      <action issue="WEAVER-16" type="fix">NullPointerException when weaving class with no package.</action>
+      <action issue="WEAVER-17" type="fix">Maven plugin was packaged without its (generated) HelpMojo class.</action>
+      <action issue="WEAVER-19" type="add">Upgrade to Java 8.</action>
       <action issue="WEAVER-20" type="update">Remove commons-io, commons-collections dependencies.</action>
-      <action issue="WEAVER-21" type="update">Upgrade xbean-finder to v4.8.</action>
-      <action issue="WEAVER-22" type="update">Upgrade modules to ASM 6.1.</action>
+      <action issue="WEAVER-21" type="update">Upgrade xbean-finder to v4.9.</action>
+      <action issue="WEAVER-22" type="update">Upgrade modules to ASM 6.2.</action>
       <action issue="WEAVER-23" type="fix">Privilizer Weaver computes Object for all variable types in catch context.</action>
-      <action issue="WEAVER-24" type="update">Blueprint method references.</action>
+      <action issue="WEAVER-24" type="add">Blueprint method references.</action>
       <action issue="WEAVER-25" type="update">Reject blueprint methods that access entities that would be inaccessible.</action>
-      <action issue="WEAVER-26" type="update">Upgrade to commons-parent v46.</action>
+      <action issue="WEAVER-26" type="update">Upgrade to commons-parent v47.</action>
     </release>
     <release version="1.3" date="2016-10-18" description="Requires Java 6 or greater.">
       <action issue="WEAVER-11" type="fix">bytecode generated with java 7 or 8 is different and can break on earlier versions</action>
