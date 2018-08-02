@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -181,7 +182,9 @@ public class ScanResult {
      * @return {@link WeavablePackage}
      */
     public WeavablePackage getWeavable(final Package pkg) {
-        final String key = pkg.getName();
+        final String key =
+            Optional.ofNullable(pkg).map(Package::getName).orElse("");
+
         if (packages.containsKey(key)) {
             return packages.get(key);
         }

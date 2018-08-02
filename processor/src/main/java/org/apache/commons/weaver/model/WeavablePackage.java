@@ -19,6 +19,7 @@
 package org.apache.commons.weaver.model;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * {@link Weavable} {@link Package}.
  */
 public class WeavablePackage extends Weavable<WeavablePackage, Package> {
+    private static final Comparator<WeavablePackage> CMP = Comparator.nullsFirst(Comparator.comparing(WeavablePackage::getTarget, Comparator.nullsFirst(Comparator.comparing(Package::getName))));
 
     private final ConcurrentNavigableMap<String, WeavableClass<?>> clazzes = new ConcurrentSkipListMap<>();
 
@@ -71,6 +73,6 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
      */
     @Override
     public int compareTo(final WeavablePackage arg0) {
-        return getTarget().getName().compareTo(arg0.getTarget().getName());
+        return CMP.compare(this, arg0);
     }
 }
