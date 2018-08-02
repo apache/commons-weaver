@@ -34,12 +34,6 @@ under the License.
     available modules.
   </description>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/processor</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/processor</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/processor</url>
-  </scm>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.xbean</groupId>

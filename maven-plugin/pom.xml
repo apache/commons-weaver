@@ -39,12 +39,6 @@ under the License.
     <aether.version>1.1.0</aether.version>
   </properties>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/maven-plugin</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/maven-plugin</url>
-  </scm>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>

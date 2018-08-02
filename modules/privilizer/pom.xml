@@ -35,12 +35,6 @@ under the License.
     Privilizer provides machinery to automate the handling of Java Security access controls in code.
   </description>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/modules/privilizer</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/modules/privilizer</url>
-  </scm>
-
   <modules>
     <module>api</module>
     <module>weaver</module>

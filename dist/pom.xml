@@ -33,12 +33,6 @@ under the License.
     Creates the Apache Commons Weaver multimodule distribution.
   </description>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/weaver/trunk/dist</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/weaver/trunk/dist</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/weaver/trunk/dist</url>
-  </scm>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
