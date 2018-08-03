@@ -27,7 +27,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * {@link Weavable} {@link Package}.
  */
 public class WeavablePackage extends Weavable<WeavablePackage, Package> {
-    private static final Comparator<WeavablePackage> CMP = Comparator.nullsFirst(Comparator.comparing(WeavablePackage::getTarget, Comparator.nullsFirst(Comparator.comparing(Package::getName))));
+    private static final Comparator<WeavablePackage> CMP = Comparator.nullsFirst(Comparator
+        .comparing(WeavablePackage::getTarget, Comparator.nullsFirst(Comparator.comparing(Package::getName))));
 
     private final ConcurrentNavigableMap<String, WeavableClass<?>> clazzes = new ConcurrentSkipListMap<>();
 
@@ -45,17 +46,9 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
      * @param <T> generic type of {@code cls}
      * @return {@link WeavableClass}
      */
+    @SuppressWarnings("unchecked")
     public synchronized <T> WeavableClass<T> getWeavable(final Class<T> cls) {
-        final String key = cls.getName();
-        if (clazzes.containsKey(key)) {
-            @SuppressWarnings("unchecked")
-            final WeavableClass<T> result = (WeavableClass<T>) clazzes.get(key);
-            return result;
-        }
-        final WeavableClass<T> result = new WeavableClass<>(cls, this);
-        @SuppressWarnings("unchecked")
-        final WeavableClass<T> faster = (WeavableClass<T>) clazzes.putIfAbsent(key, result);
-        return faster == null ? result : faster;
+        return (WeavableClass<T>) clazzes.computeIfAbsent(cls.getName(), k -> new WeavableClass<>(cls, this));
     }
 
     /**
@@ -74,5 +67,16 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
     @Override
     public int compareTo(final WeavablePackage arg0) {
         return CMP.compare(this, arg0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        if (getTarget() == null) {
+            return "Weavable default package";
+        }
+        return super.toString();
     }
 }
