@@ -50,6 +50,6 @@ public class WeavableConstructor<T> extends
      */
     @Override
     protected WeavableConstructorParameter<T> createParameter(final int index) {
-        return new WeavableConstructorParameter<T>(Integer.valueOf(index), this);
+        return new WeavableConstructorParameter<>(Integer.valueOf(index), this);
     }
 }
