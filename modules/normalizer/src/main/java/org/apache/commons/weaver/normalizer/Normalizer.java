@@ -230,8 +230,8 @@ public class Normalizer {
         }
 
         @Override
-        protected String getCommonSuperClass(final String type1, final String type2) {
-            return env.getCommonSuperClass(type1, type2);
+        protected ClassLoader getClassLoader() {
+            return env.classLoader;
         }
     }
 

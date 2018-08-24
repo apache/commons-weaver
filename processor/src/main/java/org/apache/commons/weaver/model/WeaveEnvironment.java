@@ -215,44 +215,6 @@ public abstract class WeaveEnvironment {
     }
 
     /**
-     * Calculate a common superclass for the specified classnames, in terms of the {@link WeaveEnvironment}'s
-     * {@link #classLoader}. This method exists as a convenience feature for weaver modules that use ASM, and is
-     * implemented with the same logic as the method of the same name in that library's {@code ClassVisitor} class.
-     *
-     * @param type1
-     * @param type2
-     * @return {@link String} internal name of superclass common to {@code type1} and {@code type2}
-     */
-    public final String getCommonSuperClass(final String type1, final String type2) {
-        // https://gitlab.ow2.org/asm/asm/merge_requests/166
-        Class<?> class1;
-        try {
-            class1 = Class.forName(type1.replace('/', '.'), false, classLoader);
-        } catch (Exception e) {
-            throw new TypeNotPresentException(type1, e);
-        }
-        Class<?> class2;
-        try {
-            class2 = Class.forName(type2.replace('/', '.'), false, classLoader);
-        } catch (Exception e) {
-            throw new TypeNotPresentException(type2, e);
-        }
-        if (class1.isAssignableFrom(class2)) {
-            return type1;
-        }
-        if (class2.isAssignableFrom(class1)) {
-            return type2;
-        }
-        if (class1.isInterface() || class2.isInterface()) {
-            return "java/lang/Object";
-        }
-        do {
-            class1 = class1.getSuperclass();
-        } while (!class1.isAssignableFrom(class2));
-        return class1.getName().replace('.', '/');
-    }
-
-    /**
      * Delete the specified resource.
      * @param name to delete
      * @return whether successful

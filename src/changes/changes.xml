@@ -29,7 +29,7 @@
       <action issue="WEAVER-19" type="add">Upgrade to Java 8.</action>
       <action issue="WEAVER-20" type="update">Remove commons-io, commons-collections dependencies.</action>
       <action issue="WEAVER-21" type="update">Upgrade xbean-finder to v4.9.</action>
-      <action issue="WEAVER-22" type="update">Upgrade modules to ASM 6.2.</action>
+      <action issue="WEAVER-22" type="update">Upgrade modules to ASM 6.2.1.</action>
       <action issue="WEAVER-23" type="fix">Privilizer Weaver computes Object for all variable types in catch context.</action>
       <action issue="WEAVER-24" type="add">Blueprint method references.</action>
       <action issue="WEAVER-25" type="update">Reject blueprint methods that access entities that would be inaccessible.</action>
