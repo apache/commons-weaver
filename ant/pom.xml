@@ -64,6 +64,7 @@ under the License.
 
                 <!-- shaded in; not part of public API -->
                 <exclude>org.apache.commons.weaver.ant._collections4</exclude>
+                <exclude>org.apache.commons.weaver.ant._lang3</exclude>
                 <exclude>org.apache.commons.weaver.ant._xbean</exclude>
               </excludes>
             </parameter>
