@@ -149,6 +149,15 @@ under the License.
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.9</version>
         </plugin>
+        <!-- override skip property of parent pom, can be removed once
+             we adopt parent 48+ -->
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <configuration>
+            <skip>false</skip>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
