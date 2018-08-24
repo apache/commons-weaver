@@ -17,13 +17,10 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Apache Maven 3 is required to build Apache Commons Weaver. Things to know:
+Apache Maven 3 is required to build Apache Commons Weaver, using Java 8.
 
 ### Site building issues
 Apache Commons Weaver uses the japicmp report for API compatibility reporting.
 This requires that the `package` goal be invoked in the same Maven run as the
-`site` goal. Further, the site generation process runs out of permgen space when
-built with default JVM settings (on applicable Java versions); the `MAVEN_OPTS
-environment variable can be used to set `MaxPermSize`. `-XX:MaxPermSize=128m`
-seems to be adequate on Java 7.
+`site` goal.
 
