@@ -64,9 +64,6 @@ import org.objectweb.asm.commons.SimpleRemapper;
  * Handles the work of "normalizing" anonymous class definitions.
  */
 public class Normalizer {
-    private static final String INIT = "<init>";
-
-    private static final Type OBJECT_TYPE = Type.getType(Object.class);
 
     private static final class Inspector extends ClassVisitor {
         private final class InspectConstructor extends MethodVisitor {
@@ -95,12 +92,27 @@ public class Normalizer {
             }
         }
 
-        private final MutablePair<String, String> key = new MutablePair<>();
-        private final MutableBoolean ignore = new MutableBoolean(false);
-        private final MutableBoolean valid = new MutableBoolean(true);
-        private final MutableBoolean mustRewriteConstructor = new MutableBoolean(false);
+        /**
+         * Supername of visited class.
+         */
+        String superName;
 
-        private String superName;
+        /**
+         * Key to identify "like" subclasses: abstract class or implemented interface + super ctor signature.
+         */
+        final MutablePair<String, String> key = new MutablePair<>();
+
+        /**
+         * Whether the constructor must be rewritten (true for non-{@code static} classes).
+         */
+        final MutableBoolean mustRewriteConstructor = new MutableBoolean(false);
+
+        /**
+         * Whether the inspected class is eligible to be normalized.
+         */
+        final MutableBoolean valid = new MutableBoolean(true);
+
+        private final MutableBoolean ignore = new MutableBoolean(false);
 
         private Inspector() {
             super(ASM_VERSION);
@@ -176,8 +188,12 @@ public class Normalizer {
             }
         }
 
+        /**
+         * Map of original class to normalized class wrapper.
+         */
+        final Map<String, ClassWrapper> wrappers;
+
         private final Map<String, String> classMap;
-        private final Map<String, ClassWrapper> wrappers;
 
         private Remap(final ClassVisitor wrapped, final Remapper remapper, final Map<String, String> classMap,
             final Map<String, ClassWrapper> wrappers) {
@@ -289,9 +305,25 @@ public class Normalizer {
      */
     public static final String CONFIG_TARGET_PACKAGE = CONFIG_WEAVER + "targetPackage";
 
-    private static final int ASM_VERSION = Opcodes.ASM6;
+    /**
+     * ASM version in use.
+     */
+    static final int ASM_VERSION = Opcodes.ASM6;
 
-    private final WeaveEnvironment env;
+    /**
+     * Method name of a constructor.
+     */
+    static final String INIT = "<init>";
+
+    /**
+     * {@link Type} instance representing {@link Object}.
+     */
+    static final Type OBJECT_TYPE = Type.getType(Object.class);
+
+    /**
+     * {@link WeaveEnvironment} used by this {@link Normalizer} instance.
+     */
+    final WeaveEnvironment env;
 
     private final Set<Class<?>> normalizeTypes;
     private final String targetPackage;
@@ -577,7 +609,7 @@ public class Normalizer {
      * @see Type#getObjectType(String)
      */
     @SuppressWarnings("PMD.UseVarargs") //varargs not needed here
-    private static Type[] toObjectTypes(final String[] types) {
+    static Type[] toObjectTypes(final String[] types) {
         return types == null ? null : Stream.of(types).map(Type::getObjectType).toArray(Type[]::new);
     }
 }

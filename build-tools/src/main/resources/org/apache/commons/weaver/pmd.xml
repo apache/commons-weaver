@@ -27,15 +27,23 @@ limitations under the License.
 
   <rule ref="rulesets/java/design.xml">
     <exclude name="AccessorClassGeneration" />
+    <exclude name="AvoidDeeplyNestedIfStmts" />
     <exclude name="CompareObjectsWithEquals" />
     <exclude name="NonStaticInitializer" />
     <exclude name="ConfusingTernary" />
+    <exclude name="DataClass" />
     <exclude name="AvoidSynchronizedAtMethodLevel" />
     <exclude name="UnnecessaryLocalBeforeReturn" />
     <exclude name="PreserveStackTrace" />
     <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" />
     <exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
     <exclude name="GodClass" />
+  </rule>
+
+  <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
+    <properties>
+      <property name="problemDepth" value="4" />
+    </properties>
   </rule>
 
   <rule ref="rulesets/java/empty.xml" />
@@ -46,10 +54,16 @@ limitations under the License.
   <rule ref="rulesets/java/naming.xml">
     <exclude name="AbstractNaming" />
     <exclude name="AvoidFieldNameMatchingMethodName" />
+    <exclude name="ClassNamingConventions" />
     <exclude name="GenericsNaming" />
     <exclude name="LongVariable" />
     <exclude name="ShortClassName" />
     <exclude name="ShortMethodName" />
+  </rule>
+  <rule ref="category/java/codestyle.xml/ClassNamingConventions">
+    <properties>
+      <property name="utilityClassPattern" value="[A-Z][a-zA-Z0-9]+(Utils?|Helper|s$)" />
+    </properties>
   </rule>
   <rule ref="rulesets/java/optimizations.xml">
     <exclude name="AvoidInstantiatingObjectsInLoops" />

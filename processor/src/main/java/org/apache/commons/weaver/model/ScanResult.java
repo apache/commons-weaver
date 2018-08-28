@@ -173,8 +173,10 @@ public class ScanResult {
 
     }
 
-    private final ConcurrentNavigableMap<String, WeavablePackage> packages =
-        new ConcurrentSkipListMap<>();
+    /**
+     * Weavable packages by name.
+     */
+    final ConcurrentNavigableMap<String, WeavablePackage> packages = new ConcurrentSkipListMap<>();
 
     /**
      * Public for use by {@link WeaveProcessor}.

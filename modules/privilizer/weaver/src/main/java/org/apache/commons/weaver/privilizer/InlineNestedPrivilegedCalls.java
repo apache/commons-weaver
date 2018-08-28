@@ -74,14 +74,20 @@ class InlineNestedPrivilegedCalls extends ClassNode {
         }
     }
 
-    private final Privilizer privilizer;
-
-    private final ClassVisitor next;
+    /**
+     * Owning {@link Privilizer}.
+     */
+    final Privilizer privilizer;
 
     /**
      * Map of original method to name of internal implementation method.
      */
-    private final Map<Method, String> privilegedMethods;
+    final Map<Method, String> privilegedMethods;
+
+    /**
+     * Next {@link ClassVisitor}.
+     */
+    final ClassVisitor next;
 
     /**
      * Create a new {@link InlineNestedPrivilegedCalls} object.

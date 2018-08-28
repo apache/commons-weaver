@@ -220,7 +220,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
      * security manager available.
      * @param mgen to control
      */
-    private static void checkSecurityManager(final GeneratorAdapter mgen) {
+    static void checkSecurityManager(final GeneratorAdapter mgen) {
         final Label setFalse = new Label();
         final Label done = new Label();
         mgen.invokeStatic(Type.getType(System.class),

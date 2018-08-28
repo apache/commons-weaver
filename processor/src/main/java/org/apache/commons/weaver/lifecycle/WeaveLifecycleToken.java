@@ -39,6 +39,7 @@ public class WeaveLifecycleToken {
     public @interface Represents {
         /**
          * The {@link WeaveLifecycle} stage represented by the annotated {@link WeaveLifecycleToken} type.
+         * @return {@link WeaveLifecycle}
          */
         WeaveLifecycle value();
     }

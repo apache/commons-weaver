@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 public @interface Privilized {
     /**
      * Name of {@link Policy} with which privilized weaving was performed.
+     * @return {@link String}
      */
     String value();
 }

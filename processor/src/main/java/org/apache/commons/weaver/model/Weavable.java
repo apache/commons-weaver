@@ -104,7 +104,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
         if (annotations == null) {
             return EMPTY_ANNOTATION_ARRAY; //NOPMD - no problem sharing zero-length array
         }
-        return annotations.toArray(new Annotation[annotations.size()]);
+        return annotations.toArray(new Annotation[0]);
     }
 
     /**

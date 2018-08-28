@@ -42,7 +42,7 @@ public class JavaLoggingToMojoLoggingRedirector {
     /**
      * The Maven mojo logger to delegate messages to.
      */
-    private final Log mojoLogger;
+    final Log mojoLogger;
 
     private JDKLogHandler activeHandler;
 
@@ -86,7 +86,7 @@ public class JavaLoggingToMojoLoggingRedirector {
     public void deactivate() {
         final Logger rootLogger = LogManager.getLogManager().getLogger("");
         // remove old handlers
-        
+
         if (Stream.of(rootLogger.getHandlers()).anyMatch(h -> h == activeHandler)) {
             rootLogger.removeHandler(activeHandler);
         }

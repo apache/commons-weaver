@@ -133,7 +133,7 @@ class Inflater {
                             if (k.get().equals(fld.getTarget())) {
                                 fld.addAnnotations(v);
                             }
-                        } catch (final ClassNotFoundException cnfe) {
+                        } catch (final ClassNotFoundException ignored) {
                         }
                     });
                 }
@@ -143,7 +143,7 @@ class Inflater {
                             if (k.get().equals(ctor.getTarget())) {
                                 ctor.addAnnotations(v);
                             }
-                        } catch (final ClassNotFoundException cnfe) {
+                        } catch (final ClassNotFoundException ignored) {
                         }
                     });
                     for (final WeavableConstructorParameter<?> param : ctor.getParameters()) {
@@ -154,7 +154,7 @@ class Inflater {
                                     && param.getTarget().intValue() == parameter.getIndex()) {
                                     param.addAnnotations(v);
                                 }
-                            } catch (final ClassNotFoundException cnfe) {
+                            } catch (final ClassNotFoundException ignored) {
                             }
                         });
                     }
@@ -165,7 +165,7 @@ class Inflater {
                             if (k.get().equals(methd.getTarget())) {
                                 methd.addAnnotations(v);
                             }
-                        } catch (final ClassNotFoundException cnfe) {
+                        } catch (final ClassNotFoundException ignored) {
                         }
                     });
                     for (final WeavableMethodParameter<?> param : methd.getParameters()) {
@@ -176,7 +176,7 @@ class Inflater {
                                     && param.getTarget().intValue() == parameter.getIndex()) {
                                     param.addAnnotations(v);
                                 }
-                            } catch (final ClassNotFoundException cnfe) {
+                            } catch (final ClassNotFoundException ignored) {
                             }
                         });
                     }

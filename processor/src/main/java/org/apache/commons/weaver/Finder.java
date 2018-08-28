@@ -21,6 +21,7 @@ package org.apache.commons.weaver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -109,7 +110,7 @@ class Finder extends AnnotationFinder implements Scanner {
     }
 
     private abstract class AnnotationCapturer extends AnnotationVisitor {
-        public AnnotationCapturer(final AnnotationVisitor wrapped) {
+        AnnotationCapturer(final AnnotationVisitor wrapped) {
             super(ASM_VERSION, wrapped);
         }
 
@@ -195,7 +196,7 @@ class Finder extends AnnotationFinder implements Scanner {
     public class Visitor extends ClassVisitor {
         private final InfoBuildingVisitor wrapped;
 
-        public Visitor(final InfoBuildingVisitor wrapped) {
+        Visitor(final InfoBuildingVisitor wrapped) {
             super(ASM_VERSION, wrapped);
             this.wrapped = wrapped;
         }
@@ -307,18 +308,18 @@ class Finder extends AnnotationFinder implements Scanner {
     }
 
     private static class IncludesClassfile<T extends AnnotatedElement> implements Annotated<T> {
-        private final T target;
+        private final T annotatedElement;
         private final Annotation[] annotations;
 
-        IncludesClassfile(final T target, final List<Annotation> classfileAnnotations) {
-            this(target, classfileAnnotations.toArray(new Annotation[classfileAnnotations.size()]));
+        IncludesClassfile(final T annotatedElement, final List<Annotation> classfileAnnotations) {
+            this(annotatedElement, classfileAnnotations.toArray(new Annotation[0]));
         }
 
         @SuppressWarnings("PMD.UseVarargs") // varargs not necessary here
-        IncludesClassfile(final T target, final Annotation[] classfileAnnotations) {
+        IncludesClassfile(final T annotatedElement, final Annotation[] classfileAnnotations) {
             super();
-            this.target = target;
-            this.annotations = ArrayUtils.addAll(target.getAnnotations(), classfileAnnotations);
+            this.annotatedElement = annotatedElement;
+            this.annotations = ArrayUtils.addAll(annotatedElement.getAnnotations(), classfileAnnotations);
         }
 
         @Override
@@ -352,7 +353,7 @@ class Finder extends AnnotationFinder implements Scanner {
 
         @Override
         public T get() {
-            return target;
+            return annotatedElement;
         }
     }
 
@@ -494,42 +495,73 @@ class Finder extends AnnotationFinder implements Scanner {
         }
     }
 
-    private static final int ASM_VERSION = Opcodes.ASM6;
     private static final int ASM_FLAGS = ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES;
 
     private static final String INIT = "<init>";
 
-    private static final Predicate<MethodInfo> CTOR = methodInfo -> INIT.equals(methodInfo.getName());
+    /**
+     * ASM version in use.
+     */
+    static final int ASM_VERSION = Opcodes.ASM6;
+
+    /**
+     * Ctor {@link Predicate}.
+     */
+    static final Predicate<MethodInfo> CTOR = methodInfo -> INIT.equals(methodInfo.getName());
 
     /**
      * The {@link #classfileAnnotations} member stores these; however the scanning takes place in the scope of the super
      * constructor call, thus there is no opportunity to set the reference beforehand. To work around this, we use a
      * static ThreadLocal with an initializer and pull/clear its value when we return from the super constructor. :P
      */
-    private static final ThreadLocal<Map<Info, List<Annotation>>> CLASSFILE_ANNOTATIONS =
+    static final ThreadLocal<Map<Info, List<Annotation>>> CLASSFILE_ANNOTATIONS =
         ThreadLocal.withInitial(IdentityHashMap::new);
 
-    private static <T, U> Stream<U> typed(Class<U> type, Supplier<Stream<T>> stream) {
+    /**
+     * Filter and cast {@code stream}.
+     * @param type
+     * @param stream
+     * @return {@link Stream}
+     */
+    static <T, U> Stream<U> typed(final Class<U> type, final Supplier<Stream<T>> stream) {
         return stream.get().filter(type::isInstance).map(type::cast);
     }
 
-    private static Predicate<Annotated<?>> hasAnnotation(Class<? extends Annotation> annotation) {
+    /**
+     * Obtain a {@link Predicate} to test whether an {@link Annotated} instance
+     * hosts annotations of the specified type.
+     *
+     * @param annotation
+     * @return {@link Predicate}
+     */
+    static Predicate<Annotated<?>> hasAnnotation(final Class<? extends Annotation> annotation) {
         return annotated -> annotated != null && annotated.isAnnotationPresent(annotation);
     }
 
-    private static <T> Predicate<T> isCtor(Function<? super T, MethodInfo> xform) {
+    /**
+     * Obtain a {@link Predicate} to test whether an argument, once transformed
+     * by the specified {@link Function}, represents a Java constructor.
+     *
+     * @param xform
+     * @return {@link Predicate}
+     */
+    static <T> Predicate<T> isCtor(final Function<? super T, MethodInfo> xform) {
         return t -> CTOR.test(xform.apply(t));
     }
 
+    /**
+     * Map of {@link Info} to {@link List} of classfile {@link Annotation}s.
+     */
+    final Map<Info, List<Annotation>> classfileAnnotations;
+
     private final WithAnnotations withAnnotations = new WithAnnotations();
-    private final Map<Info, List<Annotation>> classfileAnnotations;
     private final Inflater inflater;
 
     /**
      * Create a new {@link Finder} instance.
      * @param archive
      */
-    public Finder(final Archive archive) {
+    Finder(final Archive archive) {
         super(archive, false);
         classfileAnnotations = CLASSFILE_ANNOTATIONS.get();
         CLASSFILE_ANNOTATIONS.remove();
@@ -595,7 +627,8 @@ class Finder extends AnnotationFinder implements Scanner {
             }
         } else {
             for (final WeaveInterest interest : request.getInterests()) {
-                switch (interest.target) {
+                final ElementType target = interest.target;
+                switch (target) {
                 case PACKAGE:
                     for (final Annotated<Package> pkg : this.withAnnotations().findAnnotatedPackages(
                         interest.annotationType)) {
@@ -652,7 +685,12 @@ class Finder extends AnnotationFinder implements Scanner {
         return inflater.inflate(result);
     }
 
-    private Class<?> toClass(final Type type) {
+    /**
+     * Transform a {@link java.lang.reflect.Type} instance to a {@link Class}.
+     * @param type
+     * @return {@link Class}
+     */
+    Class<?> toClass(final Type type) {
         final String className;
         if (type.getSort() == Type.ARRAY) {
             className = type.getElementType().getClassName();

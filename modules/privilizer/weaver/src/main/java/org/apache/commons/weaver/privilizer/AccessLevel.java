@@ -52,7 +52,7 @@ public enum AccessLevel {
 
     private final int flag;
 
-    private AccessLevel(final int flag) {
+    AccessLevel(final int flag) {
         this.flag = flag;
     }
 

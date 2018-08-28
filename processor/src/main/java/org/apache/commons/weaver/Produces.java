@@ -38,6 +38,7 @@ import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 public @interface Produces {
     /**
      * The consuming types.
+     * @return array of {@link WeaveLifecycleProvider} subclasses
      */
     Class<? extends WeaveLifecycleProvider<?>>[] value();
 }

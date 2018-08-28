@@ -78,7 +78,10 @@ public abstract class WeaveEnvironment {
         }
     }
 
-    private static final String CONTENT_TYPE = "application/octet-stream";
+    /**
+     * Content type for environment resource.
+     */
+    static final String CONTENT_TYPE = "application/octet-stream";
 
     /**
      * Convert a classname into a resource name.
@@ -89,7 +92,7 @@ public abstract class WeaveEnvironment {
         return classname.replace('.', '/') + ".class";
     }
 
-    private static Supplier<String> supplier(String format, Object... args) {
+    private static Supplier<String> supplier(final String format, final Object... args) {
         return () -> String.format(format, args);
     }
 

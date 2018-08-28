@@ -60,13 +60,13 @@ public final class URLArray {
         }).toArray(URL[]::new);
     }
 
-    private static <T> Stream<T> stream(Iterable<T> iterable) {
+    private static <T> Stream<T> stream(final Iterable<T> iterable) {
         if (iterable instanceof Collection<?>) {
             return ((Collection<T>) iterable).stream();
         }
-        final Stream.Builder<T> b = Stream.builder();
-        iterable.forEach(b);
-        return b.build();
+        final Stream.Builder<T> builder = Stream.builder();
+        iterable.forEach(builder);
+        return builder.build();
     }
 
     private URLArray() {

@@ -177,6 +177,9 @@ under the License.
             <ruleset>/org/apache/commons/weaver/pmd.xml</ruleset>
           </rulesets>
           <skipEmptyReport>false</skipEmptyReport>
+          <excludeRoots>
+            <excludeRoot>target/generated-sources/plugin</excludeRoot>
+          </excludeRoots>
         </configuration>
       </plugin>
       <plugin>
@@ -185,6 +188,7 @@ under the License.
         <version>${checkstyle.version}</version>
         <configuration>
           <configLocation>org/apache/commons/weaver/checkstyle.xml</configLocation>
+          <excludes>org/apache/commons/weaver/maven/HelpMojo.java</excludes>
         </configuration>
       </plugin>
       <plugin>
