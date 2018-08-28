@@ -22,7 +22,7 @@ o WEAVER-23:   Privilizer Weaver computes Object for all variable types in catch
 Changes:
 o WEAVER-20:   Remove commons-io, commons-collections dependencies.
 o WEAVER-21:   Upgrade xbean-finder to v4.9.
-o WEAVER-22:   Upgrade modules to ASM 6.2.
+o WEAVER-22:   Upgrade modules to ASM 6.2.1.
 o WEAVER-25:   Reject blueprint methods that access entities that would be inaccessible.
 o WEAVER-26:   Upgrade to commons-parent v47.
 
