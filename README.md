@@ -43,16 +43,19 @@
 Apache Commons Weaver
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-weaver.svg?branch=trunk)](https://travis-ci.org/apache/commons-weaver)
+[![Build Status](https://travis-ci.org/apache/commons-weaver.svg)](https://travis-ci.org/apache/commons-weaver)
+[![Coverage Status](https://coveralls.io/repos/apache/commons-weaver/badge.svg)](https://coveralls.io/r/apache/commons-weaver)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/1.4.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/1.4)
 
-Apache Commons Weaver provides an easy way to enhance compiled Java classes by generating ("weaving") bytecode into those classes.
+Apache Commons Weaver provides an easy way to enhance compiled Java
+    classes by generating ("weaving") bytecode into those classes.
 
 Documentation
 -------------
 
 More information can be found on the [Apache Commons Weaver homepage](https://commons.apache.org/proper/commons-weaver).
-The [JavaDoc](https://commons.apache.org/proper/commons-weaver/javadocs/api-release) can be browsed.
+The [Javadoc](https://commons.apache.org/proper/commons-weaver/javadocs/api-release) can be browsed.
 Questions related to the usage of Apache Commons Weaver should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
@@ -65,7 +68,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-weaver-base</artifactId>
-  <version>1.3</version>
+  <version>1.4</version>
 </dependency>
 ```
 
