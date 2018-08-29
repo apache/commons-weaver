@@ -120,6 +120,12 @@ under the License.
     </dependency>
   </dependencies>
 
+  <properties>
+    <commons.release.isDistModule>true</commons.release.isDistModule>
+    <commons.siteOutputDirectory>${basedir}/../target/staging</commons.siteOutputDirectory>
+    <commons.releaseNotesLocation>${basedir}/../RELEASE-NOTES.txt</commons.releaseNotesLocation>
+  </properties>
+
   <build>
     <plugins>
       <plugin>
