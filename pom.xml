@@ -27,7 +27,7 @@ under the License.
   </parent>
 
   <artifactId>commons-weaver-base</artifactId>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Commons Weaver</name>
@@ -93,7 +93,7 @@ under the License.
     <connection>scm:git:http://gitbox.apache.org/repos/asf/commons-weaver.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</developerConnection>
     <url>http://gitbox.apache.org/repos/asf/commons-weaver.git</url>
-    <tag>1.4_RC1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
