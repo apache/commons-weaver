@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.activation.DataSource;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Conversion;
 import org.apache.commons.lang3.Validate;
@@ -275,7 +273,7 @@ public class Normalizer {
             super.visitEnd();
             final byte[] bytecode = ((ClassWriter) cv).toByteArray();
 
-            final DataSource classfile = env.getClassfile(className);
+            final WeaveEnvironment.Resource classfile = env.getClassfile(className);
             env.debug("Writing class %s to %s", className, classfile.getName());
             try (OutputStream outputStream = classfile.getOutputStream()) {
                 outputStream.write(bytecode);

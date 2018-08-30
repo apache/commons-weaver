@@ -35,7 +35,10 @@ import org.apache.commons.weaver.spi.Weaver;
  * Encapsulates the environment in which a {@link Weaver} or {@link Cleaner} must operate.
  */
 public abstract class WeaveEnvironment {
-    private class Resource implements DataSource {
+    /**
+     * Represents a {@link WeaveEnvironment} resource.
+     */
+    public class Resource { 
         private final String name;
 
         Resource(final String name) {
@@ -46,7 +49,6 @@ public abstract class WeaveEnvironment {
          * Get the content type, always "application/octet-stream".
          * @return {@link String}
          */
-        @Override
         public String getContentType() {
             return CONTENT_TYPE;
         }
@@ -54,7 +56,6 @@ public abstract class WeaveEnvironment {
         /**
          * Get an {@link InputStream} for reading this {@link Resource}.
          */
-        @Override
         public InputStream getInputStream() throws IOException {
             return classLoader.getResourceAsStream(name);
         }
@@ -63,7 +64,6 @@ public abstract class WeaveEnvironment {
          * Get the name of this {@link Resource}.
          * @return {@link String}
          */
-        @Override
         public String getName() {
             return name;
         }
@@ -72,7 +72,6 @@ public abstract class WeaveEnvironment {
          * Get an {@link OutputStream} for writing to this {@link Resource}.
          * @return {@link OutputStream}
          */
-        @Override
         public OutputStream getOutputStream() throws IOException {
             return WeaveEnvironment.this.getOutputStream(name);
         }
@@ -177,7 +176,7 @@ public abstract class WeaveEnvironment {
      * @param cls type
      * @return {@link DataSource}
      */
-    public final DataSource getClassfile(final Class<?> cls) {
+    public final Resource getClassfile(final Class<?> cls) {
         return getClassfile(cls.getName());
     }
 
@@ -186,7 +185,7 @@ public abstract class WeaveEnvironment {
      * @param classname of type
      * @return {@link DataSource}
      */
-    public final DataSource getClassfile(final String classname) {
+    public final Resource getClassfile(final String classname) {
         return getResource(getResourceName(classname));
     }
 
@@ -195,7 +194,7 @@ public abstract class WeaveEnvironment {
      * @param name of resource
      * @return {@link DataSource}
      */
-    public final DataSource getResource(final String name) {
+    public final Resource getResource(final String name) {
         return new Resource(name);
     }
 

@@ -26,8 +26,6 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.activation.DataSource;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -109,7 +107,7 @@ public class Privilizer {
             if (verify) {
                 verify(className, bytecode);
             }
-            final DataSource classfile = env.getClassfile(className);
+            final WeaveEnvironment.Resource classfile = env.getClassfile(className);
             env.debug("Writing class %s to resource %s", className, classfile.getName());
             try (OutputStream outputStream = classfile.getOutputStream()) {
                 outputStream.write(bytecode);
