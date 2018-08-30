@@ -31,20 +31,23 @@ public @interface Privilizing {
     /**
      * Models calls to blueprint methods defined on a specific class.
      */
-    public @interface CallTo {
+    @interface CallTo {
         /**
          * The class owning one or more blueprint method.
+         * @return {@link Class}
          */
         Class<?> value();
 
         /**
          * The names of the blueprint methods.
+         * @return {@link String}[]
          */
         String[] methods() default { };
     }
 
     /**
      * List of blueprint calls.
+     * @return {@link CallTo}[]
      */
     CallTo[] value();
 }
