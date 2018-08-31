@@ -25,8 +25,6 @@ import java.util.Properties;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import javax.activation.DataSource;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.weaver.spi.Cleaner;
 import org.apache.commons.weaver.spi.Weaver;
@@ -38,7 +36,7 @@ public abstract class WeaveEnvironment {
     /**
      * Represents a {@link WeaveEnvironment} resource.
      */
-    public class Resource { 
+    public class Resource {
         private final String name;
 
         Resource(final String name) {
@@ -55,6 +53,8 @@ public abstract class WeaveEnvironment {
 
         /**
          * Get an {@link InputStream} for reading this {@link Resource}.
+         * @return {@link InputStream}
+         * @throws IOException if unable to read
          */
         public InputStream getInputStream() throws IOException {
             return classLoader.getResourceAsStream(name);
@@ -71,6 +71,7 @@ public abstract class WeaveEnvironment {
         /**
          * Get an {@link OutputStream} for writing to this {@link Resource}.
          * @return {@link OutputStream}
+         * @throws IOException if unable to write
          */
         public OutputStream getOutputStream() throws IOException {
             return WeaveEnvironment.this.getOutputStream(name);
@@ -172,27 +173,27 @@ public abstract class WeaveEnvironment {
     }
 
     /**
-     * Get a {@link DataSource} representing {@code cls}.
+     * Get a {@link Resource} representing {@code cls}.
      * @param cls type
-     * @return {@link DataSource}
+     * @return {@link Resource}
      */
     public final Resource getClassfile(final Class<?> cls) {
         return getClassfile(cls.getName());
     }
 
     /**
-     * Get a {@link DataSource} for the specified class.
+     * Get a {@link Resource} for the specified class.
      * @param classname of type
-     * @return {@link DataSource}
+     * @return {@link Resource}
      */
     public final Resource getClassfile(final String classname) {
         return getResource(getResourceName(classname));
     }
 
     /**
-     * Get a {@link DataSource} for the specified resource.
+     * Get a {@link Resource} for the specified resource.
      * @param name of resource
-     * @return {@link DataSource}
+     * @return {@link Resource}
      */
     public final Resource getResource(final String name) {
         return new Resource(name);
