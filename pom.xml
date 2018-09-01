@@ -49,7 +49,7 @@ under the License.
 
     <commons.componentid>weaver</commons.componentid>
     <commons.module.name>org.apache.commons.weaver</commons.module.name>
-    <commons.release.version>1.4</commons.release.version>
+    <commons.release.version>2.0</commons.release.version>
     <commons.release.name>commons-weaver-${commons.release.version}</commons.release.name>
     <commons.rc.version>RC1</commons.rc.version>
     <commons.jira.id>WEAVER</commons.jira.id>

@@ -46,7 +46,7 @@ Apache Commons Weaver
 [![Build Status](https://travis-ci.org/apache/commons-weaver.svg)](https://travis-ci.org/apache/commons-weaver)
 [![Coverage Status](https://coveralls.io/repos/apache/commons-weaver/badge.svg)](https://coveralls.io/r/apache/commons-weaver)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/1.4.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/1.4)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/2.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/2.0)
 
 Apache Commons Weaver provides an easy way to enhance compiled Java
     classes by generating ("weaving") bytecode into those classes.
@@ -68,7 +68,7 @@ Alternatively you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-weaver-base</artifactId>
-  <version>1.4</version>
+  <version>2.0</version>
 </dependency>
 ```
 

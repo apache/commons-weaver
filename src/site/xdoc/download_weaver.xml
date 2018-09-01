@@ -113,32 +113,32 @@ limitations under the License.
       </p>
     </subsection>
     </section>
-    <section name="Apache Commons Weaver 1.4 ">
+    <section name="Apache Commons Weaver 2.0 ">
       <subsection name="Binaries">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/weaver/binaries/commons-weaver-1.4-bin.tar.gz">commons-weaver-1.4-bin.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-1.4-bin.tar.gz.sha256">sha256</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-1.4-bin.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/weaver/binaries/commons-weaver-2.0-bin.tar.gz">commons-weaver-2.0-bin.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-2.0-bin.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-2.0-bin.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/weaver/binaries/commons-weaver-1.4-bin.zip">commons-weaver-1.4-bin.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-1.4-bin.zip.sha256">sha256</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-1.4-bin.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/weaver/binaries/commons-weaver-2.0-bin.zip">commons-weaver-2.0-bin.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-2.0-bin.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/binaries/commons-weaver-2.0-bin.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
       <subsection name="Source">
         <table>
           <tr>
-              <td><a href="[preferred]/commons/weaver/source/commons-weaver-1.4-src.tar.gz">commons-weaver-1.4-src.tar.gz</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-1.4-src.tar.gz.sha256">sha256</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-1.4-src.tar.gz.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/weaver/source/commons-weaver-2.0-src.tar.gz">commons-weaver-2.0-src.tar.gz</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-2.0-src.tar.gz.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-2.0-src.tar.gz.asc">pgp</a></td>
           </tr>
           <tr>
-              <td><a href="[preferred]/commons/weaver/source/commons-weaver-1.4-src.zip">commons-weaver-1.4-src.zip</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-1.4-src.zip.sha256">sha256</a></td>
-              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-1.4-src.zip.asc">pgp</a></td>
+              <td><a href="[preferred]/commons/weaver/source/commons-weaver-2.0-src.zip">commons-weaver-2.0-src.zip</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-2.0-src.zip.sha256">sha256</a></td>
+              <td><a href="https://www.apache.org/dist/commons/weaver/source/commons-weaver-2.0-src.zip.asc">pgp</a></td>
           </tr>
         </table>
       </subsection>
