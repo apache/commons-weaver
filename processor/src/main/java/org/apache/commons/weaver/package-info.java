@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 /**
- * Defines the objects needed to perform filesystem-based weaving.
+ * Defines the objects needed to perform file system-based weaving.
  */
 package org.apache.commons.weaver;

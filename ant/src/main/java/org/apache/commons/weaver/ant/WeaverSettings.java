@@ -109,7 +109,7 @@ public class WeaverSettings extends DataType {
 
     /**
      * Return the effective classpath as a {@link List} of {@link String}
-     * filesystem paths. If {@link #includeSystemClasspath}, system classpath will be appended.
+     * file system paths. If {@link #includeSystemClasspath}, system classpath will be appended.
      * @return {@link List} of {@link String}
      */
     public List<String> getClasspathEntries() {

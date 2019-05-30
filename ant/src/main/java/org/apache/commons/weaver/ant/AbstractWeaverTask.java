@@ -24,7 +24,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Reference;
 
 /**
- * Abstract weaver Ant task. Manages settings for filesystem-based weaving.
+ * Abstract weaver Ant task. Manages settings for file system-based weaving.
  */
 public abstract class AbstractWeaverTask extends Task {
     private WeaverSettings settings;
