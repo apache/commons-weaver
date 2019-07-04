@@ -37,7 +37,7 @@ under the License.
     classes by generating ("weaving") bytecode into those classes.
   </description>
 
-  <url>http://commons.apache.org/proper/commons-weaver</url>
+  <url>https://commons.apache.org/proper/commons-weaver</url>
 
   <issueManagement>
     <system>jira</system>
