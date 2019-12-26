@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.Validate;
@@ -44,9 +45,7 @@ public class ScanRequest {
      * @return {@code this}, fluently
      */
     public ScanRequest add(final WeaveInterest interest) {
-        if (interest == null) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull(interest, "interest");
         interests.add(interest);
         return this;
     }
