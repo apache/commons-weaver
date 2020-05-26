@@ -424,7 +424,6 @@ under the License.
     <module>maven-plugin</module>
     <module>ant</module>
     <module>modules</module>
-    <module>dist</module>
   </modules>
 
 </project>
