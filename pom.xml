@@ -32,6 +32,8 @@ under the License.
 
   <name>Apache Commons Weaver</name>
 
+  <inceptionYear>2012</inceptionYear> <!-- from NOTICE file -->
+
   <description>
     Apache Commons Weaver provides an easy way to enhance compiled Java
     classes by generating ("weaving") bytecode into those classes.
