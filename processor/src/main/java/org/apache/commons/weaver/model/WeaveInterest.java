@@ -48,7 +48,6 @@ public final class WeaveInterest {
     public final ElementType target;
 
     private WeaveInterest(final Class<? extends Annotation> annotationType, final ElementType target) {
-        super();
         this.annotationType = annotationType;
         this.target = target;
     }

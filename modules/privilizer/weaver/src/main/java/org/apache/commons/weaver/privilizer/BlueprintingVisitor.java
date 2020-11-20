@@ -66,7 +66,6 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
 
         TypeInfo(final int access, final String superName, final Map<String, FieldNode> fields,
             final Map<Method, MethodNode> methods) {
-            super();
             this.access = access;
             this.superName = superName;
             this.fields = fields;

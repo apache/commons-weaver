@@ -48,7 +48,6 @@ class Inflater {
         final Class<? extends Info> type;
 
         InfoMatcher(final Class<? extends Info> type) {
-            super();
             this.type = type;
         }
 
@@ -94,8 +93,6 @@ class Inflater {
     final Map<ParameterInfo, List<Annotation>> methodParameterAnnotations;
 
     Inflater(final Map<Info, List<Annotation>> annotationMap) {
-        super();
-
         this.packageAnnotations = subMap(annotationMap, new InfoMatcher(PackageInfo.class));
         this.classAnnotations = subMap(annotationMap, new InfoMatcher(ClassInfo.class));
         this.fieldAnnotations = subMap(annotationMap, new InfoMatcher(FieldInfo.class));

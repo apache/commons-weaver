@@ -62,7 +62,6 @@ public class ScanResult {
         private final Iterable<PARENT> parents;
 
         Projection(final Iterable<PARENT> parents) {
-            super();
             this.parents = parents;
         }
 
@@ -121,7 +120,6 @@ public class ScanResult {
         final Class<? extends Annotation> annotationType;
 
         AnnotatedWith(final Iterable<W> wrapped, final Class<? extends Annotation> annotationType) {
-            super();
             this.wrapped = wrapped;
             this.annotationType = annotationType;
         }

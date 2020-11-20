@@ -180,7 +180,6 @@ public class Privilizer {
      * @param env to use
      */
     public Privilizer(final WeaveEnvironment env) {
-        super();
         this.env = env;
         this.policy = Policy.parse(env.config.getProperty(CONFIG_POLICY));
         this.accessLevel = AccessLevel.parse(env.config.getProperty(CONFIG_ACCESS_LEVEL));

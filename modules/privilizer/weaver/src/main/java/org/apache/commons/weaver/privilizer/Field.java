@@ -50,7 +50,6 @@ public class Field {
      * @param type of field
      */
     public Field(final int access, final String name, final Type type) {
-        super();
         this.access = access;
         this.name = Validate.notNull(name);
         this.type = Validate.notNull(type);

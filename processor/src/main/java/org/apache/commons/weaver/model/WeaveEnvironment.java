@@ -116,7 +116,6 @@ public abstract class WeaveEnvironment {
      * @param log property
      */
     protected WeaveEnvironment(final ClassLoader classLoader, final Properties config, final Logger log) {
-        super();
         this.classLoader = classLoader;
         this.config = (Properties) Validate.notNull(config, "config").clone();
         this.log = log;

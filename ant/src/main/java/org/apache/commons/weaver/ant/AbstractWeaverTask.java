@@ -34,7 +34,6 @@ public abstract class AbstractWeaverTask extends Task {
      * @param project owner
      */
     protected AbstractWeaverTask(final Project project) {
-        super();
         setProject(project);
     }
 

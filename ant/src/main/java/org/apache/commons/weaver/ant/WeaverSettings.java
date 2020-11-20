@@ -59,7 +59,6 @@ public class WeaverSettings extends DataType {
      * @param project owner
      */
     public WeaverSettings(final Project project) {
-        super();
         setProject(project);
     }
 

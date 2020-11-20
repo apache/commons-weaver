@@ -317,7 +317,6 @@ class Finder extends AnnotationFinder implements Scanner {
 
         @SuppressWarnings("PMD.UseVarargs") // varargs not necessary here
         IncludesClassfile(final T annotatedElement, final Annotation[] classfileAnnotations) {
-            super();
             this.annotatedElement = annotatedElement;
             this.annotations = ArrayUtils.addAll(annotatedElement.getAnnotations(), classfileAnnotations);
         }
