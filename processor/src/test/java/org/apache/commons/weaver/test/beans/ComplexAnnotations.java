@@ -255,7 +255,7 @@ public class ComplexAnnotations {
         Stooge[] stooges();
     }
 
-    public static enum Stooge {
+    public enum Stooge {
         MOE, LARRY, CURLY, SHEMP, JOE;
     }
 
