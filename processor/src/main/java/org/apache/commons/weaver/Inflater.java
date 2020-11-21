@@ -51,6 +51,7 @@ class Inflater {
             this.type = type;
         }
 
+        @Override
         public boolean test(final Info info) {
             return type.isInstance(info);
         }
