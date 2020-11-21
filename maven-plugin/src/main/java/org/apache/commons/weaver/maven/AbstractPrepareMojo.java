@@ -38,7 +38,7 @@ public abstract class AbstractPrepareMojo extends AbstractCWMojo {
         }
         try {
             new CleanProcessor(classpath, target, config).clean();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new MojoExecutionException("cleaning failed due to " + e.getMessage(), e);
         }
     }

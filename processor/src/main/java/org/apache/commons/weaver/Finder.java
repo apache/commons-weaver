@@ -369,7 +369,7 @@ class Finder extends AnnotationFinder implements Scanner {
             return typed(PackageInfo.class, getAnnotationInfos(annotation.getName())::stream).map(packageInfo -> {
                 try {
                     return new IncludesClassfile<>(packageInfo.get(), classfileAnnotationsFor(packageInfo));
-                } catch (ClassNotFoundException e) {
+                } catch (final ClassNotFoundException e) {
                     return null;
                 }
             }).filter(hasAnnotation(annotation)).collect(Collectors.toList());
@@ -395,7 +395,7 @@ class Finder extends AnnotationFinder implements Scanner {
             return typed(ClassInfo.class, infos::stream).map(classInfo -> {
                 try {
                     return new IncludesClassfile<Class<?>>(classInfo.get(), classfileAnnotationsFor(classInfo));
-                } catch (ClassNotFoundException e1) {
+                } catch (final ClassNotFoundException e1) {
                     return null;
                 }
             }).filter(Objects::nonNull).collect(Collectors.toList());

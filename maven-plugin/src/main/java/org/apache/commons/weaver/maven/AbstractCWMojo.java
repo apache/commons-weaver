@@ -101,7 +101,7 @@ abstract class AbstractCWMojo extends AbstractMojo {
             final List<String> classpath;
             try {
                 classpath = createClasspath();
-            } catch (DependencyResolutionException e) {
+            } catch (final DependencyResolutionException e) {
                 throw new MojoExecutionException("Error getting classpath artifacts", e);
             }
             final File target = getTarget();

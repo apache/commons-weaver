@@ -46,11 +46,11 @@ public class TestWeaver implements Weaver {
     public static List<Class<?>> subclasses = new ArrayList<Class<?>>();
 
     @Override
-    public boolean process(WeaveEnvironment environment, Scanner scanner) {
+    public boolean process(final WeaveEnvironment environment, final Scanner scanner) {
         Assert.assertNotNull(environment.config);
         Assert.assertEquals(1, environment.config.size());
 
-        String configValue = environment.config.getProperty("configKey");
+        final String configValue = environment.config.getProperty("configKey");
 
         Assert.assertEquals("configValue", configValue);
         boolean result = false;
@@ -62,22 +62,22 @@ public class TestWeaver implements Weaver {
 
         final ScanResult scanResult = scanner.scan(scanRequest);
 
-        for (WeavableClass<?> weavableClass : scanResult.getClasses().with(TestAnnotation.class)) {
+        for (final WeavableClass<?> weavableClass : scanResult.getClasses().with(TestAnnotation.class)) {
             if (wovenClasses.add(weavableClass.getTarget())) {
                 result = true;
             }
         }
-        for (WeavableMethod<?> weavableMethod : scanResult.getMethods().with(TestAnnotation.class)) {
+        for (final WeavableMethod<?> weavableMethod : scanResult.getMethods().with(TestAnnotation.class)) {
             if (wovenMethods.add(weavableMethod.getTarget())) {
                 result = true;
             }
         }
-        for (WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(TestBeanInterface.class)) {
+        for (final WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(TestBeanInterface.class)) {
             if (implementors.add(weavableClass.getTarget())) {
                 result = true;
             }
         }
-        for (WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(AbstractTestBean.class)) {
+        for (final WeavableClass<?> weavableClass : scanResult.getClassesAssignableTo(AbstractTestBean.class)) {
             if (subclasses.add(weavableClass.getTarget())) {
                 result = true;
             }

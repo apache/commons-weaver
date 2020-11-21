@@ -74,7 +74,7 @@ public class JavaLoggingToMojoLoggingRedirector {
             activeHandler.setLevel(Level.ALL);
             rootLogger.setLevel(Level.ALL);
             rootLogger.addHandler(activeHandler);
-        } catch (Exception exc) {
+        } catch (final Exception exc) {
             throw new MojoExecutionException("failed to activate the jul logging redirector", exc);
         }
     }

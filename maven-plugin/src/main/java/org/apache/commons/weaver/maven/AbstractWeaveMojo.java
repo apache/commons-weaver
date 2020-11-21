@@ -35,7 +35,7 @@ public abstract class AbstractWeaveMojo extends AbstractCWMojo {
         throws MojoExecutionException {
         try {
             new WeaveProcessor(classpath, target, config).weave();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new MojoExecutionException("weaving failed due to " + e.getMessage(), e);
         }
     }

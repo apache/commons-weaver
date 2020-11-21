@@ -73,14 +73,14 @@ public class FinderTest extends WeaverTestBase {
     @Test
     public void testElements() throws IOException {
         addClassForScanning(ComplexAnnotations.class);
-        Map<String, Annotated<Field>> fields = new HashMap<String, Annotated<Field>>();
-        for (Annotated<Field> annotated : finder().withAnnotations().findAnnotatedFields(
+        final Map<String, Annotated<Field>> fields = new HashMap<String, Annotated<Field>>();
+        for (final Annotated<Field> annotated : finder().withAnnotations().findAnnotatedFields(
             ComplexAnnotations.TestAnnotation.class)) {
             fields.put(annotated.get().getName(), annotated);
         }
         assertEquals(2, fields.size());
 
-        TestAnnotation anno1 = fields.get("dummy1").getAnnotation(TestAnnotation.class);
+        final TestAnnotation anno1 = fields.get("dummy1").getAnnotation(TestAnnotation.class);
 
         assertFalse(anno1.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, anno1.booleanValues()));
@@ -97,7 +97,7 @@ public class FinderTest extends WeaverTestBase {
         assertEquals(0L, anno1.longValue());
         assertArrayEquals(new long[] { 0L }, anno1.longValues());
 
-        NestAnnotation nest1 = anno1.nest();
+        final NestAnnotation nest1 = anno1.nest();
         assertFalse(nest1.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, nest1.booleanValues()));
         assertEquals((byte) 0, nest1.byteValue());
@@ -122,7 +122,7 @@ public class FinderTest extends WeaverTestBase {
         assertArrayEquals(new Class[] { Object.class }, nest1.types());
 
         assertEquals(1, anno1.nests().length);
-        NestAnnotation nest1_0 = anno1.nests()[0];
+        final NestAnnotation nest1_0 = anno1.nests()[0];
         assertFalse(nest1_0.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, nest1_0.booleanValues()));
         assertEquals((byte) 0, nest1_0.byteValue());
@@ -155,7 +155,7 @@ public class FinderTest extends WeaverTestBase {
         assertEquals(Object.class, anno1.type());
         assertArrayEquals(new Class[] { Object.class }, anno1.types());
 
-        TestAnnotation anno2 = fields.get("dummy2").getAnnotation(TestAnnotation.class);
+        final TestAnnotation anno2 = fields.get("dummy2").getAnnotation(TestAnnotation.class);
         assertFalse(anno2.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, anno2.booleanValues()));
         assertEquals((byte) 0, anno2.byteValue());
@@ -171,7 +171,7 @@ public class FinderTest extends WeaverTestBase {
         assertEquals(0L, anno2.longValue());
         assertArrayEquals(new long[] { 0L }, anno2.longValues());
 
-        NestAnnotation nest2 = anno2.nest();
+        final NestAnnotation nest2 = anno2.nest();
         assertFalse(nest2.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, nest2.booleanValues()));
         assertEquals((byte) 0, nest2.byteValue());
@@ -196,7 +196,7 @@ public class FinderTest extends WeaverTestBase {
         assertArrayEquals(new Class[] { Object.class }, nest2.types());
 
         assertEquals(2, anno2.nests().length);
-        NestAnnotation nest2_0 = anno2.nests()[0];
+        final NestAnnotation nest2_0 = anno2.nests()[0];
         assertFalse(nest2_0.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, nest2_0.booleanValues()));
         assertEquals((byte) 0, nest2_0.byteValue());
@@ -220,7 +220,7 @@ public class FinderTest extends WeaverTestBase {
         assertEquals(Object[].class, nest2_0.type());
         assertArrayEquals(new Class[] { Object[].class }, nest2_0.types());
 
-        NestAnnotation nest2_1 = anno2.nests()[1];
+        final NestAnnotation nest2_1 = anno2.nests()[1];
         assertFalse(nest2_1.booleanValue());
         assertTrue(Arrays.equals(new boolean[] { false }, nest2_1.booleanValues()));
         assertEquals((byte) 0, nest2_1.byteValue());
@@ -257,9 +257,9 @@ public class FinderTest extends WeaverTestBase {
     @Test
     public void testObjectMethods() throws IOException {
         addClassForScanning(ComplexAnnotations.class);
-        for (Annotated<Field> annotated : finder().withAnnotations().findAnnotatedFields(
+        for (final Annotated<Field> annotated : finder().withAnnotations().findAnnotatedFields(
             ComplexAnnotations.TestAnnotation.class)) {
-            TestAnnotation anno = annotated.getAnnotation(TestAnnotation.class);
+            final TestAnnotation anno = annotated.getAnnotation(TestAnnotation.class);
             assertFalse(anno.toString().isEmpty());
             assertFalse(anno.hashCode() == 0);
             assertTrue(anno.equals(anno));
@@ -274,14 +274,14 @@ public class FinderTest extends WeaverTestBase {
         addClassForScanning(TestBeanWithMethodAnnotation.class);
 
         final Set<Class<?>> implementors = new HashSet<Class<?>>();
-        for (Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(TestBeanInterface.class)) {
+        for (final Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(TestBeanInterface.class)) {
             implementors.add(annotated.get());
         }
         assertEquals(1, implementors.size());
         assertTrue(implementors.contains(TestBeanWithClassAnnotation.class));
 
         final Set<Class<?>> subclasses = new HashSet<Class<?>>();
-        for (Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(AbstractTestBean.class)) {
+        for (final Annotated<Class<?>> annotated : finder().withAnnotations().findAssignableTypes(AbstractTestBean.class)) {
             subclasses.add(annotated.get());
         }
         assertEquals(2, subclasses.size());
@@ -296,18 +296,18 @@ public class FinderTest extends WeaverTestBase {
         addClassForScanning(TestBeanWithClassAnnotation.class);
         addClassForScanning(TestBeanWithMethodAnnotation.class);
 
-        List<Annotated<Class<?>>> allClasses = finder().withAnnotations().getAllClasses();
+        final List<Annotated<Class<?>>> allClasses = finder().withAnnotations().getAllClasses();
         assertThat(extract(allClasses), Matchers.<Class<?>> containsInAnyOrder(TestBeanInterface.class,
             AbstractTestBean.class, TestBeanWithClassAnnotation.class, TestBeanWithMethodAnnotation.class));
     }
 
-    private List<Class<?>> extract(List<Annotated<Class<?>>> input) {
+    private List<Class<?>> extract(final List<Annotated<Class<?>>> input) {
         Validate.noNullElements(input);
         if (input.isEmpty()) {
             return Collections.emptyList();
         }
         final List<Class<?>> result = new ArrayList<Class<?>>(input.size());
-        for (Annotated<Class<?>> c : input) {
+        for (final Annotated<Class<?>> c : input) {
             result.add(c.get());
         }
         return result;

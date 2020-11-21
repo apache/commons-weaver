@@ -76,7 +76,7 @@ public class ProvidersTest {
     public class Monkeywrench implements FauxWeaveProvider {
     }
 
-    private FauxWeaveProvider a = new A(), b = new B(), c = new C(), w = new W(), x = new X(), y = new Y(), z = new Z(),
+    private final FauxWeaveProvider a = new A(), b = new B(), c = new C(), w = new W(), x = new X(), y = new Y(), z = new Z(),
                     monkeywrench = new Monkeywrench();
 
     @Test

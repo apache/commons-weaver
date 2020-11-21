@@ -31,14 +31,14 @@ import org.apache.commons.weaver.test.beans.TestAnnotation;
 public class TestCleaner implements Cleaner {
 
     @Override
-    public boolean clean(WeaveEnvironment environment, Scanner scanner) {
+    public boolean clean(final WeaveEnvironment environment, final Scanner scanner) {
         boolean result = false;
 
         final ScanRequest scanRequest =
             new ScanRequest().add(WeaveInterest.of(TestAnnotation.class, ElementType.TYPE)).add(
                 WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
 
-        for (WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
+        for (final WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
             if (environment.deleteClassfile(weavableClass.getTarget())) {
                 result = true;
             } else {

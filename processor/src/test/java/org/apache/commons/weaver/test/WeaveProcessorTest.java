@@ -42,7 +42,7 @@ public class WeaveProcessorTest extends WeaverTestBase {
         final Properties config = new Properties();
         config.put("configKey", "configValue");
 
-        WeaveProcessor wp = new WeaveProcessor(getClassPathEntries(), getTargetFolder(), config);
+        final WeaveProcessor wp = new WeaveProcessor(getClassPathEntries(), getTargetFolder(), config);
 
         TestWeaver.wovenClasses.clear();
         TestWeaver.wovenMethods.clear();

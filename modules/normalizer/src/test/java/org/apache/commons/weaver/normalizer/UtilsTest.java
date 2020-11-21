@@ -89,9 +89,9 @@ public class UtilsTest {
         Utils.parseTypes("java.lang.Object,,java.lang.Iterable", getClass().getClassLoader());
     }
     
-    <E> void assertContainsInOrder(Iterable<E> iterable, E... expectedElements) {
+    <E> void assertContainsInOrder(final Iterable<E> iterable, final E... expectedElements) {
         final Iterator<E> iterator = iterable.iterator();
-        for (E e : expectedElements) {
+        for (final E e : expectedElements) {
             assertTrue(iterator.hasNext());
             assertEquals(e, iterator.next());
         }

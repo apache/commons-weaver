@@ -52,21 +52,21 @@ public abstract class WeaverTestBase {
      * 
      * @param clazz
      */
-    protected void addClassForScanning(Class<?> clazz) throws IOException {
-        String clazzDirName = clazz.getPackage().getName().replace(".", "/");
-        File targetDirFile = new File(getTargetFolder(), clazzDirName);
+    protected void addClassForScanning(final Class<?> clazz) throws IOException {
+        final String clazzDirName = clazz.getPackage().getName().replace(".", "/");
+        final File targetDirFile = new File(getTargetFolder(), clazzDirName);
         targetDirFile.mkdirs();
 
-        String fileName = baseName(clazz) + ".class";
-        String clazzFileName = clazzDirName + "/" + fileName;
-        URL clazzUrl = getClass().getClassLoader().getResource(clazzFileName);
-        File targetClazzFile = new File(targetDirFile, fileName);
+        final String fileName = baseName(clazz) + ".class";
+        final String clazzFileName = clazzDirName + "/" + fileName;
+        final URL clazzUrl = getClass().getClassLoader().getResource(clazzFileName);
+        final File targetClazzFile = new File(targetDirFile, fileName);
 
-        byte[] buffer = new byte[0xFFFF];
+        final byte[] buffer = new byte[0xFFFF];
 
-        FileOutputStream fos = new FileOutputStream(targetClazzFile);
+        final FileOutputStream fos = new FileOutputStream(targetClazzFile);
 
-        InputStream inputStream = clazzUrl.openStream();
+        final InputStream inputStream = clazzUrl.openStream();
         int len;
         while ((len = inputStream.read(buffer)) > 0) {
             fos.write(buffer, 0, len);
@@ -74,12 +74,12 @@ public abstract class WeaverTestBase {
         fos.flush();
         fos.close();
 
-        for (Class<?> inner : clazz.getClasses()) {
+        for (final Class<?> inner : clazz.getClasses()) {
             addClassForScanning(inner);
         }
     }
 
-    private String baseName(Class<?> clazz) {
+    private String baseName(final Class<?> clazz) {
         if (clazz.getDeclaringClass() == null) {
             return clazz.getSimpleName();
         }
@@ -110,7 +110,7 @@ public abstract class WeaverTestBase {
             classPathEntries = new ArrayList<String>(1);
             try {
                 classPathEntries.add(getTargetFolder().getCanonicalPath());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 throw new RuntimeException(ioe);
             }
         }
