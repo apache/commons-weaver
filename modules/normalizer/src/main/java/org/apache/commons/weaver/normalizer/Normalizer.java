@@ -586,7 +586,6 @@ public class Normalizer {
                             mgen.returnValue();
                             mgen.endMethod();
                         }
-                        return null;
                     }
                     return null;
                 }
