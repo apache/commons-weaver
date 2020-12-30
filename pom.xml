@@ -59,7 +59,7 @@ under the License.
     <commons.site.path>commons-weaver</commons.site.path>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${commons.site.path}</commons.scmPubUrl>
 
-    <commons.japicmp.version>0.11.1</commons.japicmp.version>
+    <commons.japicmp.version>0.14.4</commons.japicmp.version>
     <!-- remove after 2.0 release: -->
     <commons.japicmp.breakBuildOnBinaryIncompatibleModifications>false</commons.japicmp.breakBuildOnBinaryIncompatibleModifications>
 
