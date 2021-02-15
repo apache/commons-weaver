@@ -49,7 +49,7 @@ public abstract class WeaverTestBase {
 
     /**
      * Add a class (and its inner classes) to the temporary folder.
-     * 
+     *
      * @param clazz
      */
     protected void addClassForScanning(final Class<?> clazz) throws IOException {

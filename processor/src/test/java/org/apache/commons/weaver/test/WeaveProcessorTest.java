@@ -54,10 +54,10 @@ public class WeaveProcessorTest extends WeaverTestBase {
 
         Assert.assertEquals(1, TestWeaver.wovenMethods.size());
         Assert.assertEquals(TestBeanWithMethodAnnotation.class, TestWeaver.wovenMethods.get(0).getDeclaringClass());
-        
+
         Assert.assertEquals(1, TestWeaver.implementors.size());
         Assert.assertEquals(TestBeanWithClassAnnotation.class, TestWeaver.implementors.get(0));
-        
+
         Assert.assertEquals(2, TestWeaver.subclasses.size());
         Assert.assertTrue(TestWeaver.subclasses.containsAll(Arrays.<Class<?>> asList(
             TestBeanWithClassAnnotation.class, TestBeanWithMethodAnnotation.class)));

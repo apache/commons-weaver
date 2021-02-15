@@ -37,7 +37,7 @@ import org.apache.commons.weaver.test.beans.TestBeanInterface;
 import org.junit.Assert;
 
 /**
- * 
+ *
  */
 public class TestWeaver implements Weaver {
     public static List<Method> wovenMethods = new ArrayList<Method>();

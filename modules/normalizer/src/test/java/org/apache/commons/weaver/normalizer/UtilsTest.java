@@ -78,7 +78,7 @@ public class UtilsTest {
     public void testParseMissingFirstType() {
         Utils.parseTypes(",java.lang.Object", getClass().getClassLoader());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testParseMissingLastType() {
         Utils.parseTypes("java.lang.Object,", getClass().getClassLoader());
@@ -88,7 +88,7 @@ public class UtilsTest {
     public void testParseMissingType() {
         Utils.parseTypes("java.lang.Object,,java.lang.Iterable", getClass().getClassLoader());
     }
-    
+
     <E> void assertContainsInOrder(final Iterable<E> iterable, final E... expectedElements) {
         final Iterator<E> iterator = iterable.iterator();
         for (final E e : expectedElements) {

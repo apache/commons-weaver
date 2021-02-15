@@ -67,7 +67,7 @@ public class FinderTest extends WeaverTestBase {
     /**
      * The point of this is to prove that we can correctly hydate instances of
      * annotations with class retention.
-     * 
+     *
      * @throws IOException
      */
     @Test
