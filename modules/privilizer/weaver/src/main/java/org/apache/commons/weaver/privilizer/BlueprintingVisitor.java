@@ -361,12 +361,11 @@ class BlueprintingVisitor extends Privilizer.PrivilizerClassVisitor {
             final Type ownerType = Type.getObjectType(owner);
             final Method method = new Method(name, desc);
 
-            if (isAccessible(ownerType) && isAccessible(ownerType, method)) {
-                super.visitNonImportedMethodInsn(opcode, owner, name, desc, itf);
-            } else {
+            if (!isAccessible(ownerType) || !isAccessible(ownerType, method)) {
                 throw new IllegalStateException(String.format("Blueprint method %s.%s calls inaccessible method %s.%s",
                     this.owner, methodKey.getRight(), owner, method));
             }
+            super.visitNonImportedMethodInsn(opcode, owner, name, desc, itf);
         }
 
         @Override

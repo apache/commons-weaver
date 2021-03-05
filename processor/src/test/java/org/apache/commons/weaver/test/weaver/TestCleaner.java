@@ -39,11 +39,10 @@ public class TestCleaner implements Cleaner {
                 WeaveInterest.of(TestAnnotation.class, ElementType.METHOD));
 
         for (final WeavableClass<?> weavableClass : scanner.scan(scanRequest).getClasses()) {
-            if (environment.deleteClassfile(weavableClass.getTarget())) {
-                result = true;
-            } else {
+            if (!environment.deleteClassfile(weavableClass.getTarget())) {
                 break;
             }
+            result = true;
         }
         return result;
     }
