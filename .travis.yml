@@ -15,10 +15,16 @@
 
 language: java
 sudo: false
-
+dist: trusty
+cache:
+  directories:
+    - $HOME/.m2
 jdk:
   - openjdk8
   - openjdk11
+
+script:
+  - mvn -e install
 
 after_success:
   - mvn clean cobertura:cobertura coveralls:report
