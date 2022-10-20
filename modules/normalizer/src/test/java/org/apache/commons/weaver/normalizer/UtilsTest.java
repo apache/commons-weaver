@@ -19,13 +19,16 @@ package org.apache.commons.weaver.normalizer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.jupiter.api.function.Executable;
 
 public class UtilsTest {
+
     @Test
     public void testValidatePackageName() {
         assertEquals("", Utils.validatePackageName(""));
@@ -42,14 +45,14 @@ public class UtilsTest {
         assertEquals("foo2", Utils.validatePackageName("foo2"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testValidatePackageNameStartsWithDigit() {
-        Utils.validatePackageName("2foo");
+        assertThrows(IllegalArgumentException.class, () -> Utils.validatePackageName("2foo"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testValidatePackageNameEmbeddedWhitespace() {
-        Utils.validatePackageName("foo bar");
+        assertThrows(IllegalArgumentException.class, () -> Utils.validatePackageName("foo bar"));
     }
 
     @Test
@@ -69,24 +72,24 @@ public class UtilsTest {
             Number.class, String.class, Map.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseUnknownType() {
-        Utils.parseTypes("gobbledygook", getClass().getClassLoader());
+        assertThrows(IllegalArgumentException.class, () -> Utils.parseTypes("gobbledygook", getClass().getClassLoader()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseMissingFirstType() {
-        Utils.parseTypes(",java.lang.Object", getClass().getClassLoader());
+        assertThrows(IllegalArgumentException.class, () -> Utils.parseTypes(",java.lang.Object", getClass().getClassLoader()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseMissingLastType() {
-        Utils.parseTypes("java.lang.Object,", getClass().getClassLoader());
+        assertThrows(IllegalArgumentException.class, () -> Utils.parseTypes("java.lang.Object,", getClass().getClassLoader()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseMissingType() {
-        Utils.parseTypes("java.lang.Object,,java.lang.Iterable", getClass().getClassLoader());
+        assertThrows(IllegalArgumentException.class, () -> Utils.parseTypes("java.lang.Object,,java.lang.Iterable", getClass().getClassLoader()));
     }
 
     <E> void assertContainsInOrder(final Iterable<E> iterable, final E... expectedElements) {
@@ -97,4 +100,5 @@ public class UtilsTest {
         }
         assertFalse(iterator.hasNext());
     }
+
 }
