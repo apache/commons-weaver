@@ -19,6 +19,7 @@
 package org.apache.commons.weaver.utils;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
@@ -29,17 +30,18 @@ import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 import org.apache.commons.weaver.spi.Weaver;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Test;
+import org.junit.jupiter.api.function.Executable;
 
 public class ProvidersTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testSortNull() {
-        Providers.sort(null);
+        assertThrows(NullPointerException.class, () -> Providers.sort(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSortNullElement() {
-        Providers.sort(Arrays.asList((Weaver) null));
+        assertThrows(IllegalArgumentException.class, () -> Providers.sort(Arrays.asList((Weaver) null)));
     }
 
     public interface FauxWeaveProvider extends WeaveLifecycleProvider<WeaveLifecycleToken.Weave> {
@@ -85,9 +87,9 @@ public class ProvidersTest {
         assertThat(Providers.sort(Arrays.asList(y, w, x, z)), IsIterableContainingInOrder.contains(z, y, x, w));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testCircularSort() {
-        Providers.sort(Arrays.asList(y, z, monkeywrench));
+        assertThrows(IllegalStateException.class, () -> Providers.sort(Arrays.asList(y, z, monkeywrench)));
     }
 
 }
