@@ -20,6 +20,7 @@ package org.apache.commons.weaver.privilizer.example;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.weaver.privilizer.Privileged;
 
 public class UsingArgs {
@@ -40,7 +41,7 @@ public class UsingArgs {
         for (String name : names) {
             result.add(System.getProperty(name));
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 
     @Privileged
