@@ -23,7 +23,7 @@ final class Setup {
     }
 
     /**
-     * This simply allows us to to set up test classes by doing
+     * This simply allows us to set up test classes by doing
      * privileged things without granting privileges to the test
      * code itself and thus making it impossible to test the effects
      * of privilization.
