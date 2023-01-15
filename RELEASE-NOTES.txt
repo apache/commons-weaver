@@ -30,6 +30,6 @@ o WEAVER-26:   Upgrade to commons-parent v47.
 Historical list of changes: https://commons.apache.org/proper/commons-weaver/changes-report.html
 
 For complete information on Apache Commons Weaver, including instructions on how to submit bug reports,
-patches, or suggestions for improvement, see the Apache Apache Commons Weaver website:
+patches, or suggestions for improvement, see the Apache Commons Weaver website:
 
 https://commons.apache.org/proper/commons-weaver
