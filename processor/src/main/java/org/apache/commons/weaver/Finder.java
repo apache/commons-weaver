@@ -165,7 +165,7 @@ class Finder extends AnnotationFinder implements Scanner {
             try {
                 enumType = Class.forName(Type.getType(desc).getClassName()).asSubclass(Enum.class);
             } catch (final ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException(e);
             }
             @SuppressWarnings("unchecked")
             final Enum<?> enumValue = Enum.valueOf(enumType, value);
@@ -703,7 +703,7 @@ class Finder extends AnnotationFinder implements Scanner {
             try {
                 result = getArchive().loadClass(className);
             } catch (final ClassNotFoundException e1) {
-                throw new RuntimeException(e1);
+                throw new IllegalArgumentException(e1);
             }
         }
         if (type.getSort() == Type.ARRAY) {

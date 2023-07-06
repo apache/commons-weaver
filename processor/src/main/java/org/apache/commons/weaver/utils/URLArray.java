@@ -55,7 +55,7 @@ public final class URLArray {
                 return f.toURI().toURL();
             } catch (final MalformedURLException e) {
                 // this shouldn't happen
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException(e);
             }
         }).toArray(URL[]::new);
     }
