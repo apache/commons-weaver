@@ -44,11 +44,8 @@ Apache Commons Weaver
 ===================
 
 [![GitHub Actions Status](https://github.com/apache/commons-weaver/workflows/Java%20CI/badge.svg)](https://github.com/apache/commons-weaver/actions)
-[![Coverage Status](https://codecov.io/gh/apache/commons-weaver/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-weaver)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/2.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/2.0)
-[![CodeQL](https://github.com/apache/commons-weaver/workflows/CodeQL/badge.svg)](https://github.com/apache/commons-weaver/actions/workflows/codeql-analysis.yml?query=workflow%3ACodeQL)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-weaver/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-weaver)
 
 Apache Commons Weaver provides an easy way to enhance compiled Java
     classes by generating ("weaving") bytecode into those classes.
