@@ -372,7 +372,7 @@ public class Normalizer {
     /**
      * Map a set of classes by their enclosing class.
      * @param sort values
-     * @return {@link Map} of enclosing classname to {@link Map} of internal name to {@link ClassWrapper}
+     * @return {@link Map} of enclosing class name to {@link Map} of internal name to {@link ClassWrapper}
      */
     private Map<String, Map<String, ClassWrapper>> byEnclosingClass(final Set<ClassWrapper> sort) {
         final Map<String, Map<String, ClassWrapper>> result = new HashMap<>();
@@ -502,9 +502,9 @@ public class Normalizer {
      * Create the normalized version of a given class in the configured target package. The {@link Normalizer} will
      * gladly do so in a package from which the normalized class will not actually be able to reference any types upon
      * which it relies; in such a situation you must specify the target package as the package of the supertype.
-     * @param key used to generate the normalized classname.
+     * @param key used to generate the normalized class name.
      * @param classWrapper
-     * @return the generated classname.
+     * @return the generated class name.
      * @throws IOException
      */
     private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException {
