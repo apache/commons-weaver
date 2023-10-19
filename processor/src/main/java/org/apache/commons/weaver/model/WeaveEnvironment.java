@@ -84,12 +84,12 @@ public abstract class WeaveEnvironment {
     static final String CONTENT_TYPE = "application/octet-stream";
 
     /**
-     * Convert a classname into a resource name.
-     * @param classname to convert
+     * Convert a class name into a resource name.
+     * @param className to convert
      * @return String
      */
-    protected static String getResourceName(final String classname) {
-        return classname.replace('.', '/') + ".class";
+    protected static String getResourceName(final String className) {
+        return className.replace('.', '/') + ".class";
     }
 
     private static Supplier<String> supplier(final String format, final Object... args) {
@@ -182,11 +182,11 @@ public abstract class WeaveEnvironment {
 
     /**
      * Get a {@link Resource} for the specified class.
-     * @param classname of type
+     * @param className of type
      * @return {@link Resource}
      */
-    public final Resource getClassfile(final String classname) {
-        return getResource(getResourceName(classname));
+    public final Resource getClassfile(final String className) {
+        return getResource(getResourceName(className));
     }
 
     /**
@@ -209,11 +209,11 @@ public abstract class WeaveEnvironment {
 
     /**
      * Delete the classfile for the specified class.
-     * @param classname of type
+     * @param className of type
      * @return whether successful
      */
-    public final boolean deleteClassfile(final String classname) {
-        return deleteResource(getResourceName(classname));
+    public final boolean deleteClassfile(final String className) {
+        return deleteResource(getResourceName(className));
     }
 
     /**
