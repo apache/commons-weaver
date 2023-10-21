@@ -43,7 +43,7 @@
 Apache Commons Weaver
 ===================
 
-[![GitHub Actions Status](https://github.com/apache/commons-weaver/workflows/Java%20CI/badge.svg)](https://github.com/apache/commons-weaver/actions)
+[![Java CI](https://github.com/apache/commons-weaver/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-weaver/actions/workflows/maven.yml)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/2.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/2.0)
 
