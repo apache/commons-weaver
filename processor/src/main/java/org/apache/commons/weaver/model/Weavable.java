@@ -88,7 +88,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
     }
 
     /**
-     * Get the target of this {@link Weavable}.
+     * Gets the target of this {@link Weavable}.
      * @return {@code TARGET}
      */
     public TARGET getTarget() {
@@ -96,7 +96,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
     }
 
     /**
-     * Get all {@link Annotation}s associated with this element.
+     * Gets all {@link Annotation}s associated with this element.
      * @return {@link Annotation}[]
      */
     @Override
@@ -108,7 +108,7 @@ public abstract class Weavable<SELF extends Weavable<SELF, TARGET>, TARGET> impl
     }
 
     /**
-     * Get any instance of {@code annotationClass} attached to {@link #getTarget()}.
+     * Gets any instance of {@code annotationClass} attached to {@link #getTarget()}.
      * @param annotationClass {@link Class} annotation type
      * @param <T> annotation type
      * @return {@code T} instance if available, else {@code null}

@@ -57,7 +57,7 @@ public enum AccessLevel {
     }
 
     /**
-     * Get the {@link AccessLevel} specified by a Java modifier.
+     * Gets the {@link AccessLevel} specified by a Java modifier.
      * @param mod from which to extract
      * @return {@link AccessLevel}
      * @throws IllegalArgumentException if multiple access modifiers specified
@@ -103,7 +103,7 @@ public enum AccessLevel {
     }
 
     /**
-     * Get the {@link AccessLevel} value that should be used as a default.
+     * Gets the {@link AccessLevel} value that should be used as a default.
      * This is <em>not</em> "default"/{@code package} access, but rather the default
      * value that should be used for privilizer weaving.
      * @return {@link AccessLevel#PRIVATE}

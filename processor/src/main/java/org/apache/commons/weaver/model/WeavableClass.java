@@ -57,7 +57,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get a {@link WeavableField} representing {@code fld}.
+     * Gets a {@link WeavableField} representing {@code fld}.
      * @param fld to wrap
      * @return {@link WeavableField}
      */
@@ -66,7 +66,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get a {@link WeavableMethod} representing {@code mt}.
+     * Gets a {@link WeavableMethod} representing {@code mt}.
      * @param methd to wrap
      * @return {@link WeavableMethod}
      */
@@ -75,7 +75,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get a {@link WeavableConstructor} representing {@code ctor}.
+     * Gets a {@link WeavableConstructor} representing {@code ctor}.
      * @param ctor to wrap
      * @return {@link WeavableConstructor}
      */
@@ -84,7 +84,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get {@link WeavableField}s of this {@link WeavableClass}.
+     * Gets {@link WeavableField}s of this {@link WeavableClass}.
      * @return {@link Iterable}
      */
     public Iterable<WeavableField<T>> getFields() {
@@ -92,7 +92,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get {@link WeavableConstructor}s of this {@link WeavableClass}.
+     * Gets {@link WeavableConstructor}s of this {@link WeavableClass}.
      * @return {@link Iterable}
      */
     public Iterable<WeavableConstructor<T>> getConstructors() {
@@ -100,7 +100,7 @@ public class WeavableClass<T> extends NestedWeavable<WeavableClass<T>, Class<T>,
     }
 
     /**
-     * Get {@link WeavableMethod}s of this {@link WeavableClass}.
+     * Gets {@link WeavableMethod}s of this {@link WeavableClass}.
      * @return {@link Iterable}
      */
     public Iterable<WeavableMethod<T>> getMethods() {

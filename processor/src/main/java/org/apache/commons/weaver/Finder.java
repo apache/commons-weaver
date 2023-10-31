@@ -376,7 +376,7 @@ class Finder extends AnnotationFinder implements Scanner {
         }
 
         /**
-         * Get the list of objects representing all scanned classes.
+         * Gets the list of objects representing all scanned classes.
          * @since 1.3
          * @return {@link List} of {@link Annotated}{@code <Class<?>>}
          */

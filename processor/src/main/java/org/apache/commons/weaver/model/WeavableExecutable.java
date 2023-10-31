@@ -65,7 +65,7 @@ public abstract class WeavableExecutable
     protected abstract P createParameter(int index);
 
     /**
-     * Get the parameter types of {@link #getTarget()}.
+     * Gets the parameter types of {@link #getTarget()}.
      * @return {@link Class}[]
      */
     protected abstract Class<?>[] getParameterTypes();
@@ -79,7 +79,7 @@ public abstract class WeavableExecutable
     }
 
     /**
-     * Get the parameter at the specified index.
+     * Gets the parameter at the specified index.
      * @param index {@code int}
      * @return {@code P}
      */
@@ -88,7 +88,7 @@ public abstract class WeavableExecutable
     }
 
     /**
-     * Get the parameters declared by this {@link WeavableExecutable}.
+     * Gets the parameters declared by this {@link WeavableExecutable}.
      * @return {@link Iterable} of {@code P}
      */
     public Iterable<P> getParameters() {

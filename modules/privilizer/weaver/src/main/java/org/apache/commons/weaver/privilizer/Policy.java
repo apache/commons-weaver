@@ -49,7 +49,7 @@ public enum Policy {
     ALWAYS;
 
     /**
-     * Get the {@link Policy} value that should be used as a default.
+     * Gets the {@link Policy} value that should be used as a default.
      * @return {@link Policy#DYNAMIC}
      */
     public static Policy defaultValue() {

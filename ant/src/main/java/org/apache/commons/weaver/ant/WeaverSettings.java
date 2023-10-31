@@ -63,7 +63,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Get the {@code target} directory.
+     * Gets the {@code target} directory.
      * @return {@link File}
      */
     public File getTarget() {
@@ -85,7 +85,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Get the {@code classpathref}.
+     * Gets the {@code classpathref}.
      * @return {@link String}
      */
     public String getClasspathref() {
@@ -124,7 +124,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Get the {@code classpath}.
+     * Gets the {@code classpath}.
      * @return {@link Path}
      */
     public Path getClasspath() {

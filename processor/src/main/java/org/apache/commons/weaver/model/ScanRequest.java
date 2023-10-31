@@ -61,7 +61,7 @@ public class ScanRequest {
     }
 
     /**
-     * Get registered {@link WeaveInterest}s.
+     * Gets registered {@link WeaveInterest}s.
      * @return {@link Iterable}
      */
     public Iterable<WeaveInterest> getInterests() {
@@ -69,7 +69,7 @@ public class ScanRequest {
     }
 
     /**
-     * Get registered {@link Class}es whose subtypes will be returned.
+     * Gets registered {@link Class}es whose subtypes will be returned.
      * @return {@link Set}
      */
     public Set<Class<?>> getSupertypes() {

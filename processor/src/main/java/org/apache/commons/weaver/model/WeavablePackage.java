@@ -41,7 +41,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
     }
 
     /**
-     * Get a {@link WeavableClass} representing {@code cls}.
+     * Gets a {@link WeavableClass} representing {@code cls}.
      * @param cls to wrap
      * @param <T> generic type of {@code cls}
      * @return {@link WeavableClass}
@@ -52,7 +52,7 @@ public class WeavablePackage extends Weavable<WeavablePackage, Package> {
     }
 
     /**
-     * Get enclosed {@link WeavableClass}es.
+     * Gets enclosed {@link WeavableClass}es.
      * @return {@link Iterable}
      */
     public Iterable<WeavableClass<?>> getClasses() {

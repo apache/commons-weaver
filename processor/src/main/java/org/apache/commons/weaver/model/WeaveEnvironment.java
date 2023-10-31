@@ -44,7 +44,7 @@ public abstract class WeaveEnvironment {
         }
 
         /**
-         * Get the content type, always "application/octet-stream".
+         * Gets the content type, always "application/octet-stream".
          * @return {@link String}
          */
         public String getContentType() {
@@ -52,7 +52,7 @@ public abstract class WeaveEnvironment {
         }
 
         /**
-         * Get an {@link InputStream} for reading this {@link Resource}.
+         * Gets an {@link InputStream} for reading this {@link Resource}.
          * @return {@link InputStream}
          * @throws IOException if unable to read
          */
@@ -61,7 +61,7 @@ public abstract class WeaveEnvironment {
         }
 
         /**
-         * Get the name of this {@link Resource}.
+         * Gets the name of this {@link Resource}.
          * @return {@link String}
          */
         public String getName() {
@@ -69,7 +69,7 @@ public abstract class WeaveEnvironment {
         }
 
         /**
-         * Get an {@link OutputStream} for writing to this {@link Resource}.
+         * Gets an {@link OutputStream} for writing to this {@link Resource}.
          * @return {@link OutputStream}
          * @throws IOException if unable to write
          */
@@ -172,7 +172,7 @@ public abstract class WeaveEnvironment {
     }
 
     /**
-     * Get a {@link Resource} representing {@code cls}.
+     * Gets a {@link Resource} representing {@code cls}.
      * @param cls type
      * @return {@link Resource}
      */
@@ -181,7 +181,7 @@ public abstract class WeaveEnvironment {
     }
 
     /**
-     * Get a {@link Resource} for the specified class.
+     * Gets a {@link Resource} for the specified class.
      * @param className of type
      * @return {@link Resource}
      */
@@ -190,7 +190,7 @@ public abstract class WeaveEnvironment {
     }
 
     /**
-     * Get a {@link Resource} for the specified resource.
+     * Gets a {@link Resource} for the specified resource.
      * @param name of resource
      * @return {@link Resource}
      */

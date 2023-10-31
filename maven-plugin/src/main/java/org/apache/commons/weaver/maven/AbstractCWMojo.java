@@ -81,7 +81,7 @@ abstract class AbstractCWMojo extends AbstractMojo {
     protected RepositorySystemSession repositorySystemSession;
 
     /**
-     * Get the target directory for this prepare mojo.
+     * Gets the target directory for this prepare mojo.
      *
      * @return {@link File}
      */

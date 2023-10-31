@@ -49,7 +49,7 @@ public abstract class AbstractWeaverTask extends Task {
     }
 
     /**
-     * Get the {@link WeaverSettings} in use.
+     * Gets the {@link WeaverSettings} in use.
      * @return {@link WeaverSettings}
      */
     public WeaverSettings getSettings() {

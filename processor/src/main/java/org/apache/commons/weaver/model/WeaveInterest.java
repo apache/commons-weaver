@@ -28,7 +28,7 @@ import java.lang.annotation.ElementType;
 public final class WeaveInterest {
 
     /**
-     * Get a {@link WeaveInterest}.
+     * Gets a {@link WeaveInterest}.
      * @param annotationType observed annotation type
      * @param target attached element type
      * @return {@link WeaveInterest}

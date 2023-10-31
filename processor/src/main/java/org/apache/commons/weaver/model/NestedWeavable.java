@@ -45,7 +45,7 @@ public abstract class NestedWeavable
     }
 
     /**
-     * Get the parent.
+     * Gets the parent.
      * @return {@code PARENT}
      */
     public PARENT getParent() {
