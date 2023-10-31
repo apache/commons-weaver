@@ -57,7 +57,7 @@ public abstract class AbstractWeaverTask extends Task {
     }
 
     /**
-     * Set a project reference to a {@link WeaverSettings} object.
+     * Sets a project reference to a {@link WeaverSettings} object.
      * @param refid key
      */
     public void setSettingsRef(final String refid) {

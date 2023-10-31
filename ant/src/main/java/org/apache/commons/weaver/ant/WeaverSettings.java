@@ -74,7 +74,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Set the {@code target} directory.
+     * Sets the {@code target} directory.
      * @param target {@link File}
      */
     public void setTarget(final File target) {
@@ -96,7 +96,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Set the {@code classpathref}.
+     * Sets the {@code classpathref}.
      * @param classpathref {@link String}
      */
     public void setClasspathRef(final String classpathref) {
@@ -144,7 +144,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Set the {@code classpath}.
+     * Sets the {@code classpath}.
      * @param classpath {@link Path}
      */
     public void setClasspath(final Path classpath) {
@@ -189,7 +189,7 @@ public class WeaverSettings extends DataType {
     }
 
     /**
-     * Set whether to include the system classpath.
+     * Sets whether to include the system classpath.
      * @param includeSystemClasspath the includeSystemClasspath to set
      * @since 1.3
      * @see Path#systemClasspath
