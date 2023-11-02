@@ -23,12 +23,12 @@
     <author email="mbenson@apache.org">Matt Benson</author>
   </properties>
   <body>
-    <release version="2.1" date="YYYY-MM-DD" description="Requires Java 8 or greater.">
+    <release version="2.1" date="YYYY-MM-DD" description="Requires Java 8 or above.">
       <action type="fix" dev="ggregory">Update commons.japicmp.version 0.11.1 -> 0.15.1.</action>
       <action type="fix" dev="ggregory" due-to="John Patrick">Use JUnit 5 assertThrows() #11, #12.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.apache.maven:maven-core from 3.1.0 to 3.8.1 in /maven-plugin #13.</action>
     </release>
-    <release version="2.0" date="2018-09-07" description="Requires Java 8 or greater.">
+    <release version="2.0" date="2018-09-07" description="Requires Java 8 or above.">
       <action issue="WEAVER-16" type="fix">NullPointerException when weaving class with no package.</action>
       <action issue="WEAVER-17" type="fix">Maven plugin was packaged without its (generated) HelpMojo class.</action>
       <action issue="WEAVER-19" type="add">Upgrade to Java 8.</action>

@@ -6,7 +6,7 @@ The Apache Commons team is pleased to announce the release of Apache Commons Wea
 Apache Commons Weaver provides an easy way to enhance compiled Java
 classes by generating ("weaving") bytecode into those classes.
 
-Requires Java 8 or greater.
+Requires Java 8 or above.
 
 Changes in this version include:
 
