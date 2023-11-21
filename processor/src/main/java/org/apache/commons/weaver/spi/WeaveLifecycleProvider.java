@@ -18,7 +18,7 @@
  */
 package org.apache.commons.weaver.spi;
 
-import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in javadoc
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in Javadoc
 import org.apache.commons.weaver.lifecycle.WeaveLifecycleToken;
 
 /**

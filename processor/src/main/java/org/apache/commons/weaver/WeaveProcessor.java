@@ -24,7 +24,7 @@ import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
-import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in javadoc
+import org.apache.commons.weaver.lifecycle.WeaveLifecycle; //NOPMD used in Javadoc
 import org.apache.commons.weaver.model.WeaveEnvironment;
 import org.apache.commons.weaver.spi.Weaver;
 
