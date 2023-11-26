@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.weaver.privilizer.Privileged;
 
-
-
 public abstract class StaticUsingArgs {
 
     private StaticUsingArgs() {
