@@ -55,7 +55,7 @@ Documentation
 
 More information can be found on the [Apache Commons Weaver homepage](https://commons.apache.org/proper/commons-weaver).
 The [Javadoc](https://commons.apache.org/proper/commons-weaver/javadocs/api-release) can be browsed.
-Questions related to the usage of Apache Commons Weaver should be posted to the [user mailing list][ml].
+Questions related to the usage of Apache Commons Weaver should be posted to the [user mailing list](https://commons.apache.org/mail-lists.html).
 
 Where can I get the latest release?
 -----------------------------------
