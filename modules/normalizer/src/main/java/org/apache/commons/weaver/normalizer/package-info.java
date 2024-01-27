@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Implements the Normalizer weaver, whose purpose is to collapse identical
  * anonymous class definitions into a single one.
