@@ -44,7 +44,7 @@ Apache Commons Weaver
 ===================
 
 [![Java CI](https://github.com/apache/commons-weaver/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-weaver/actions/workflows/maven.yml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-weaver-base/?gav=true)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.commons/commons-weaver-base?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.commons/commons-weaver-base)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-weaver-base/2.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-weaver-base/2.0)
 
 Apache Commons Weaver provides an easy way to enhance compiled Java
