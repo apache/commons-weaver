@@ -26,7 +26,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        java: [ 8, 11, 17 ]
+        java: [ 8, 11 ]
         os: [ubuntu-latest]
         experimental: [false]
         # Don't need 
@@ -37,7 +37,9 @@ jobs:
           - java: 8
             os: windows-latest
             experimental: false
-#        include:
+          # Fails with Unsupported class file major version 61 (= 17)
+          - java: 17
+            experimental: true
 #          - java: 18-ea
 #            experimental: true        
 
