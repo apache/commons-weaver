@@ -40,6 +40,7 @@ jobs:
           # Fails with Unsupported class file major version 61 (= 17)
           - java: 17
             experimental: true
+            os: ubuntu-latest
 #          - java: 18-ea
 #            experimental: true        
 
