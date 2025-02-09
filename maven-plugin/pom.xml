@@ -35,7 +35,7 @@ under the License.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.version>3.8.1</maven.version>
-    <maven.plugin.version>3.5.2</maven.plugin.version>
+    <maven.plugin.version>3.15.1</maven.plugin.version>
     <aether.version>1.1.0</aether.version>
   </properties>
 
