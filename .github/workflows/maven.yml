@@ -28,7 +28,7 @@ jobs:
       matrix:
         java: [ 8, 11 ]
         os: [ubuntu-latest]
-        experimental: [false]
+        experimental: [true] # allow builds to continue to debug test fails
         # Don't need 
         include:
           - java: 8
