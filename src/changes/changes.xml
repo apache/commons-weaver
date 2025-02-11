@@ -28,6 +28,9 @@
       <action type="fix" dev="ggregory" due-to="John Patrick">Use JUnit 5 assertThrows() #11, #12.</action>
       <action type="fix" dev="sebb">Construct nested class to avoid compilation error</action>
       <!-- UPDATE -->
+      <action type="update" dev="sebb">Commons Lang 3.7 -> 3.8.1. Fixes: java.lang.NullPointerException 
+        at org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast (SystemUtils.java:1654)</action>
+      <action type="update" dev="sebb">commons.japicmp.version 0.15.1 -> 0.23.1</action>
       <action type="update" dev="ggregory">Update commons.japicmp.version 0.11.1 -> 0.15.1.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.apache.maven:maven-core from 3.1.0 to 3.8.1 in /maven-plugin #13.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump junit from 4.12 to 4.13.1 in /parent #9.</action>
