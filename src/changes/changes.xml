@@ -26,6 +26,7 @@
     <release version="2.1" date="YYYY-MM-DD" description="Requires Java 8 or above.">
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="John Patrick">Use JUnit 5 assertThrows() #11, #12.</action>
+      <action type="fix" dev="sebb">Construct nested class to avoid compilation error</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory">Update commons.japicmp.version 0.11.1 -> 0.15.1.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.apache.maven:maven-core from 3.1.0 to 3.8.1 in /maven-plugin #13.</action>
