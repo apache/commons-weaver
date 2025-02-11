@@ -78,9 +78,10 @@ jobs:
     #    and modify them (or add more) to build your code if your project
     #    uses a compiled language
 
+    # Javadoc is needed by the distribution module
     - name: Manual Build
       run: |
-        mvn clean package -Dmaven.javadoc.skip -DskipTests
+        mvn clean package -DskipTests
 
     #- run: |
     #   make bootstrap
