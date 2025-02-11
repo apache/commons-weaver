@@ -45,7 +45,7 @@ public class Privilizer {
     /**
      * An ASM {@link ClassVisitor} for privilization.
      */
-    abstract class PrivilizerClassVisitor extends ClassVisitor {
+    static abstract class PrivilizerClassVisitor extends ClassVisitor {
         String className;
         Type target;
 
