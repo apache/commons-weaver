@@ -53,6 +53,7 @@ class PrivilizingVisitor extends Privilizer.PrivilizerClassVisitor {
      * @param cv next
      */
     PrivilizingVisitor(final Privilizer privilizer, final ClassVisitor cv) { //NOPMD
+        privilizer.super(cv);
         this.policy = privilizer.policy;
         this.accessLevel = privilizer.accessLevel;
         this.cv =
