@@ -37,6 +37,12 @@ under the License.
     <maven.version>3.8.1</maven.version>
     <maven.plugin.version>3.5.2</maven.plugin.version>
     <aether.version>1.1.0</aether.version>
+    <!-- 
+      Workround for japicmp failure.
+      The build fails to find the module
+       org.apache.commons:commons-weaver-maven-plugin:maven-plugin:2.0
+    -->
+    <japicmp.skip>true</japicmp.skip>
   </properties>
 
   <dependencies>
