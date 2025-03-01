@@ -214,7 +214,7 @@ under the License.
           <dependency>
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>ecj</artifactId>
-            <version>3.14.0</version>
+            <version>3.40.0</version>
           </dependency>
         </dependencies>
       </plugin>
