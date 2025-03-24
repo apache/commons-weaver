@@ -377,8 +377,9 @@ class Finder extends AnnotationFinder implements Scanner {
 
         /**
          * Gets the list of objects representing all scanned classes.
-         * @since 1.3
+         *
          * @return {@link List} of {@link Annotated}{@code <Class<?>>}
+         * @since 1.3
          */
         public List<Annotated<Class<?>>> getAllClasses() {
             return annotate(originalInfos.values());
