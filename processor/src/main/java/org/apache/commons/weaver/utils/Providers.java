@@ -106,7 +106,7 @@ public final class Providers {
         }
 
         /**
-         * Read any {@link Produces} annotation associated with {@code providerClass}, designating types before which it
+         * Reads any {@link Produces} annotation associated with {@code providerClass}, designating types before which it
          * should be invoked.
          *
          * @param providerClass
@@ -126,7 +126,7 @@ public final class Providers {
         }
 
         /**
-         * Read any {@link Consumes} annotation associated with {@code providerClass} as dependencies.
+         * Reads any {@link Consumes} annotation associated with {@code providerClass} as dependencies.
          *
          * @param providerClass
          * @return {@link Class}[]
