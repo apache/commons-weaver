@@ -106,7 +106,7 @@ under the License.
   </distributionManagement>
 
   <build>
-    <defaultGoal>clean verify apache-rat:check</defaultGoal>
+    <defaultGoal>clean apache-rat:check verify</defaultGoal>
     <pluginManagement>
       <plugins>
         <plugin>
