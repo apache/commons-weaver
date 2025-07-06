@@ -19,36 +19,27 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
     <version>47</version>
   </parent>
-
   <artifactId>commons-weaver-base</artifactId>
   <version>2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <name>Apache Commons Weaver</name>
-
   <inceptionYear>2012</inceptionYear> <!-- from NOTICE file -->
-
   <description>
     Apache Commons Weaver provides an easy way to enhance compiled Java
     classes by generating ("weaving") bytecode into those classes.
   </description>
-
   <url>https://commons.apache.org/proper/commons-weaver</url>
-
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/WEAVER</url>
   </issueManagement>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
     <commons.componentid>weaver</commons.componentid>
     <commons.module.name>org.apache.commons.weaver</commons.module.name>
     <commons.release.version>2.0</commons.release.version>
@@ -64,11 +55,9 @@ under the License.
          define these here for the animal-sniffer config of commons-parent: -->
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-
     <ant.version>1.9.4</ant.version>
     <asm.version>6.2.1</asm.version>
   </properties>
-
   <developers>
     <developer>
       <id>kinow</id>
@@ -89,14 +78,12 @@ under the License.
       <organization>Apache</organization>
     </developer>
   </developers>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</developerConnection>
     <url>http://gitbox.apache.org/repos/asf/commons-weaver.git</url>
     <tag>HEAD</tag>
   </scm>
-
   <distributionManagement>
     <site>
       <id>commons.site</id>
@@ -104,7 +91,6 @@ under the License.
       <url>scm:svn:${commons.scmPubUrl}</url>
     </site>
   </distributionManagement>
-
   <build>
     <defaultGoal>clean apache-rat:check verify</defaultGoal>
     <pluginManagement>
@@ -179,7 +165,6 @@ under the License.
                 <presetdef name="truth">
                   <condition value="true" else="false" />
                 </presetdef>
-
                 <macrodef name="seek">
                   <attribute name="name" />
                   <attribute name="addto" />
@@ -191,7 +176,6 @@ under the License.
                     <step dir="${project.basedir}" name="@{name}" addto="@{addto}" ws="@{name}-ws" />
                   </sequential>
                 </macrodef>
-
                 <macrodef name="step">
                   <attribute name="name" />
                   <attribute name="dir" />
@@ -229,7 +213,6 @@ under the License.
                     </sequential>
                   </sequential>
                 </macrodef>
-
                 <truth property="pom-only">
                   <equals arg1="${project.packaging}" arg2="pom" />
                 </truth>
@@ -251,17 +234,14 @@ under the License.
                     <pathconvert refid="notices" pathsep="${line.separator}" />
                     <fail message="Some notices not found." />
                   </sequential>
-
                   <mkdir dir="${project.build.directory}/generated-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-resources/notices/META-INF">
                     <resources refid="notices" />
                   </copy>
-
                   <mkdir dir="${project.build.directory}/generated-test-resources/notices/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/generated-test-resources/notices/META-INF">
                     <resources refid="notices" />
                   </copy>
-
                   <mkdir dir="${project.build.directory}/apidocs/META-INF" />
                   <copy verbose="true" todir="${project.build.directory}/apidocs/META-INF">
                     <resources refid="notices" />
@@ -336,7 +316,6 @@ under the License.
       </plugin>
     </plugins>
   </build>
-
   <reporting>
     <plugins>
       <plugin>
@@ -362,7 +341,6 @@ under the License.
       </plugin>
     </plugins>
   </reporting>
-
   <profiles>
     <profile>
       <id>java10plus</id>
@@ -417,7 +395,6 @@ under the License.
       </build>
     </profile>
   </profiles>
-
   <modules>
     <module>build-tools</module>
     <module>parent</module>
@@ -427,5 +404,4 @@ under the License.
     <module>modules</module>
     <module>dist</module>
   </modules>
-
 </project>
