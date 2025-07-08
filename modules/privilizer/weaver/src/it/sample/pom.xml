@@ -29,7 +29,7 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <privilizer.policy>ON_INIT</privilizer.policy>
     <privilizer.verify>true</privilizer.verify>
-    <ant.version>1.9.3</ant.version>
+    <ant.version>1.9.16</ant.version>
   </properties>
 
   <dependencies>
