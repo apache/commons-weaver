@@ -95,6 +95,7 @@ under the License.
           <properties>
             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
           </properties>
+          <streamLogsOnFailures>true</streamLogsOnFailures>
         </configuration>
         <executions>
           <execution>
