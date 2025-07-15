@@ -34,6 +34,9 @@ jobs:
           - java: 8
             os: macos-13
             experimental: false
+          - java: 11
+            os: macos-latest
+            experimental: false
           - java: 8
             os: windows-latest
             experimental: false
@@ -41,8 +44,6 @@ jobs:
           - java: 17
             experimental: true
             os: ubuntu-latest
-#          - java: 18-ea
-#            experimental: true        
 
     runs-on: ${{ matrix.os }}
     steps:
