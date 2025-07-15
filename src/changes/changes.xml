@@ -15,9 +15,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
   -->
-<document xmlns="http://maven.apache.org/changes/1.0.0"
+<document xmlns="http://maven.apache.org/changes/2.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 https://maven.apache.org/xsd/changes-1.0.0.xsd">
+          xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <properties>
     <title>Apache Commons Weaver Changes</title>
     <author email="mbenson@apache.org">Matt Benson</author>
@@ -34,6 +34,7 @@
       <action type="update" dev="ggregory">Update commons.japicmp.version 0.11.1 -> 0.15.1.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump org.apache.maven:maven-core from 3.1.0 to 3.8.1 in /maven-plugin #13.</action>
       <action type="update" dev="ggregory" due-to="Dependabot">Bump junit from 4.12 to 4.13.1 in /parent #9.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 47 to 85.</action>
     </release>
     <release version="2.0" date="2018-09-07" description="Requires Java 8 or above.">
       <action issue="WEAVER-16" type="fix">NullPointerException when weaving class with no package.</action>

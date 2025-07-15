@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>47</version>
+    <version>85</version>
   </parent>
   <artifactId>commons-weaver-base</artifactId>
   <version>2.1-SNAPSHOT</version>
@@ -46,7 +46,8 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons.componentid>weaver</commons.componentid>
     <commons.module.name>org.apache.commons.weaver</commons.module.name>
-    <commons.release.version>2.0</commons.release.version>
+    <commons.release.version>2.1</commons.release.version>
+    <commons.bc.version>2.0</commons.bc.version>
     <commons.release.name>commons-weaver-${commons.release.version}</commons.release.name>
     <commons.rc.version>RC1</commons.rc.version>
     <commons.jira.id>WEAVER</commons.jira.id>
@@ -114,7 +115,7 @@ under the License.
         <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-shade-plugin</artifactId>
-	        <version>3.1.1</version>
+	        <version>3.6.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>

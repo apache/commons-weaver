@@ -34,7 +34,10 @@ under the License.
   <description>
     Privilizer provides machinery to automate the handling of Java Security access controls in code.
   </description>
-
+  <properties>
+    <!-- TODO? -->
+    <moditect.skip>true</moditect.skip>
+  </properties>
   <modules>
     <module>api</module>
     <module>weaver</module>

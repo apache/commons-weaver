@@ -28,6 +28,8 @@ under the License.
   <name>Apache Commons Weaver Normalizer</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- TODO? -->
+    <moditect.skip>true</moditect.skip>
   </properties>
 
   <description>
@@ -45,7 +47,6 @@ under the License.
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.9.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
