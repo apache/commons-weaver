@@ -30,6 +30,7 @@ under the License.
     <privilizer.policy>ON_INIT</privilizer.policy>
     <privilizer.verify>true</privilizer.verify>
     <ant.version>1.10.15</ant.version>
+    <invoker.debug>true</invoker.debug>
   </properties>
 
   <dependencies>
