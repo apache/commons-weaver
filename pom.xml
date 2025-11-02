@@ -87,7 +87,7 @@ under the License.
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-weaver.git</developerConnection>
-    <url>http://gitbox.apache.org/repos/asf/commons-weaver.git</url>
+    <url>https://gitbox.apache.org/repos/asf/commons-weaver.git</url>
     <tag>HEAD</tag>
   </scm>
   <distributionManagement>
