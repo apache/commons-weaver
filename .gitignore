@@ -13,3 +13,7 @@ docs/reference/src/main/docbook/en-US/version_info.xml
 .idea
 .forge_settings
 .factorypath
+
+# NetBeans files
+nb-configuration.xml
+nbactions.xml
