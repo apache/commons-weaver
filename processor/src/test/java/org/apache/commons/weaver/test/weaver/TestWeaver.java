@@ -39,10 +39,10 @@ import org.junit.Assert;
 /**
  */
 public class TestWeaver implements Weaver {
-    public static List<Method> wovenMethods = new ArrayList<Method>();
-    public static List<Class<?>> wovenClasses = new ArrayList<Class<?>>();
-    public static List<Class<?>> implementors = new ArrayList<Class<?>>();
-    public static List<Class<?>> subclasses = new ArrayList<Class<?>>();
+    public static final List<Method> wovenMethods = new ArrayList<Method>();
+    public static final List<Class<?>> wovenClasses = new ArrayList<Class<?>>();
+    public static final List<Class<?>> implementors = new ArrayList<Class<?>>();
+    public static final List<Class<?>> subclasses = new ArrayList<Class<?>>();
 
     @Override
     public boolean process(final WeaveEnvironment environment, final Scanner scanner) {
