@@ -57,7 +57,7 @@ public final class Utils {
         return System.getProperty(key);
     }
 
-    private static Integer n;
+    private static final Integer n;
     static {
         n = Integer.valueOf(999);
     }

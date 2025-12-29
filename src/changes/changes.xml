@@ -27,6 +27,8 @@
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="John Patrick">Use JUnit 5 assertThrows() #11, #12.</action>
       <action type="fix" dev="sebb">Construct nested class to avoid compilation error</action>
+      <action type="fix" dev="sebb">Add final to static fields in test and example code</action>
+      <action type="fix" dev="sebb">Add missing Javadoc required by later Java versions</action>
       <!-- UPDATE -->
       <action type="update" dev="sebb">Commons Lang 3.7 -> 3.8.1. Fixes: java.lang.NullPointerException 
         at org.apache.commons.lang3.SystemUtils.isJavaVersionAtLeast (SystemUtils.java:1654)</action>

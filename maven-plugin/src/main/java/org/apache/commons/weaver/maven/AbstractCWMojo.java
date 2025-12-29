@@ -71,12 +71,21 @@ abstract class AbstractCWMojo extends AbstractMojo {
     @Parameter(property = "weaver.config", required = false)
     protected Properties weaverConfig;
 
+    /**
+     * {@code project} parameter.
+     */
     @Parameter(defaultValue = "${project}")
     protected MavenProject project;
 
+    /**
+     * {@code repositorySystem} parameter.
+     */
     @Component
     protected RepositorySystem repositorySystem;
 
+    /**
+     * {@code repositorySystemSession} parameter.
+     */
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
     protected RepositorySystemSession repositorySystemSession;
 
@@ -115,6 +124,15 @@ abstract class AbstractCWMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Execute the mojo
+     * 
+     * @param target location of target
+     * @param classpath classpath to use
+     * @param config configuration
+     * @throws MojoExecutionException if execution fails
+     * @throws MojoFailureException for other errors
+     */
     protected abstract void doExecute(File target, List<String> classpath, Properties config)
         throws MojoExecutionException, MojoFailureException;
 
