@@ -28,6 +28,7 @@ import org.apache.commons.weaver.model.WeaveEnvironment;
  * Implements the {@code CLEAN} stage of the {@link WeaveLifecycle}.
  */
 public interface Cleaner extends WeaveLifecycleProvider<Clean> {
+
     /**
      * Using the supplied {@link Scanner}, clean a {@link WeaveEnvironment}.
      *

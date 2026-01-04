@@ -25,6 +25,7 @@ package org.apache.commons.weaver.lifecycle;
  * @since 1.2
  */
 public enum WeaveLifecycle {
+
     /**
      * Depicts the 'clean' stage of the lifecycle.
      */

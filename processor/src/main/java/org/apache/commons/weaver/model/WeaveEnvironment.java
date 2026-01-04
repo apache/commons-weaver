@@ -33,6 +33,7 @@ import org.apache.commons.weaver.spi.Weaver;
  * Encapsulates the environment in which a {@link Weaver} or {@link Cleaner} must operate.
  */
 public abstract class WeaveEnvironment {
+
     /**
      * Represents a {@link WeaveEnvironment} resource.
      */

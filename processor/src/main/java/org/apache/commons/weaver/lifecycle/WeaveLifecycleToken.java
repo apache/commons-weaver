@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
  * @since 1.2
  */
 public class WeaveLifecycleToken {
+
     /**
      * Declares the association between a {@link WeaveLifecycleToken} and an element of the {@link WeaveLifecycle}.
      */
@@ -37,6 +38,7 @@ public class WeaveLifecycleToken {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Represents {
+
         /**
          * The {@link WeaveLifecycle} stage represented by the annotated {@link WeaveLifecycleToken} type.
          * @return {@link WeaveLifecycle}

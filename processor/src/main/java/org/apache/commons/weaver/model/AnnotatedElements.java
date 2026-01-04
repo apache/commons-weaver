@@ -30,6 +30,7 @@ import java.lang.reflect.AnnotatedElement;
  * @param <T> element type
  */
 public interface AnnotatedElements<T extends AnnotatedElement> extends Iterable<T> {
+
     /**
      * Filter by annotation type.
      * @param annotationType filter

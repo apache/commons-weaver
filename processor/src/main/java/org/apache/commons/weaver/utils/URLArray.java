@@ -28,6 +28,7 @@ import java.util.stream.Stream;
  * {@link URL} Array utilities.
  */
 public final class URLArray {
+
     /**
      * Convert an {@link Iterable} of file system paths.
      * @param files to convert

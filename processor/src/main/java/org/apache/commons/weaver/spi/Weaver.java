@@ -28,6 +28,7 @@ import org.apache.commons.weaver.model.WeaveEnvironment;
  * byte code enhancement in the classes.
  */
 public interface Weaver extends WeaveLifecycleProvider<Weave> {
+
     /**
      * Using the supplied {@link Scanner}, process a {@link WeaveEnvironment}.
      *

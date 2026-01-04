@@ -43,6 +43,7 @@ public final class Providers {
     }
 
     private static class SortWorker<P extends WeaveLifecycleProvider<?>> {
+
         /**
          * Implement {@link Providers#sort(Iterable)}.
          *

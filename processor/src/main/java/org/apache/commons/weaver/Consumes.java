@@ -36,6 +36,7 @@ import org.apache.commons.weaver.spi.WeaveLifecycleProvider;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface Consumes {
+
     /**
      * The consumed types.
      * @return array of {@link WeaveLifecycleProvider} subclasses
