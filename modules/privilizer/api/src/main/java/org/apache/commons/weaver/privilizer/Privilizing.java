@@ -28,10 +28,12 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 public @interface Privilizing {
+
     /**
      * Models calls to blueprint methods defined on a specific class.
      */
     @interface CallTo {
+
         /**
          * The class owning one or more blueprint method.
          * @return {@link Class}
