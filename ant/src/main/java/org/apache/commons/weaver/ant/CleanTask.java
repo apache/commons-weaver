@@ -27,6 +27,7 @@ import org.apache.tools.ant.Project;
  * Clean Ant task.
  */
 public class CleanTask extends AbstractWeaverTask {
+
     /**
      * Create a new {@link CleanTask} instance.
      * @param project owner

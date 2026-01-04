@@ -27,6 +27,7 @@ import org.apache.tools.ant.Project;
  * Weave Ant task.
  */
 public class WeaveTask extends AbstractWeaverTask {
+
     /**
      * Create a new {@link WeaveTask} instance.
      * @param project owner

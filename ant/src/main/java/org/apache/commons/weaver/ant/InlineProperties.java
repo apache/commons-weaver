@@ -34,6 +34,7 @@ import org.apache.tools.ant.DynamicElementNS;
  * </p>
  */
 public class InlineProperties implements DynamicElementNS {
+
     /**
      * Represents a single inline property.
      */
