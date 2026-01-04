@@ -42,6 +42,7 @@ import org.objectweb.asm.util.TraceClassVisitor;
  * Coordinates privilization activities.
  */
 public class Privilizer {
+
     /**
      * An ASM {@link ClassVisitor} for privilization.
      */

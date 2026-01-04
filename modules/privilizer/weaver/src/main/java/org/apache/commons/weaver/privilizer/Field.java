@@ -28,6 +28,7 @@ import org.objectweb.asm.Type;
  * Represents a Java field.
  */
 public class Field {
+
     /**
      * Access modifier.
      */

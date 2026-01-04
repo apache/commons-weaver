@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * Weaving policy: when to use {@link PrivilegedAction}s.
  */
 public enum Policy {
+
     /**
      * Disables weaving.
      */

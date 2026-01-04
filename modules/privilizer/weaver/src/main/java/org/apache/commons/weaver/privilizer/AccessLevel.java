@@ -30,6 +30,7 @@ import org.apache.commons.lang3.Validate;
  * Enumerates the Java access levels.
  */
 public enum AccessLevel {
+
     /**
      * {@code public}.
      */

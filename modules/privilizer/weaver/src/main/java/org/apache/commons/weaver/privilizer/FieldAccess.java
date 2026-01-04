@@ -25,6 +25,7 @@ import org.objectweb.asm.Type;
  * accessing type.
  */
 public class FieldAccess extends Field {
+
     /**
      * {@link Type} from which field is accessed.
      */
