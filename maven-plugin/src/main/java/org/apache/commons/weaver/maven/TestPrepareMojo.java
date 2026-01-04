@@ -38,6 +38,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 )
 @TestScope
 public class TestPrepareMojo extends AbstractPrepareMojo {
+
     /**
      * {@link Build#getTestOutputDirectory()}.
      */

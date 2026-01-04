@@ -51,6 +51,7 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
  * @since 1.3
  */
 abstract class AbstractCWMojo extends AbstractMojo {
+
     /**
      * Marks a mojo as requiring dependencies in {@link JavaScopes#TEST} scope.
      */

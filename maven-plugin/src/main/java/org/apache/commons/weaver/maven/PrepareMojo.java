@@ -36,6 +36,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
     requiresDependencyResolution = ResolutionScope.RUNTIME_PLUS_SYSTEM
 )
 public class PrepareMojo extends AbstractPrepareMojo {
+
     /**
      * {@link Build#getOutputDirectory()}.
      */
