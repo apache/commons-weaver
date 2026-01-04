@@ -27,6 +27,7 @@ import org.apache.commons.lang3.Validate;
  * Normalization utilities.
  */
 final class Utils {
+
     /**
      * Validate a package name.
      * @param pkg to validate
