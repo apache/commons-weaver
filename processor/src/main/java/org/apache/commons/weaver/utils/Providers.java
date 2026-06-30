@@ -192,7 +192,7 @@ public final class Providers {
     /**
      * Sort the specified providers with respect to declared {@link Consumes} and {@link Produces} annotations.
      *
-     * @param <P> the {@link WeaveLifecycleProvider} type
+     * @param <P> The {@link WeaveLifecycleProvider} type
      * @param providers to sort
      * @return {@link Iterable} of {@code P}
      */
