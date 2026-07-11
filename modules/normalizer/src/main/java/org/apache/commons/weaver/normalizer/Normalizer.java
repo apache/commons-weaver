@@ -504,7 +504,7 @@ public class Normalizer {
      * which it relies; in such a situation you must specify the target package as the package of the supertype.
      * @param key used to generate the normalized class name.
      * @param classWrapper
-     * @return the generated class name.
+     * @return The generated class name.
      * @throws IOException
      */
     private String copy(final Pair<String, String> key, final ClassWrapper classWrapper) throws IOException {
