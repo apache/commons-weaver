@@ -190,7 +190,7 @@ public class WeaverSettings extends DataType {
 
     /**
      * Sets whether to include the system classpath.
-     * @param includeSystemClasspath the includeSystemClasspath to set
+     * @param includeSystemClasspath The includeSystemClasspath to set
      * @since 1.3
      * @see Path#systemClasspath
      */
