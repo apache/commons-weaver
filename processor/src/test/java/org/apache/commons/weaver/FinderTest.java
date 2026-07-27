@@ -262,7 +262,7 @@ public class FinderTest extends WeaverTestBase {
             final TestAnnotation anno = annotated.getAnnotation(TestAnnotation.class);
             assertFalse(anno.toString().isEmpty());
             assertFalse(anno.hashCode() == 0);
-            assertTrue(anno.equals(anno));
+            assertEquals(anno, anno);
         }
     }
 
