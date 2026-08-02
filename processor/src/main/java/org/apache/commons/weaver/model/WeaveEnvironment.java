@@ -55,7 +55,7 @@ public abstract class WeaveEnvironment {
         /**
          * Gets an {@link InputStream} for reading this {@link Resource}.
          * @return {@link InputStream}
-         * @throws IOException if unable to read
+         * @throws IOException Thrown if unable to read
          */
         public InputStream getInputStream() throws IOException {
             return classLoader.getResourceAsStream(name);
@@ -72,7 +72,7 @@ public abstract class WeaveEnvironment {
         /**
          * Gets an {@link OutputStream} for writing to this {@link Resource}.
          * @return {@link OutputStream}
-         * @throws IOException if unable to write
+         * @throws IOException Thrown if unable to write
          */
         public OutputStream getOutputStream() throws IOException {
             return WeaveEnvironment.this.getOutputStream(name);
