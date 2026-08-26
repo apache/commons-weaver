@@ -60,7 +60,7 @@ under the License.
          define these here for the animal-sniffer config of commons-parent: -->
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <ant.version>1.9.4</ant.version>
+    <ant.version>1.10.11</ant.version>
     <asm.version>6.2.1</asm.version>
     <invoker.debug>true</invoker.debug>
   </properties>
