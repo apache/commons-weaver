@@ -241,7 +241,6 @@ under the License.
           <execution>
             <id>create-javadoc-jar</id>
             <goals>
-              <goal>javadoc</goal>
               <goal>jar</goal>
             </goals>
             <phase>package</phase>
