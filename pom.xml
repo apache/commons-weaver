@@ -354,7 +354,6 @@ under the License.
         <jdk>[10,)</jdk>
       </activation>
       <build>
-		<defaultGoal>clean verify</defaultGoal>
         <pluginManagement>
           <plugins>
             <plugin>
