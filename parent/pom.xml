@@ -249,6 +249,9 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
+          <encoding>UTF-8</encoding>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
         </configuration>
       </plugin>
       <plugin>
