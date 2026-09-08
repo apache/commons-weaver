@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.weaver.maven;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import org.eclipse.aether.util.filter.ScopeDependencyFilter;
 
 /**
  * Defines common properties and high-level management common to all commons-weaver Maven goals.
+ *
  * @since 1.3
  */
 abstract class AbstractCWMojo extends AbstractMojo {

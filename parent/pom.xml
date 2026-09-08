@@ -241,7 +241,6 @@ under the License.
           <execution>
             <id>create-javadoc-jar</id>
             <goals>
-              <goal>javadoc</goal>
               <goal>jar</goal>
             </goals>
             <phase>package</phase>
@@ -249,6 +248,9 @@ under the License.
         </executions>
         <configuration>
           <source>${maven.compiler.source}</source>
+          <encoding>UTF-8</encoding>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
         </configuration>
       </plugin>
       <plugin>
