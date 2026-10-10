@@ -16,6 +16,8 @@
 github:
   description: "Apache Commons Weaver"
   homepage: https://commons.apache.org/weaver/
+  autolink_jira:
+    - WEAVER
 
 notifications:
     commits:      commits@commons.apache.org
