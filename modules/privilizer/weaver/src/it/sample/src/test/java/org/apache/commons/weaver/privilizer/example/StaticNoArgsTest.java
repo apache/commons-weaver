@@ -54,13 +54,9 @@ public class StaticNoArgsTest {
         assertFalse(StaticNoArgs.getFalse());
     }
 
-    @Test
-    public void testThrowingCheckedException1() {
-        try {
-            StaticNoArgs.throwingCheckedException1();
-            fail();
-        } catch (CheckedException1 e) {
-        }
+    @Test(expected = CheckedException1.class)
+    public void testThrowingCheckedException1() throws CheckedException1 {
+        StaticNoArgs.throwingCheckedException1();
     }
 
     @Test
